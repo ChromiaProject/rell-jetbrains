@@ -1,0 +1,93 @@
+<!-- Plugin Configuration File. Read more: https://plugins.jetbrains.com/docs/intellij/plugin-configuration-file.html -->
+<idea-plugin>
+    <id>net.postchain.rellide.jetbrains</id>
+    <name>Rell Chromaway</name>
+    <vendor>Chromaway</vendor>
+    <description>Rell blockchain programming language plugin</description>
+
+    <depends>com.intellij.modules.platform</depends>
+
+    <resource-bundle>messages.RellBundle</resource-bundle>
+
+    <extensions defaultExtensionNs="com.intellij">
+        <fileType
+                name="Rell file"
+                implementationClass="net.postchain.rellide.jetbrains.language.RellFileType"
+                fieldName="INSTANCE"
+                language="Rell"
+                extensions="rell"/>
+
+        <lang.parserDefinition
+                language="Rell"
+                implementationClass="net.postchain.rellide.jetbrains.language.RellParserDefinition"/>
+
+        <lang.syntaxHighlighterFactory
+                language="Rell"
+                implementationClass="net.postchain.rellide.jetbrains.language.RellSyntaxHighlighterFactory"/>
+
+        <colorSettingsPage
+                implementation="net.postchain.rellide.jetbrains.colors.RellColorSettingsPage"/>
+
+        <!-- Commenter -->
+        <lang.commenter language="Rell" implementationClass="net.postchain.rellide.jetbrains.language.RellCommenter"/>
+
+
+<!--        <toolWindow factoryClass="net.postchain.rellide.jetbrains.toolWindow.RellToolWindowFactory" id="RellToolWindow"/>-->
+<!--        &lt;!&ndash; register a preloading activity. You need to init IntellijLanguageClient with your config, see readme &ndash;&gt;-->
+<!--        <preloadingActivity implementation="net.postchain.rellide.jetbrains.RellPreloadingActivity" id="net.postchain.rellide.jetbrains.RellPreloadingActivity"/>-->
+
+<!--        &lt;!&ndash; register intellijLanguageClient as a Service OR as a plugin component (see readme)... &ndash;&gt;-->
+<!--        <applicationService serviceImplementation="org.wso2.lsp4intellij.IntellijLanguageClient"/>-->
+
+<!--        &lt;!&ndash; register a listener on editor events, required for lsp file sync &ndash;&gt;-->
+<!--        <editorFactoryListener implementation="org.wso2.lsp4intellij.listeners.LSPEditorListener"/>-->
+<!--        <fileDocumentManagerListener implementation="org.wso2.lsp4intellij.listeners.LSPFileDocumentManagerListener"/>-->
+
+<!--        &lt;!&ndash; for displaying notifications by lsp &ndash;&gt;-->
+<!--        <notificationGroup id="lsp" displayType="STICKY_BALLOON"/>-->
+
+<!--        &lt;!&ndash; for displaying the statusbar icon &ndash;&gt;-->
+<!--        <statusBarWidgetFactory implementation="org.wso2.lsp4intellij.statusbar.LSPServerStatusWidgetFactory"-->
+<!--                                id="org.wso2.lsp4intellij.statusbar.LSPServerStatusWidgetFactory"-->
+<!--                                order="first" />-->
+
+<!--        &lt;!&ndash; needed for completion &ndash;&gt;-->
+<!--        <completion.contributor implementationClass="org.wso2.lsp4intellij.contributors.LSPCompletionContributor"-->
+<!--                                id="org.wso2.lsp4intellij.contributors.LSPCompletionContributor" language="Rell"/>-->
+<!--        &lt;!&ndash; needed for completion as well as signature help &ndash;&gt;-->
+<!--        <typedHandler implementation="org.wso2.lsp4intellij.listeners.LSPTypedHandler"-->
+<!--                      id="LSPTypedHandler"/>-->
+
+<!--        &lt;!&ndash; needed for code diagnostics &ndash;&gt;-->
+<!--        <externalAnnotator id="LSPAnnotator" language="Rell"-->
+<!--                           implementationClass="org.wso2.lsp4intellij.contributors.annotator.LSPAnnotator"/>-->
+
+<!--        &lt;!&ndash; needed for Workspace Symbols &ndash;&gt;-->
+<!--        <gotoSymbolContributor implementation="org.wso2.lsp4intellij.contributors.symbol.LSPSymbolContributor"-->
+<!--                               id="LSPSymbolContributor"/>-->
+
+<!--        &lt;!&ndash; needed for renaming &ndash;&gt;-->
+<!--        <renameHandler implementation="org.wso2.lsp4intellij.contributors.rename.LSPRenameHandler" id="LSPRenameHandler" order="first"/>-->
+<!--        <renamePsiElementProcessor implementation="org.wso2.lsp4intellij.contributors.rename.LSPRenameProcessor" id="LSPRenameProcessor" order="first"/>-->
+    </extensions>
+
+    <actions>
+<!--        &lt;!&ndash; needed for hover &ndash;&gt;-->
+<!--        <action id="org.intellij.sdk.action.QuickDocAction" class="org.wso2.lsp4intellij.actions.LSPQuickDocAction">-->
+<!--        </action>-->
+
+<!--        &lt;!&ndash; needed for find references &ndash;&gt;-->
+<!--        <action class="org.wso2.lsp4intellij.actions.LSPReferencesAction" id="LSPFindUsages">-->
+<!--            <keyboard-shortcut first-keystroke="shift alt F7" keymap="$default"/>-->
+<!--        </action>-->
+    </actions>
+
+    <applicationListeners>
+<!--        <listener class="net.postchain.rellide.jetbrains.listeners.RellFrameStateListener" topic="com.intellij.ide.FrameStateListener"/>-->
+<!--        &lt;!&ndash; required for lsp file sync &ndash;&gt;-->
+<!--        <listener class="org.wso2.lsp4intellij.listeners.VFSListener"-->
+<!--                  topic="com.intellij.openapi.vfs.VirtualFileListener"/>-->
+<!--        <listener class="org.wso2.lsp4intellij.listeners.LSPProjectManagerListener"-->
+<!--                  topic="com.intellij.openapi.project.ProjectManagerListener"/>-->
+    </applicationListeners>
+</idea-plugin>
