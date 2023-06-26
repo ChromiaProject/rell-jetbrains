@@ -4,6 +4,8 @@ import org.jetbrains.changelog.markdownToHTML
 fun properties(key: String) = providers.gradleProperty(key)
 fun environment(key: String) = providers.environmentVariable(key)
 
+val rellVersion = "0.14.0-SNAPSHOT"
+
 plugins {
     // Java support
     id("java")
@@ -19,20 +21,36 @@ plugins {
     id("org.jetbrains.kotlinx.kover") version "0.6.1"
 }
 
+dependencies {
+    implementation(group="net.postchain.rell", name="rell", version=rellVersion, ext="pom")
+    implementation("net.postchain.rell:rell-base:$rellVersion")
+    implementation("net.postchain.rell:rell-tools:$rellVersion")
+}
+
 group = properties("pluginGroup").get()
 version = properties("pluginVersion").get()
 
 // Configure project's dependencies
 repositories {
-    mavenCentral();
+    mavenCentral()
     maven { url = uri("https://jitpack.io") }
+    maven {
+        name = "bintray"
+        url = uri("https://jcenter.bintray.com")
+    }
+    maven {
+        name = "etherjar"
+        url = uri("https://maven.emrld.io")
+    }
+    maven {
+        name = "Rell GitLab Registry"
+        url = uri("https://gitlab.com/api/v4/projects/32802097/packages/maven")
+    }
+    maven {
+        name = "Postchain GitLab Registry"
+        url = uri("https://gitlab.com/api/v4/projects/32294340/packages/maven")
+    }
 }
-
-
-//// LSP integration
-//dependencies {
-//    implementation("com.github.ballerina-platform:lsp4intellij:0.95.1")
-//}
 
 sourceSets["main"].java.srcDirs("src/main/gen")
 

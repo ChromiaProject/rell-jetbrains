@@ -2828,7 +2828,7 @@ public class RellParser implements PsiParser, LightPsiParser {
     if (!recursion_guard_(b, l, "X_Modifier")) return false;
     boolean r;
     Marker m = enter_section_(b, l, _NONE_, X_MODIFIER, "<x modifier>");
-    r = consumeToken(b, "abstract");
+    r = consumeToken(b, ABSTRACT);
     if (!r) r = consumeToken(b, "override");
     if (!r) r = X_Annotation(b, l + 1);
     exit_section_(b, l, m, r, false, null);

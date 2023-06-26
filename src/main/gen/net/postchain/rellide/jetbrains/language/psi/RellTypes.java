@@ -219,6 +219,7 @@ public interface RellTypes {
   IElementType X_WHEN_STMT_CASE = new RellElementType("X_WHEN_STMT_CASE");
   IElementType X_WHILE_STMT = new RellElementType("X_WHILE_STMT");
 
+  IElementType ABSTRACT = new RellTokenType("abstract");
   IElementType BOOLEANLITERAL = new RellTokenType("booleanLiteral");
   IElementType BYTES = new RellTokenType("BYTES");
   IElementType DECNUM = new RellTokenType("DECNUM");
