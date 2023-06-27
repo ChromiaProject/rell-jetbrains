@@ -19,16 +19,18 @@ import net.postchain.rellide.jetbrains.language.psi.RellTypes
 
 
 class RellParserDefinition : ParserDefinition {
+    val COMMENTS: TokenSet = TokenSet.create( RellTypes.SL_COMMENT, RellTypes.ML_COMMENT)
+
     override fun createLexer(project: Project): Lexer {
         return RellLexerAdapter()
     }
 
     override fun getCommentTokens(): TokenSet {
-        return RellTokenSets.ML_COMMENT
+        return COMMENTS
     }
 
     override fun getStringLiteralElements(): TokenSet {
-        return TokenSet.EMPTY
+        return RellTokenSets.STRING
     }
 
     override fun createParser(project: Project): PsiParser {

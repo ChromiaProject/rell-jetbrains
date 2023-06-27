@@ -7,6 +7,6 @@ import org.jetbrains.annotations.NonNls
 class RellTokenType(debugName: @NonNls String) :
     IElementType(debugName, RellLanguage.INSTANCE) {
     override fun toString(): String {
-        return "SimpleTokenType." + super.toString()
+        return "RellTokenType." + super.toString()
     }
 }
