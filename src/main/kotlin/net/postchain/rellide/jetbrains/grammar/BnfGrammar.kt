@@ -349,8 +349,13 @@ private class BnfNonterm(val name: String) {
     val terminals = mutableListOf<Pair<String, String>>()
     fun generate(): String {
         val ps = prods.get().joinToString("\n   | ") { it.generate() }
-        if(name == "X_IfStmt") {
+        if (name == "X_IfStmt") {
              return "$name ::= ${ps.replace("'else'", "X_tkElse")}\n"
+        }
+        if (name in listOf("X_LiteralExpr", "X_BaseExprHead")) {
+            // Swap order or X_IntExpr and X_BigIntExpr
+            val regex = Regex("(X_IntExpr)(\\s+\\|\\s+)(X_BigIntExpr)", RegexOption.MULTILINE)
+            return "$name ::= ${ps.replace(regex, "$3$2$1")}\n"
         }
         return "\n$name ::= $ps\n"
     }

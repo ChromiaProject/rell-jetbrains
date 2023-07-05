@@ -963,8 +963,8 @@ public class RellParser implements PsiParser, LightPsiParser {
   //    | X_NameExpr
   //    | X_DollarExpr
   //    | X_AttrExpr
-  //    | X_IntExpr
   //    | X_BigIntExpr
+  //    | X_IntExpr
   //    | X_DecimalExpr
   //    | X_StringExpr
   //    | X_BytesExpr
@@ -986,8 +986,8 @@ public class RellParser implements PsiParser, LightPsiParser {
     if (!r) r = X_NameExpr(b, l + 1);
     if (!r) r = X_DollarExpr(b, l + 1);
     if (!r) r = X_AttrExpr(b, l + 1);
-    if (!r) r = X_IntExpr(b, l + 1);
     if (!r) r = X_BigIntExpr(b, l + 1);
+    if (!r) r = X_IntExpr(b, l + 1);
     if (!r) r = X_DecimalExpr(b, l + 1);
     if (!r) r = X_StringExpr(b, l + 1);
     if (!r) r = X_BytesExpr(b, l + 1);
@@ -2668,8 +2668,8 @@ public class RellParser implements PsiParser, LightPsiParser {
   }
 
   /* ********************************************************** */
-  // X_IntExpr
-  //    | X_BigIntExpr
+  // X_BigIntExpr
+  //    | X_IntExpr
   //    | X_DecimalExpr
   //    | X_StringExpr
   //    | X_BytesExpr
@@ -2680,8 +2680,8 @@ public class RellParser implements PsiParser, LightPsiParser {
     if (!recursion_guard_(b, l, "X_LiteralExpr")) return false;
     boolean r;
     Marker m = enter_section_(b, l, _NONE_, X_LITERAL_EXPR, "<x literal expr>");
-    r = X_IntExpr(b, l + 1);
-    if (!r) r = X_BigIntExpr(b, l + 1);
+    r = X_BigIntExpr(b, l + 1);
+    if (!r) r = X_IntExpr(b, l + 1);
     if (!r) r = X_DecimalExpr(b, l + 1);
     if (!r) r = X_StringExpr(b, l + 1);
     if (!r) r = X_BytesExpr(b, l + 1);
