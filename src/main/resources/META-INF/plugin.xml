@@ -31,7 +31,11 @@
         <!-- Commenter -->
         <lang.commenter language="Rell" implementationClass="net.postchain.rellide.jetbrains.language.RellCommenter"/>
 
+        <!-- Brace Matcher -->
         <lang.braceMatcher language="Rell" implementationClass="net.postchain.rellide.jetbrains.language.RellPairedBraceMatcher"/>
+
+        <!-- Quote Handlers -->
+        <lang.quoteHandler language="Rell" implementationClass="net.postchain.rellide.jetbrains.language.RellQuoteTokenHandler"/>
 
 <!--        <toolWindow factoryClass="net.postchain.rellide.jetbrains.toolWindow.RellToolWindowFactory" id="RellToolWindow"/>-->
 <!--        &lt;!&ndash; register a preloading activity. You need to init IntellijLanguageClient with your config, see readme &ndash;&gt;-->
