@@ -13,6 +13,9 @@ public interface RellXIfStmt extends PsiElement {
   @NotNull
   List<RellXStatementRef> getXStatementRefList();
 
+  @Nullable
+  RellXTkElse getXTkElse();
+
   @NotNull
   RellXTkIF getXTkIF();
 

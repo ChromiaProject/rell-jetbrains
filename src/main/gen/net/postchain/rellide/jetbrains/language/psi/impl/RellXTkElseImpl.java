@@ -11,26 +11,20 @@ import static net.postchain.rellide.jetbrains.language.psi.RellTypes.*;
 import com.intellij.extapi.psi.ASTWrapperPsiElement;
 import net.postchain.rellide.jetbrains.language.psi.*;
 
-public class RellDecimalImpl extends ASTWrapperPsiElement implements RellDecimal {
+public class RellXTkElseImpl extends ASTWrapperPsiElement implements RellXTkElse {
 
-  public RellDecimalImpl(@NotNull ASTNode node) {
+  public RellXTkElseImpl(@NotNull ASTNode node) {
     super(node);
   }
 
   public void accept(@NotNull RellVisitor visitor) {
-    visitor.visitDecimal(this);
+    visitor.visitXTkElse(this);
   }
 
   @Override
   public void accept(@NotNull PsiElementVisitor visitor) {
     if (visitor instanceof RellVisitor) accept((RellVisitor)visitor);
     else super.accept(visitor);
-  }
-
-  @Override
-  @Nullable
-  public RellExponent getExponent() {
-    return findChildByClass(RellExponent.class);
   }
 
 }
