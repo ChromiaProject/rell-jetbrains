@@ -32,14 +32,12 @@ private fun generateHeader() {
           elementTypeHolderClass="net.postchain.rellide.jetbrains.language.psi.RellTypes"
           elementTypeClass="net.postchain.rellide.jetbrains.language.psi.RellElementType"
           tokenTypeClass="net.postchain.rellide.jetbrains.language.psi.RellTokenType"
-          
+
           psiImplUtilClass="net.postchain.rellide.jetbrains.language.psi.impl.RellPsiImplUtil"
 
           tokens=[
             space='regexp:\s+'
             booleanLiteral='regexp:true|false'
-
-            ABSTRACT='abstract'
 
             SL_COMMENT="regexp://.*"
             ML_COMMENT="regexp:/\*([^*]|[\r\n]|(\*+([^*/]|[\r\n])))*\*+/"
@@ -47,8 +45,8 @@ private fun generateHeader() {
             WS="regexp:(' '|'\t'|'\r'|'\n')+"
             ${tokenizer.tkIdentifier.name}='regexp:[a-zA-Z_${'$'}][a-zA-Z_${'$'}0-9]*'
             DECNUM="regexp:[0-9]+"
-            HEXDIG="regexp:[0-9]|[A-F]|[a-f]"
             DECIMAL="regexp:[-+]?[0-9]*\.?[0-9]+([eE][-+]?[0-9]+)?"
+            HEXDIG="regexp:[0-9]|[A-F]|[a-f]"
             ${tokenizer.tkByteArray.name}="regexp:x(('[_0-9a-fA-F]+')|(\"[_0-9a-fA-F]+\"))"
             STRBAD="regexp:\\|'\u0000' .. '\u001F'"
 
