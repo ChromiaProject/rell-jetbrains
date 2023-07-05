@@ -36,7 +36,7 @@ HEXDIG=[0-9]|[A-F]|[a-f]
 BYTES=x(('[_0-9a-fA-F]+')|(\"[_0-9a-fA-F]+\"))
 STRBAD=\\|'\u0000' .. '\u001F'
 STRING=(\"([^\"\r\n\\]|\\.)*\")|('([^'\r\n\\]|\\.)*')
-DECIMAL=[-+]?[0-9]*\.?[0-9]+([eE][-+]?[0-9]+)?
+DECIMAL=[0-9]*\.?[0-9]+([eE][-+]?[0-9]+)?
 COMMON_INT={DECNUM}| '0' 'x' {HEXDIG}+
 BIG_INTEGER={COMMON_INT} 'L'
 

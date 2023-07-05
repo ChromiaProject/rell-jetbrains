@@ -45,7 +45,7 @@ private fun generateHeader() {
             WS="regexp:(' '|'\t'|'\r'|'\n')+"
             ${tokenizer.tkIdentifier.name}='regexp:[a-zA-Z_${'$'}][a-zA-Z_${'$'}0-9]*'
             DECNUM="regexp:[0-9]+"
-            DECIMAL="regexp:[-+]?[0-9]*\.?[0-9]+([eE][-+]?[0-9]+)?"
+            DECIMAL="regexp:[0-9]*\.?[0-9]+([eE][-+]?[0-9]+)?"
             HEXDIG="regexp:[0-9]|[A-F]|[a-f]"
             ${tokenizer.tkByteArray.name}="regexp:x(('[_0-9a-fA-F]+')|(\"[_0-9a-fA-F]+\"))"
             STRBAD="regexp:\\|'\u0000' .. '\u001F'"
