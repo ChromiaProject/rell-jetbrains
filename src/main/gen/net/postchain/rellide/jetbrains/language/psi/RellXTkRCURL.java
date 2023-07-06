@@ -5,12 +5,6 @@ import java.util.List;
 import org.jetbrains.annotations.*;
 import com.intellij.psi.PsiElement;
 
-public interface RellCommonInt extends PsiElement {
-
-  @Nullable
-  PsiElement getDecnum();
-
-  @Nullable
-  PsiElement getHexdignum();
+public interface RellXTkRCURL extends PsiElement {
 
 }

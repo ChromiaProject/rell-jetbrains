@@ -28,38 +28,42 @@ WHITE_SPACE=\s+
 SPACE=[ \t\n\x0B\f\r]+
 BOOLEANLITERAL=true|false
 SL_COMMENT="//".*
-ML_COMMENT="/"\*(.|\n)*\*"/"
+ML_COMMENT="/"\*([^*]|[\r\n]|(\*+([^*/]|[\r\n])))*\*+"/"
 WS=(' '|'\t'|'\r'|'\n')+
-ID=[a-zA-Z_$][a-zA-Z_$0-9]*
-DECNUM=['0'..'9']+
-HEXDIG='0'..'9'|'A'..'F'|'a'..'f'
+ID=[a-zA-Z_][a-zA-Z_0-9]*
+DECNUM=[0-9]+
+HEXDIG=[0-9A-Fa-f]
 BYTES=x(('[_0-9a-fA-F]+')|(\"[_0-9a-fA-F]+\"))
 STRBAD=\\|'\u0000' .. '\u001F'
 STRING=(\"([^\"\r\n\\]|\\.)*\")|('([^'\r\n\\]|\\.)*')
-
+DECIMAL=[0-9]*\.?[0-9]+([eE][-+]?[0-9]+)?
+COMMON_INT={DECNUM}| '0' 'x' {HEXDIG}+
+BIG_INTEGER={COMMON_INT} 'L'
+HEXDIGNUM=0[ \t\n\x0B\f\r]*x[ \t\n\x0B\f\r]*[0-9A-Fa-f]+
 
 %%
 <YYINITIAL> {
   {WHITE_SPACE}         { return WHITE_SPACE; }
 
-  "("                   { return X_TK_LPAR; }
-  //")"                   { return X_TK_RPAR ; }
+  "->"                  { return X_TK_ARROW; }
+  ")"                   { return X_TK_RPAR; }
+  "}"                   { return X_TK_RCURL; }
+  "]"                   { return X_TK_RBRACK; }
+
+  "("               { return X_TK_LPAR; }
   "{"               { return X_TK_LCURL ; }
-  //"}"               { return RCURL ; }
   "["               { return X_TK_LBRACK ; }
-  //"]"               { return RBRACK ; }
   "@"               { return X_TK_AT; }
   "$"               { return X_DOLLAR_EXPR; }
   ":"               { return X_TK_COLON; }
   ";"               { return X_TK_SEMI ; }
   ","               { return X_TK_COMMA ; }
   "."               { return X_TK_DOT ; }
-  "?:"               { return X_BINARY_OPERATOR ; }
-  "?."               { return X_BINARY_OPERATOR ; }
-  "!!"               { return X_BASE_EXPR_TAIL_NOT_NULL ; }
   "?"               { return X_TK_QUESTION ; }
+  "?:"               { return X_BINARY_OPERATOR ; }
+  "?."               { return X_BASE_EXPR_TAIL_SAFE_MEMBER ; }
+  "!!"               { return X_BASE_EXPR_TAIL_NOT_NULL ; }
   "??"               { return X_UNARY_POSTFIX_OPERATOR ; }
- // "->"               { return ARROW ; }
   "^"               { return X_TK_CARET ; }
 
   "=="               { return X_BINARY_OPERATOR ; }
@@ -71,9 +75,9 @@ STRING=(\"([^\"\r\n\\]|\\.)*\")|('([^'\r\n\\]|\\.)*')
   "==="               { return X_BINARY_OPERATOR ; }
   "!=="               { return X_BINARY_OPERATOR ; }
 
-  "+"               { return X_TK_PLUS ; }
+  "+"               { return X_BINARY_OPERATOR ; }
   "-"               { return X_BINARY_OPERATOR ; }
-  "*"               { return X_TK_MUL ; }
+  "*"               { return X_BINARY_OPERATOR ; }
   "/"               { return X_BINARY_OPERATOR ; }
   "%"               { return X_BINARY_OPERATOR ; }
   "++"               { return X_INCREMENT_OPERATOR ; }
@@ -81,7 +85,7 @@ STRING=(\"([^\"\r\n\\]|\\.)*\")|('([^'\r\n\\]|\\.)*')
 
   "and"               { return X_BINARY_OPERATOR ; }
   "or"               { return X_BINARY_OPERATOR ; }
-  "not"               { return X_BINARY_OPERATOR ; }
+  "not"               { return X_UNARY_PREFIX_OPERATOR ; }
 
   "="               { return X_ASSIGN_OP ; }
   "+="               { return X_ASSIGN_OP ; }
@@ -90,19 +94,21 @@ STRING=(\"([^\"\r\n\\]|\\.)*\")|('([^'\r\n\\]|\\.)*')
   "/="               { return X_ASSIGN_OP ; }
   "%="               { return X_ASSIGN_OP ; }
 
-  //"abstract"               { return ABSTRACT ; }
+  "abstract"               { return X_MODIFIER ; }
   "break"               { return X_TK_BREAK ; }
   "class"               { return X_ENTITY_KEYWORD; }
   "continue"               { return X_TK_CONTINUE ; }
   "create"               { return X_TK_CREATE ; }
   "delete"               { return X_TK_DELETE ; }
-  "else"               { return X_WHEN_CONDITION_ELSE; }
-  "entity"               { return X_ENTITY_DEF; }
+  "else"               { return X_TK_ELSE ; }
+  "entity"               { return X_ENTITY_KEYWORD; }
   "enum"               { return X_TK_ENUM; }
+  "false"              { return X_LITERAL_EXPR; }
+  "true"              { return X_LITERAL_EXPR; }
   "for"               { return X_TK_FOR ; }
   "function"               { return X_TK_FUNCTION ; }
   "guard"               { return X_TK_GUARD ; }
-  "if"               { return X_TK_IF ; }
+  "if"               { return X_TK_IF; }
   "import"               { return X_TK_IMPORT ; }
   "in"               { return X_TK_IN ; }
   "include"               { return X_TK_INCLUDE ; }
@@ -120,8 +126,7 @@ STRING=(\"([^\"\r\n\\]|\\.)*\")|('([^'\r\n\\]|\\.)*')
   "query"               { return X_TK_QUERY ; }
   "record"               { return X_STRUCT_KEYWORD ; }
   "return"               { return X_TK_RETURN ; }
-  "struct"               { return X_TK_STRUCT ; }
-
+  "struct"               { return X_STRUCT_KEYWORD ; }
   "update"               { return X_TK_UPDATE ; }
   "val"               { return X_TK_VAL ; }
   "var"               { return X_VAR_VAL ; }
@@ -129,14 +134,15 @@ STRING=(\"([^\"\r\n\\]|\\.)*\")|('([^'\r\n\\]|\\.)*')
   "when"               { return X_TK_WHEN ; }
   "while"               { return X_TK_WHILE ; }
 
-  {BOOLEANLITERAL}      { return BOOLEANLITERAL; }
   {SL_COMMENT}          { return SL_COMMENT; }
   {ML_COMMENT}          { return ML_COMMENT; }
   {WS}                  { return WS; }
   {ID}                  { return ID; }
   {DECNUM}              { return DECNUM; }
-  {HEXDIG}              { return HEXDIG; }
+  {HEXDIGNUM}           { return HEXDIGNUM; }
+  {BIG_INTEGER}         { return BIG_INTEGER; }
   {BYTES}               { return BYTES; }
+  {DECIMAL}             { return DECIMAL;}
   {STRBAD}              { return STRBAD; }
   {STRING}              { return STRING; }
   {SPACE}               { return SPACE; }

@@ -33,19 +33,21 @@ private fun generateHeader() {
           elementTypeClass="net.postchain.rellide.jetbrains.language.psi.RellElementType"
           tokenTypeClass="net.postchain.rellide.jetbrains.language.psi.RellTokenType"
 
+          psiImplUtilClass="net.postchain.rellide.jetbrains.language.psi.impl.RellPsiImplUtil"
+
           tokens=[
             space='regexp:\s+'
             booleanLiteral='regexp:true|false'
 
-            ABSTRACT='abstract'
-
             SL_COMMENT="regexp://.*"
-            ML_COMMENT="regexp:/\*(.|\n)*\*/"
+            ML_COMMENT="regexp:/\*([^*]|[\r\n]|(\*+([^*/]|[\r\n])))*\*+/"
 
             WS="regexp:(' '|'\t'|'\r'|'\n')+"
-            ${tokenizer.tkIdentifier.name}='regexp:[a-zA-Z_${'$'}][a-zA-Z_${'$'}0-9]*'
-            DECNUM="regexp:['0'..'9']+"
-            HEXDIG="regexp:'0'..'9'|'A'..'F'|'a'..'f'"
+            ${tokenizer.tkIdentifier.name}='regexp:[a-zA-Z_][a-zA-Z_0-9]*'
+            DECNUM="regexp:[0-9]+"
+            HEXDIGNUM="regexp:0\s*x\s*[0-9A-Fa-f]+"
+            DECIMAL="regexp:[0-9]*\.?[0-9]+([eE][-+]?[0-9]+)?"
+            HEXDIG="regexp:[0-9A-Fa-f]"
             ${tokenizer.tkByteArray.name}="regexp:x(('[_0-9a-fA-F]+')|(\"[_0-9a-fA-F]+\"))"
             STRBAD="regexp:\\|'\u0000' .. '\u001F'"
 
@@ -60,14 +62,19 @@ private fun generateHeader() {
 private fun generateFooter() {
     val tokenizer = S_Grammar.tokenizer
     val text = """
-        EXPONENT ::= "regexp:('E'|'e') ('+'|'-')?" DECNUM ;
-        ${tokenizer.tkDecimal.name} ::= DECNUM? '.' DECNUM EXPONENT? | DECNUM EXPONENT ;
-
-        COMMON_INT ::= DECNUM | '0' 'x' HEXDIG+;
+        COMMON_INT ::= HEXDIGNUM | DECNUM;
         ${tokenizer.tkBigInteger.name} ::= COMMON_INT 'L';
         ${tokenizer.tkInteger.name} ::= COMMON_INT;
 
-        STRCHAR ::= '\t' | '\\' ('b'|'t'|'n'|'f'|'r'|'"'|"'"|'\\' | 'u' HEXDIG HEXDIG HEXDIG HEXDIG);
+        STRCHAR ::= '\t' | '\\' ('b'|'t'|'n'|'f'|'r'|'"'|"'"|'\\' | 'u' HEXDIG HEXDIG HEXDIG HEXDIG)
+        
+        X_tkElse ::= 'else'
+        X_tkLimit ::= 'limit'
+        X_tkOffset ::= 'offset'
+        X_tkArrow ::= '->'
+        X_tkRPAR ::= ')'
+        X_tkRCURL ::= '}'
+        X_tkRBRACK ::= ']'
     """.trimIndent()
 
     println(text.trim())
@@ -343,6 +350,14 @@ private class BnfNonterm(val name: String) {
     val terminals = mutableListOf<Pair<String, String>>()
     fun generate(): String {
         val ps = prods.get().joinToString("\n   | ") { it.generate() }
+        if (name == "X_IfStmt") {
+             return "$name ::= ${ps.replace("'else'", "X_tkElse")}\n"
+        }
+        if (name in listOf("X_LiteralExpr", "X_BaseExprHead")) {
+            // Swap order or X_IntExpr and X_BigIntExpr
+            val regex = Regex("(X_IntExpr)(\\s+\\|\\s+)(X_BigIntExpr)", RegexOption.MULTILINE)
+            return "$name ::= ${ps.replace(regex, "$3$2$1")}\n"
+        }
         return "\n$name ::= $ps\n"
     }
 }

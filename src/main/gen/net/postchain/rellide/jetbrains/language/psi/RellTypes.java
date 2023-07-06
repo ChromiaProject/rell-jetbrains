@@ -10,8 +10,6 @@ public interface RellTypes {
 
   IElementType BIG_INTEGER = new RellElementType("BIG_INTEGER");
   IElementType COMMON_INT = new RellElementType("COMMON_INT");
-  IElementType DECIMAL = new RellElementType("DECIMAL");
-  IElementType EXPONENT = new RellElementType("EXPONENT");
   IElementType NUMBER = new RellElementType("NUMBER");
   IElementType STRCHAR = new RellElementType("STRCHAR");
   IElementType X_ABSOLUTE_IMPORT_MODULE = new RellElementType("X_ABSOLUTE_IMPORT_MODULE");
@@ -144,6 +142,7 @@ public interface RellTypes {
   IElementType X_STRING_EXPR = new RellElementType("X_STRING_EXPR");
   IElementType X_STRUCT_DEF = new RellElementType("X_STRUCT_DEF");
   IElementType X_STRUCT_KEYWORD = new RellElementType("X_STRUCT_KEYWORD");
+  IElementType X_TK_ARROW = new RellElementType("X_TK_ARROW");
   IElementType X_TK_ASSIGN = new RellElementType("X_TK_ASSIGN");
   IElementType X_TK_AT = new RellElementType("X_TK_AT");
   IElementType X_TK_BREAK = new RellElementType("X_TK_BREAK");
@@ -154,6 +153,7 @@ public interface RellTypes {
   IElementType X_TK_CREATE = new RellElementType("X_TK_CREATE");
   IElementType X_TK_DELETE = new RellElementType("X_TK_DELETE");
   IElementType X_TK_DOT = new RellElementType("X_TK_DOT");
+  IElementType X_TK_ELSE = new RellElementType("X_TK_ELSE");
   IElementType X_TK_ENUM = new RellElementType("X_TK_ENUM");
   IElementType X_TK_FOR = new RellElementType("X_TK_FOR");
   IElementType X_TK_FUNCTION = new RellElementType("X_TK_FUNCTION");
@@ -164,17 +164,22 @@ public interface RellTypes {
   IElementType X_TK_INCLUDE = new RellElementType("X_TK_INCLUDE");
   IElementType X_TK_LBRACK = new RellElementType("X_TK_LBRACK");
   IElementType X_TK_LCURL = new RellElementType("X_TK_LCURL");
+  IElementType X_TK_LIMIT = new RellElementType("X_TK_LIMIT");
   IElementType X_TK_LPAR = new RellElementType("X_TK_LPAR");
   IElementType X_TK_MODULE = new RellElementType("X_TK_MODULE");
   IElementType X_TK_MUL = new RellElementType("X_TK_MUL");
   IElementType X_TK_MUTABLE = new RellElementType("X_TK_MUTABLE");
   IElementType X_TK_NAMESPACE = new RellElementType("X_TK_NAMESPACE");
   IElementType X_TK_OBJECT = new RellElementType("X_TK_OBJECT");
+  IElementType X_TK_OFFSET = new RellElementType("X_TK_OFFSET");
   IElementType X_TK_OPERATION = new RellElementType("X_TK_OPERATION");
   IElementType X_TK_PLUS = new RellElementType("X_TK_PLUS");
   IElementType X_TK_QUERY = new RellElementType("X_TK_QUERY");
   IElementType X_TK_QUESTION = new RellElementType("X_TK_QUESTION");
+  IElementType X_TK_RBRACK = new RellElementType("X_TK_RBRACK");
+  IElementType X_TK_RCURL = new RellElementType("X_TK_RCURL");
   IElementType X_TK_RETURN = new RellElementType("X_TK_RETURN");
+  IElementType X_TK_RPAR = new RellElementType("X_TK_RPAR");
   IElementType X_TK_SEMI = new RellElementType("X_TK_SEMI");
   IElementType X_TK_STRING = new RellElementType("X_TK_STRING");
   IElementType X_TK_STRUCT = new RellElementType("X_TK_STRUCT");
@@ -219,11 +224,12 @@ public interface RellTypes {
   IElementType X_WHEN_STMT_CASE = new RellElementType("X_WHEN_STMT_CASE");
   IElementType X_WHILE_STMT = new RellElementType("X_WHILE_STMT");
 
-  IElementType ABSTRACT = new RellTokenType("abstract");
   IElementType BOOLEANLITERAL = new RellTokenType("booleanLiteral");
   IElementType BYTES = new RellTokenType("BYTES");
+  IElementType DECIMAL = new RellTokenType("DECIMAL");
   IElementType DECNUM = new RellTokenType("DECNUM");
   IElementType HEXDIG = new RellTokenType("HEXDIG");
+  IElementType HEXDIGNUM = new RellTokenType("HEXDIGNUM");
   IElementType ID = new RellTokenType("ID");
   IElementType ML_COMMENT = new RellTokenType("ML_COMMENT");
   IElementType SL_COMMENT = new RellTokenType("SL_COMMENT");
@@ -239,12 +245,6 @@ public interface RellTypes {
       }
       else if (type == COMMON_INT) {
         return new RellCommonIntImpl(node);
-      }
-      else if (type == DECIMAL) {
-        return new RellDecimalImpl(node);
-      }
-      else if (type == EXPONENT) {
-        return new RellExponentImpl(node);
       }
       else if (type == NUMBER) {
         return new RellNumberImpl(node);
@@ -642,6 +642,9 @@ public interface RellTypes {
       else if (type == X_STRUCT_KEYWORD) {
         return new RellXStructKeywordImpl(node);
       }
+      else if (type == X_TK_ARROW) {
+        return new RellXTkArrowImpl(node);
+      }
       else if (type == X_TK_ASSIGN) {
         return new RellXTkASSIGNImpl(node);
       }
@@ -671,6 +674,9 @@ public interface RellTypes {
       }
       else if (type == X_TK_DOT) {
         return new RellXTkDOTImpl(node);
+      }
+      else if (type == X_TK_ELSE) {
+        return new RellXTkElseImpl(node);
       }
       else if (type == X_TK_ENUM) {
         return new RellXTkENUMImpl(node);
@@ -702,6 +708,9 @@ public interface RellTypes {
       else if (type == X_TK_LCURL) {
         return new RellXTkLCURLImpl(node);
       }
+      else if (type == X_TK_LIMIT) {
+        return new RellXTkLimitImpl(node);
+      }
       else if (type == X_TK_LPAR) {
         return new RellXTkLPARImpl(node);
       }
@@ -720,6 +729,9 @@ public interface RellTypes {
       else if (type == X_TK_OBJECT) {
         return new RellXTkOBJECTImpl(node);
       }
+      else if (type == X_TK_OFFSET) {
+        return new RellXTkOffsetImpl(node);
+      }
       else if (type == X_TK_OPERATION) {
         return new RellXTkOPERATIONImpl(node);
       }
@@ -732,8 +744,17 @@ public interface RellTypes {
       else if (type == X_TK_QUESTION) {
         return new RellXTkQUESTIONImpl(node);
       }
+      else if (type == X_TK_RBRACK) {
+        return new RellXTkRBRACKImpl(node);
+      }
+      else if (type == X_TK_RCURL) {
+        return new RellXTkRCURLImpl(node);
+      }
       else if (type == X_TK_RETURN) {
         return new RellXTkRETURNImpl(node);
+      }
+      else if (type == X_TK_RPAR) {
+        return new RellXTkRPARImpl(node);
       }
       else if (type == X_TK_SEMI) {
         return new RellXTkSEMIImpl(node);

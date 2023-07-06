@@ -9,7 +9,7 @@ enum class RellColor(humanName: String, default: TextAttributesKey) {
     BLOCK_COMMENT("Comments//BlockComment", Defaults.BLOCK_COMMENT),
     NAT_SPEC_TAG("Comments//NatSpecTag", Defaults.DOC_COMMENT_TAG),
 
-    CONTRACT_NAME("Types//Contract name", Defaults.CLASS_NAME),
+    ENTITY_NAME("Types//Entity name", Defaults.CLASS_NAME),
     STRUCT_NAME("Types//Struct name", Defaults.CLASS_NAME),
     ERROR_NAME("Types//Error name", Defaults.CLASS_NAME),
     EVENT_NAME("Types//Event name", Defaults.CLASS_NAME),
@@ -37,6 +37,6 @@ enum class RellColor(humanName: String, default: TextAttributesKey) {
     OPERATION_SIGN("Other//Operation signs", Defaults.OPERATION_SIGN),
     ;
 
-    val textAttributesKey = TextAttributesKey.createTextAttributesKey("me.serce.solidity.$name", default)
+    val textAttributesKey = TextAttributesKey.createTextAttributesKey("net.postchain.rellide.jetbrains.$name", default)
     val attributesDescriptor = AttributesDescriptor(humanName, textAttributesKey)
 }

@@ -15,14 +15,6 @@ public class RellVisitor extends PsiElementVisitor {
     visitPsiElement(o);
   }
 
-  public void visitDecimal(@NotNull RellDecimal o) {
-    visitPsiElement(o);
-  }
-
-  public void visitExponent(@NotNull RellExponent o) {
-    visitPsiElement(o);
-  }
-
   public void visitNumber(@NotNull RellNumber o) {
     visitPsiElement(o);
   }
@@ -699,6 +691,10 @@ public class RellVisitor extends PsiElementVisitor {
     visitPsiElement(o);
   }
 
+  public void visitXTkArrow(@NotNull RellXTkArrow o) {
+    visitPsiElement(o);
+  }
+
   public void visitXTkBREAK(@NotNull RellXTkBREAK o) {
     visitPsiElement(o);
   }
@@ -732,6 +728,10 @@ public class RellVisitor extends PsiElementVisitor {
   }
 
   public void visitXTkENUM(@NotNull RellXTkENUM o) {
+    visitPsiElement(o);
+  }
+
+  public void visitXTkElse(@NotNull RellXTkElse o) {
     visitPsiElement(o);
   }
 
@@ -775,6 +775,10 @@ public class RellVisitor extends PsiElementVisitor {
     visitPsiElement(o);
   }
 
+  public void visitXTkLimit(@NotNull RellXTkLimit o) {
+    visitPsiElement(o);
+  }
+
   public void visitXTkMODULE(@NotNull RellXTkMODULE o) {
     visitPsiElement(o);
   }
@@ -799,6 +803,10 @@ public class RellVisitor extends PsiElementVisitor {
     visitPsiElement(o);
   }
 
+  public void visitXTkOffset(@NotNull RellXTkOffset o) {
+    visitPsiElement(o);
+  }
+
   public void visitXTkPLUS(@NotNull RellXTkPLUS o) {
     visitPsiElement(o);
   }
@@ -811,7 +819,19 @@ public class RellVisitor extends PsiElementVisitor {
     visitPsiElement(o);
   }
 
+  public void visitXTkRBRACK(@NotNull RellXTkRBRACK o) {
+    visitPsiElement(o);
+  }
+
+  public void visitXTkRCURL(@NotNull RellXTkRCURL o) {
+    visitPsiElement(o);
+  }
+
   public void visitXTkRETURN(@NotNull RellXTkRETURN o) {
+    visitPsiElement(o);
+  }
+
+  public void visitXTkRPAR(@NotNull RellXTkRPAR o) {
     visitPsiElement(o);
   }
 

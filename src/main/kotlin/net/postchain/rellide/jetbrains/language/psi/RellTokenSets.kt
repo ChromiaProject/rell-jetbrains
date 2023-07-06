@@ -10,7 +10,6 @@ interface RellTokenSets {
         val COMMON_INT = TokenSet.create(RellTypes.COMMON_INT);
         val DECIMAL = TokenSet.create(RellTypes.DECIMAL);
         val DECNUM = TokenSet.create(RellTypes.DECNUM);
-        val EXPONENT = TokenSet.create(RellTypes.EXPONENT);
         val HEXDIG = TokenSet.create(RellTypes.HEXDIG);
         val ID = TokenSet.create(RellTypes.ID);
         val ML_COMMENT = TokenSet.create(RellTypes.ML_COMMENT);

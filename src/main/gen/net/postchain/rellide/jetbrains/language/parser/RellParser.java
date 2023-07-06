@@ -39,6 +39,7 @@ public class RellParser implements PsiParser, LightPsiParser {
   // COMMON_INT 'L'
   public static boolean BIG_INTEGER(PsiBuilder b, int l) {
     if (!recursion_guard_(b, l, "BIG_INTEGER")) return false;
+    if (!nextTokenIs(b, "<big integer>", DECNUM, HEXDIGNUM)) return false;
     boolean r;
     Marker m = enter_section_(b, l, _NONE_, BIG_INTEGER, "<big integer>");
     r = COMMON_INT(b, l + 1);
@@ -48,102 +49,14 @@ public class RellParser implements PsiParser, LightPsiParser {
   }
 
   /* ********************************************************** */
-  // DECNUM | '0' 'x' HEXDIG+
+  // HEXDIGNUM | DECNUM
   public static boolean COMMON_INT(PsiBuilder b, int l) {
     if (!recursion_guard_(b, l, "COMMON_INT")) return false;
+    if (!nextTokenIs(b, "<common int>", DECNUM, HEXDIGNUM)) return false;
     boolean r;
     Marker m = enter_section_(b, l, _NONE_, COMMON_INT, "<common int>");
-    r = consumeToken(b, DECNUM);
-    if (!r) r = COMMON_INT_1(b, l + 1);
-    exit_section_(b, l, m, r, false, null);
-    return r;
-  }
-
-  // '0' 'x' HEXDIG+
-  private static boolean COMMON_INT_1(PsiBuilder b, int l) {
-    if (!recursion_guard_(b, l, "COMMON_INT_1")) return false;
-    boolean r;
-    Marker m = enter_section_(b);
-    r = consumeToken(b, "0");
-    r = r && consumeToken(b, "x");
-    r = r && COMMON_INT_1_2(b, l + 1);
-    exit_section_(b, m, null, r);
-    return r;
-  }
-
-  // HEXDIG+
-  private static boolean COMMON_INT_1_2(PsiBuilder b, int l) {
-    if (!recursion_guard_(b, l, "COMMON_INT_1_2")) return false;
-    boolean r;
-    Marker m = enter_section_(b);
-    r = consumeToken(b, HEXDIG);
-    while (r) {
-      int c = current_position_(b);
-      if (!consumeToken(b, HEXDIG)) break;
-      if (!empty_element_parsed_guard_(b, "COMMON_INT_1_2", c)) break;
-    }
-    exit_section_(b, m, null, r);
-    return r;
-  }
-
-  /* ********************************************************** */
-  // DECNUM? '.' DECNUM EXPONENT? | DECNUM EXPONENT
-  public static boolean DECIMAL(PsiBuilder b, int l) {
-    if (!recursion_guard_(b, l, "DECIMAL")) return false;
-    boolean r;
-    Marker m = enter_section_(b, l, _NONE_, DECIMAL, "<decimal>");
-    r = DECIMAL_0(b, l + 1);
-    if (!r) r = DECIMAL_1(b, l + 1);
-    exit_section_(b, l, m, r, false, null);
-    return r;
-  }
-
-  // DECNUM? '.' DECNUM EXPONENT?
-  private static boolean DECIMAL_0(PsiBuilder b, int l) {
-    if (!recursion_guard_(b, l, "DECIMAL_0")) return false;
-    boolean r;
-    Marker m = enter_section_(b);
-    r = DECIMAL_0_0(b, l + 1);
-    r = r && consumeToken(b, ".");
-    r = r && consumeToken(b, DECNUM);
-    r = r && DECIMAL_0_3(b, l + 1);
-    exit_section_(b, m, null, r);
-    return r;
-  }
-
-  // DECNUM?
-  private static boolean DECIMAL_0_0(PsiBuilder b, int l) {
-    if (!recursion_guard_(b, l, "DECIMAL_0_0")) return false;
-    consumeToken(b, DECNUM);
-    return true;
-  }
-
-  // EXPONENT?
-  private static boolean DECIMAL_0_3(PsiBuilder b, int l) {
-    if (!recursion_guard_(b, l, "DECIMAL_0_3")) return false;
-    EXPONENT(b, l + 1);
-    return true;
-  }
-
-  // DECNUM EXPONENT
-  private static boolean DECIMAL_1(PsiBuilder b, int l) {
-    if (!recursion_guard_(b, l, "DECIMAL_1")) return false;
-    boolean r;
-    Marker m = enter_section_(b);
-    r = consumeToken(b, DECNUM);
-    r = r && EXPONENT(b, l + 1);
-    exit_section_(b, m, null, r);
-    return r;
-  }
-
-  /* ********************************************************** */
-  // "regexp:('E'|'e') ('+'|'-')?" DECNUM
-  public static boolean EXPONENT(PsiBuilder b, int l) {
-    if (!recursion_guard_(b, l, "EXPONENT")) return false;
-    boolean r;
-    Marker m = enter_section_(b, l, _NONE_, EXPONENT, "<exponent>");
-    r = consumeToken(b, "regexp:('E'|'e') ('+'|'-')?");
-    r = r && consumeToken(b, DECNUM);
+    r = consumeToken(b, HEXDIGNUM);
+    if (!r) r = consumeToken(b, DECNUM);
     exit_section_(b, l, m, r, false, null);
     return r;
   }
@@ -152,6 +65,7 @@ public class RellParser implements PsiParser, LightPsiParser {
   // COMMON_INT
   public static boolean NUMBER(PsiBuilder b, int l) {
     if (!recursion_guard_(b, l, "NUMBER")) return false;
+    if (!nextTokenIs(b, "<number>", DECNUM, HEXDIGNUM)) return false;
     boolean r;
     Marker m = enter_section_(b, l, _NONE_, NUMBER, "<number>");
     r = COMMON_INT(b, l + 1);
@@ -1025,8 +939,8 @@ public class RellParser implements PsiParser, LightPsiParser {
   //    | X_NameExpr
   //    | X_DollarExpr
   //    | X_AttrExpr
-  //    | X_IntExpr
   //    | X_BigIntExpr
+  //    | X_IntExpr
   //    | X_DecimalExpr
   //    | X_StringExpr
   //    | X_BytesExpr
@@ -1048,8 +962,8 @@ public class RellParser implements PsiParser, LightPsiParser {
     if (!r) r = X_NameExpr(b, l + 1);
     if (!r) r = X_DollarExpr(b, l + 1);
     if (!r) r = X_AttrExpr(b, l + 1);
-    if (!r) r = X_IntExpr(b, l + 1);
     if (!r) r = X_BigIntExpr(b, l + 1);
+    if (!r) r = X_IntExpr(b, l + 1);
     if (!r) r = X_DecimalExpr(b, l + 1);
     if (!r) r = X_StringExpr(b, l + 1);
     if (!r) r = X_BytesExpr(b, l + 1);
@@ -1297,6 +1211,7 @@ public class RellParser implements PsiParser, LightPsiParser {
   // BIG_INTEGER
   public static boolean X_BigIntExpr(PsiBuilder b, int l) {
     if (!recursion_guard_(b, l, "X_BigIntExpr")) return false;
+    if (!nextTokenIs(b, "<x big int expr>", DECNUM, HEXDIGNUM)) return false;
     boolean r;
     Marker m = enter_section_(b, l, _NONE_, X_BIG_INT_EXPR, "<x big int expr>");
     r = BIG_INTEGER(b, l + 1);
@@ -1717,10 +1632,11 @@ public class RellParser implements PsiParser, LightPsiParser {
   // DECIMAL
   public static boolean X_DecimalExpr(PsiBuilder b, int l) {
     if (!recursion_guard_(b, l, "X_DecimalExpr")) return false;
+    if (!nextTokenIs(b, DECIMAL)) return false;
     boolean r;
-    Marker m = enter_section_(b, l, _NONE_, X_DECIMAL_EXPR, "<x decimal expr>");
-    r = DECIMAL(b, l + 1);
-    exit_section_(b, l, m, r, false, null);
+    Marker m = enter_section_(b);
+    r = consumeToken(b, DECIMAL);
+    exit_section_(b, m, X_DECIMAL_EXPR, r);
     return r;
   }
 
@@ -2379,7 +2295,7 @@ public class RellParser implements PsiParser, LightPsiParser {
   }
 
   /* ********************************************************** */
-  // X_tkIF '(' X_Expression ')' X_StatementRef ('else' X_StatementRef)?
+  // X_tkIF '(' X_Expression ')' X_StatementRef (X_tkElse X_StatementRef)?
   public static boolean X_IfStmt(PsiBuilder b, int l) {
     if (!recursion_guard_(b, l, "X_IfStmt")) return false;
     boolean r;
@@ -2394,19 +2310,19 @@ public class RellParser implements PsiParser, LightPsiParser {
     return r;
   }
 
-  // ('else' X_StatementRef)?
+  // (X_tkElse X_StatementRef)?
   private static boolean X_IfStmt_5(PsiBuilder b, int l) {
     if (!recursion_guard_(b, l, "X_IfStmt_5")) return false;
     X_IfStmt_5_0(b, l + 1);
     return true;
   }
 
-  // 'else' X_StatementRef
+  // X_tkElse X_StatementRef
   private static boolean X_IfStmt_5_0(PsiBuilder b, int l) {
     if (!recursion_guard_(b, l, "X_IfStmt_5_0")) return false;
     boolean r;
     Marker m = enter_section_(b);
-    r = consumeToken(b, "else");
+    r = X_tkElse(b, l + 1);
     r = r && X_StatementRef(b, l + 1);
     exit_section_(b, m, null, r);
     return r;
@@ -2655,6 +2571,7 @@ public class RellParser implements PsiParser, LightPsiParser {
   // NUMBER
   public static boolean X_IntExpr(PsiBuilder b, int l) {
     if (!recursion_guard_(b, l, "X_IntExpr")) return false;
+    if (!nextTokenIs(b, "<x int expr>", DECNUM, HEXDIGNUM)) return false;
     boolean r;
     Marker m = enter_section_(b, l, _NONE_, X_INT_EXPR, "<x int expr>");
     r = NUMBER(b, l + 1);
@@ -2729,8 +2646,8 @@ public class RellParser implements PsiParser, LightPsiParser {
   }
 
   /* ********************************************************** */
-  // X_IntExpr
-  //    | X_BigIntExpr
+  // X_BigIntExpr
+  //    | X_IntExpr
   //    | X_DecimalExpr
   //    | X_StringExpr
   //    | X_BytesExpr
@@ -2741,8 +2658,8 @@ public class RellParser implements PsiParser, LightPsiParser {
     if (!recursion_guard_(b, l, "X_LiteralExpr")) return false;
     boolean r;
     Marker m = enter_section_(b, l, _NONE_, X_LITERAL_EXPR, "<x literal expr>");
-    r = X_IntExpr(b, l + 1);
-    if (!r) r = X_BigIntExpr(b, l + 1);
+    r = X_BigIntExpr(b, l + 1);
+    if (!r) r = X_IntExpr(b, l + 1);
     if (!r) r = X_DecimalExpr(b, l + 1);
     if (!r) r = X_StringExpr(b, l + 1);
     if (!r) r = X_BytesExpr(b, l + 1);
@@ -2828,7 +2745,7 @@ public class RellParser implements PsiParser, LightPsiParser {
     if (!recursion_guard_(b, l, "X_Modifier")) return false;
     boolean r;
     Marker m = enter_section_(b, l, _NONE_, X_MODIFIER, "<x modifier>");
-    r = consumeToken(b, ABSTRACT);
+    r = consumeToken(b, "abstract");
     if (!r) r = consumeToken(b, "override");
     if (!r) r = X_Annotation(b, l + 1);
     exit_section_(b, l, m, r, false, null);
@@ -4543,6 +4460,17 @@ public class RellParser implements PsiParser, LightPsiParser {
   }
 
   /* ********************************************************** */
+  // '->'
+  public static boolean X_tkArrow(PsiBuilder b, int l) {
+    if (!recursion_guard_(b, l, "X_tkArrow")) return false;
+    boolean r;
+    Marker m = enter_section_(b, l, _NONE_, X_TK_ARROW, "<x tk arrow>");
+    r = consumeToken(b, "->");
+    exit_section_(b, l, m, r, false, null);
+    return r;
+  }
+
+  /* ********************************************************** */
   // 'break'
   public static boolean X_tkBREAK(PsiBuilder b, int l) {
     if (!recursion_guard_(b, l, "X_tkBREAK")) return false;
@@ -4637,6 +4565,17 @@ public class RellParser implements PsiParser, LightPsiParser {
     boolean r;
     Marker m = enter_section_(b, l, _NONE_, X_TK_ENUM, "<x tk enum>");
     r = consumeToken(b, "enum");
+    exit_section_(b, l, m, r, false, null);
+    return r;
+  }
+
+  /* ********************************************************** */
+  // 'else'
+  public static boolean X_tkElse(PsiBuilder b, int l) {
+    if (!recursion_guard_(b, l, "X_tkElse")) return false;
+    boolean r;
+    Marker m = enter_section_(b, l, _NONE_, X_TK_ELSE, "<x tk else>");
+    r = consumeToken(b, "else");
     exit_section_(b, l, m, r, false, null);
     return r;
   }
@@ -4752,6 +4691,17 @@ public class RellParser implements PsiParser, LightPsiParser {
   }
 
   /* ********************************************************** */
+  // 'limit'
+  public static boolean X_tkLimit(PsiBuilder b, int l) {
+    if (!recursion_guard_(b, l, "X_tkLimit")) return false;
+    boolean r;
+    Marker m = enter_section_(b, l, _NONE_, X_TK_LIMIT, "<x tk limit>");
+    r = consumeToken(b, "limit");
+    exit_section_(b, l, m, r, false, null);
+    return r;
+  }
+
+  /* ********************************************************** */
   // 'module'
   public static boolean X_tkMODULE(PsiBuilder b, int l) {
     if (!recursion_guard_(b, l, "X_tkMODULE")) return false;
@@ -4818,6 +4768,17 @@ public class RellParser implements PsiParser, LightPsiParser {
   }
 
   /* ********************************************************** */
+  // 'offset'
+  public static boolean X_tkOffset(PsiBuilder b, int l) {
+    if (!recursion_guard_(b, l, "X_tkOffset")) return false;
+    boolean r;
+    Marker m = enter_section_(b, l, _NONE_, X_TK_OFFSET, "<x tk offset>");
+    r = consumeToken(b, "offset");
+    exit_section_(b, l, m, r, false, null);
+    return r;
+  }
+
+  /* ********************************************************** */
   // '+'
   public static boolean X_tkPLUS(PsiBuilder b, int l) {
     if (!recursion_guard_(b, l, "X_tkPLUS")) return false;
@@ -4851,12 +4812,45 @@ public class RellParser implements PsiParser, LightPsiParser {
   }
 
   /* ********************************************************** */
+  // ']'
+  public static boolean X_tkRBRACK(PsiBuilder b, int l) {
+    if (!recursion_guard_(b, l, "X_tkRBRACK")) return false;
+    boolean r;
+    Marker m = enter_section_(b, l, _NONE_, X_TK_RBRACK, "<x tk rbrack>");
+    r = consumeToken(b, "]");
+    exit_section_(b, l, m, r, false, null);
+    return r;
+  }
+
+  /* ********************************************************** */
+  // '}'
+  public static boolean X_tkRCURL(PsiBuilder b, int l) {
+    if (!recursion_guard_(b, l, "X_tkRCURL")) return false;
+    boolean r;
+    Marker m = enter_section_(b, l, _NONE_, X_TK_RCURL, "<x tk rcurl>");
+    r = consumeToken(b, "}");
+    exit_section_(b, l, m, r, false, null);
+    return r;
+  }
+
+  /* ********************************************************** */
   // 'return'
   public static boolean X_tkRETURN(PsiBuilder b, int l) {
     if (!recursion_guard_(b, l, "X_tkRETURN")) return false;
     boolean r;
     Marker m = enter_section_(b, l, _NONE_, X_TK_RETURN, "<x tk return>");
     r = consumeToken(b, "return");
+    exit_section_(b, l, m, r, false, null);
+    return r;
+  }
+
+  /* ********************************************************** */
+  // ')'
+  public static boolean X_tkRPAR(PsiBuilder b, int l) {
+    if (!recursion_guard_(b, l, "X_tkRPAR")) return false;
+    boolean r;
+    Marker m = enter_section_(b, l, _NONE_, X_TK_RPAR, "<x tk rpar>");
+    r = consumeToken(b, ")");
     exit_section_(b, l, m, r, false, null);
     return r;
   }
