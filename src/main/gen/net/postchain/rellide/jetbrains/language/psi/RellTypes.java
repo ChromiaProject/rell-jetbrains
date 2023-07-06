@@ -229,6 +229,7 @@ public interface RellTypes {
   IElementType DECIMAL = new RellTokenType("DECIMAL");
   IElementType DECNUM = new RellTokenType("DECNUM");
   IElementType HEXDIG = new RellTokenType("HEXDIG");
+  IElementType HEXDIGNUM = new RellTokenType("HEXDIGNUM");
   IElementType ID = new RellTokenType("ID");
   IElementType ML_COMMENT = new RellTokenType("ML_COMMENT");
   IElementType SL_COMMENT = new RellTokenType("SL_COMMENT");

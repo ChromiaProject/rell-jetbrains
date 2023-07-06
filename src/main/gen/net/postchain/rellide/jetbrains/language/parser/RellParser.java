@@ -39,6 +39,7 @@ public class RellParser implements PsiParser, LightPsiParser {
   // COMMON_INT 'L'
   public static boolean BIG_INTEGER(PsiBuilder b, int l) {
     if (!recursion_guard_(b, l, "BIG_INTEGER")) return false;
+    if (!nextTokenIs(b, "<big integer>", DECNUM, HEXDIGNUM)) return false;
     boolean r;
     Marker m = enter_section_(b, l, _NONE_, BIG_INTEGER, "<big integer>");
     r = COMMON_INT(b, l + 1);
@@ -48,41 +49,15 @@ public class RellParser implements PsiParser, LightPsiParser {
   }
 
   /* ********************************************************** */
-  // DECNUM | '0' 'x' HEXDIG+
+  // HEXDIGNUM | DECNUM
   public static boolean COMMON_INT(PsiBuilder b, int l) {
     if (!recursion_guard_(b, l, "COMMON_INT")) return false;
+    if (!nextTokenIs(b, "<common int>", DECNUM, HEXDIGNUM)) return false;
     boolean r;
     Marker m = enter_section_(b, l, _NONE_, COMMON_INT, "<common int>");
-    r = consumeToken(b, DECNUM);
-    if (!r) r = COMMON_INT_1(b, l + 1);
+    r = consumeToken(b, HEXDIGNUM);
+    if (!r) r = consumeToken(b, DECNUM);
     exit_section_(b, l, m, r, false, null);
-    return r;
-  }
-
-  // '0' 'x' HEXDIG+
-  private static boolean COMMON_INT_1(PsiBuilder b, int l) {
-    if (!recursion_guard_(b, l, "COMMON_INT_1")) return false;
-    boolean r;
-    Marker m = enter_section_(b);
-    r = consumeToken(b, "0");
-    r = r && consumeToken(b, "x");
-    r = r && COMMON_INT_1_2(b, l + 1);
-    exit_section_(b, m, null, r);
-    return r;
-  }
-
-  // HEXDIG+
-  private static boolean COMMON_INT_1_2(PsiBuilder b, int l) {
-    if (!recursion_guard_(b, l, "COMMON_INT_1_2")) return false;
-    boolean r;
-    Marker m = enter_section_(b);
-    r = consumeToken(b, HEXDIG);
-    while (r) {
-      int c = current_position_(b);
-      if (!consumeToken(b, HEXDIG)) break;
-      if (!empty_element_parsed_guard_(b, "COMMON_INT_1_2", c)) break;
-    }
-    exit_section_(b, m, null, r);
     return r;
   }
 
@@ -90,6 +65,7 @@ public class RellParser implements PsiParser, LightPsiParser {
   // COMMON_INT
   public static boolean NUMBER(PsiBuilder b, int l) {
     if (!recursion_guard_(b, l, "NUMBER")) return false;
+    if (!nextTokenIs(b, "<number>", DECNUM, HEXDIGNUM)) return false;
     boolean r;
     Marker m = enter_section_(b, l, _NONE_, NUMBER, "<number>");
     r = COMMON_INT(b, l + 1);
@@ -1235,6 +1211,7 @@ public class RellParser implements PsiParser, LightPsiParser {
   // BIG_INTEGER
   public static boolean X_BigIntExpr(PsiBuilder b, int l) {
     if (!recursion_guard_(b, l, "X_BigIntExpr")) return false;
+    if (!nextTokenIs(b, "<x big int expr>", DECNUM, HEXDIGNUM)) return false;
     boolean r;
     Marker m = enter_section_(b, l, _NONE_, X_BIG_INT_EXPR, "<x big int expr>");
     r = BIG_INTEGER(b, l + 1);
@@ -2594,6 +2571,7 @@ public class RellParser implements PsiParser, LightPsiParser {
   // NUMBER
   public static boolean X_IntExpr(PsiBuilder b, int l) {
     if (!recursion_guard_(b, l, "X_IntExpr")) return false;
+    if (!nextTokenIs(b, "<x int expr>", DECNUM, HEXDIGNUM)) return false;
     boolean r;
     Marker m = enter_section_(b, l, _NONE_, X_INT_EXPR, "<x int expr>");
     r = NUMBER(b, l + 1);

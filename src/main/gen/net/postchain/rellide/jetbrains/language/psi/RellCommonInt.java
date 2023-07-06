@@ -10,4 +10,7 @@ public interface RellCommonInt extends PsiElement {
   @Nullable
   PsiElement getDecnum();
 
+  @Nullable
+  PsiElement getHexdignum();
+
 }

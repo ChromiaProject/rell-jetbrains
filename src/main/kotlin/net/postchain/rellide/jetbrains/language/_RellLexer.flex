@@ -30,22 +30,21 @@ BOOLEANLITERAL=true|false
 SL_COMMENT="//".*
 ML_COMMENT="/"\*([^*]|[\r\n]|(\*+([^*/]|[\r\n])))*\*+"/"
 WS=(' '|'\t'|'\r'|'\n')+
-ID=[a-zA-Z_$][a-zA-Z_$0-9]*
+ID=[a-zA-Z_][a-zA-Z_0-9]*
 DECNUM=[0-9]+
-HEXDIG=[0-9]|[A-F]|[a-f]
+HEXDIG=[0-9A-Fa-f]
 BYTES=x(('[_0-9a-fA-F]+')|(\"[_0-9a-fA-F]+\"))
 STRBAD=\\|'\u0000' .. '\u001F'
 STRING=(\"([^\"\r\n\\]|\\.)*\")|('([^'\r\n\\]|\\.)*')
 DECIMAL=[0-9]*\.?[0-9]+([eE][-+]?[0-9]+)?
 COMMON_INT={DECNUM}| '0' 'x' {HEXDIG}+
 BIG_INTEGER={COMMON_INT} 'L'
+HEXDIGNUM=0[ \t\n\x0B\f\r]*x[ \t\n\x0B\f\r]*[0-9A-Fa-f]+
 
 %%
 <YYINITIAL> {
   {WHITE_SPACE}         { return WHITE_SPACE; }
 
-  //"limit"               { return X_TK_LIMIT; }
-  //"offset"              { return X_TK_OFFSET; }
   "->"                  { return X_TK_ARROW; }
   ")"                   { return X_TK_RPAR; }
   "}"                   { return X_TK_RCURL; }
@@ -140,6 +139,7 @@ BIG_INTEGER={COMMON_INT} 'L'
   {WS}                  { return WS; }
   {ID}                  { return ID; }
   {DECNUM}              { return DECNUM; }
+  {HEXDIGNUM}           { return HEXDIGNUM; }
   {BIG_INTEGER}         { return BIG_INTEGER; }
   {BYTES}               { return BYTES; }
   {DECIMAL}             { return DECIMAL;}

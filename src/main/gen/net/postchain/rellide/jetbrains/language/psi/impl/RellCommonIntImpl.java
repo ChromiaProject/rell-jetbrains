@@ -33,4 +33,10 @@ public class RellCommonIntImpl extends ASTWrapperPsiElement implements RellCommo
     return findChildByType(DECNUM);
   }
 
+  @Override
+  @Nullable
+  public PsiElement getHexdignum() {
+    return findChildByType(HEXDIGNUM);
+  }
+
 }

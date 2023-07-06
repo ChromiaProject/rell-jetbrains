@@ -60,7 +60,7 @@ object RellSyntaxHighlighter : SyntaxHighlighterBase() {
     )
 
     fun types() = setOf<IElementType>(
-        BIG_INTEGER, COMMON_INT, DECIMAL, DECNUM, NUMBER
+        BIG_INTEGER, COMMON_INT, DECIMAL, DECNUM, NUMBER, HEXDIGNUM
     )
 
     private fun literals() = setOf<IElementType>(X_NULL_LITERAL_EXPR, X_LITERAL_EXPR,
