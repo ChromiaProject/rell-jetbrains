@@ -43,10 +43,11 @@ private fun generateHeader() {
             ML_COMMENT="regexp:/\*([^*]|[\r\n]|(\*+([^*/]|[\r\n])))*\*+/"
 
             WS="regexp:(' '|'\t'|'\r'|'\n')+"
-            ${tokenizer.tkIdentifier.name}='regexp:[a-zA-Z_${'$'}][a-zA-Z_${'$'}0-9]*'
+            ${tokenizer.tkIdentifier.name}='regexp:[a-zA-Z_][a-zA-Z_0-9]*'
             DECNUM="regexp:[0-9]+"
+            HEXDIGNUM="regexp:0\s*x\s*[0-9A-Fa-f]+"
             DECIMAL="regexp:[0-9]*\.?[0-9]+([eE][-+]?[0-9]+)?"
-            HEXDIG="regexp:[0-9]|[A-F]|[a-f]"
+            HEXDIG="regexp:[0-9A-Fa-f]"
             ${tokenizer.tkByteArray.name}="regexp:x(('[_0-9a-fA-F]+')|(\"[_0-9a-fA-F]+\"))"
             STRBAD="regexp:\\|'\u0000' .. '\u001F'"
 
@@ -61,7 +62,7 @@ private fun generateHeader() {
 private fun generateFooter() {
     val tokenizer = S_Grammar.tokenizer
     val text = """
-        COMMON_INT ::= DECNUM | '0' 'x' HEXDIG+;
+        COMMON_INT ::= HEXDIGNUM | DECNUM;
         ${tokenizer.tkBigInteger.name} ::= COMMON_INT 'L';
         ${tokenizer.tkInteger.name} ::= COMMON_INT;
 
