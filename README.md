@@ -35,7 +35,7 @@ To keep everything working, do not remove `<!-- ... -->` sections.
   
 - Manually:
 
-  Download the [latest release](https://bitbucket.org/chromawallet/rell-jetbrains) and install it manually using
+  Download the [latest release](https://bitbucket.org/chromawallet/rell-jetbrains/downloads/rell-jetbrains-0.0.1.zip) and install it manually using
   <kbd>Settings/Preferences</kbd> > <kbd>Plugins</kbd> > <kbd>⚙️</kbd> > <kbd>Install plugin from disk...</kbd>
 
 
