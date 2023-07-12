@@ -18,7 +18,7 @@ interface RellTokenSets {
         val STRBAD = TokenSet.create(RellTypes.STRBAD);
         val STRCHAR = TokenSet.create(RellTypes.STRCHAR);
         val STRING = TokenSet.create(RellTypes.STRING);
-        val WS = TokenSet.create(RellTypes.WS);
+        //val WS = TokenSet.create(RellTypes.WS);
         val X_ABSOLUTE_IMPORT_MODULE = TokenSet.create(RellTypes.X_ABSOLUTE_IMPORT_MODULE);
         val X_ANNOTATED_DEF = TokenSet.create(RellTypes.X_ANNOTATED_DEF);
         val X_ANNOTATION = TokenSet.create(RellTypes.X_ANNOTATION);

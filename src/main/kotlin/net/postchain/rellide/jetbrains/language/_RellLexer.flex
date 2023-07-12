@@ -4,17 +4,98 @@ import com.intellij.lexer.FlexLexer;
 import com.intellij.psi.tree.IElementType;
 
 import static com.intellij.psi.TokenType.BAD_CHARACTER;
+import static com.intellij.psi.TokenType.ERROR_ELEMENT;
 import static com.intellij.psi.TokenType.WHITE_SPACE;
 import static net.postchain.rellide.jetbrains.language.psi.RellTypes.*;
+import java.math.BigInteger;
+import java.math.BigDecimal;
+import java.math.RoundingMode;
 
 %%
 
 %{
+  private static final int MAX_ALLOWED_DIGITS = 131072;
+  private static final int MAX_ALLOWED_HEX_DIGITS = 999;
+  private static final BigInteger MAX_VALUE = BigInteger.TEN.pow(MAX_ALLOWED_DIGITS);
+  private static final BigInteger BIG_INTEGER_MAX_VALUE = MAX_VALUE.subtract(BigInteger.ONE);
+  private static final BigInteger BIG_INTEGER_MIN_VALUE = MAX_VALUE.add(BigInteger.ONE).negate();
+  private static final int DECIMAL_FRAC_DIGITS = 20;
+  private static final int DECIMAL_PRECISION = MAX_ALLOWED_DIGITS + DECIMAL_FRAC_DIGITS;
+  private static final BigDecimal DECIMAL_MIN_VALUE = BigDecimal.ONE.divide(BigDecimal.TEN.pow(DECIMAL_FRAC_DIGITS));
+  private static final BigDecimal DECIMAL_MAX_VALUE = BigDecimal.TEN.pow(DECIMAL_PRECISION).subtract(BigDecimal.ONE)
+          .divide(BigDecimal.TEN.pow(DECIMAL_FRAC_DIGITS));
+  private static final int MAX_DECIMAL_LITERAL_LENGTH = 1000;
+  private static final BigDecimal POSITIVE_MIN = BigDecimal.ONE.divide(BigDecimal.TEN.pow(DECIMAL_FRAC_DIGITS + 1));
+  private static final BigDecimal NEGATIVE_MIN = POSITIVE_MIN.negate();
+  private static final BigDecimal UPPER_LIMIT = BigDecimal.TEN.pow(MAX_ALLOWED_DIGITS);
+  private static final BigDecimal LOWER_LIMIT = UPPER_LIMIT.negate();
+
   public _RellLexer() {
     this((java.io.Reader)null);
   }
 %}
 
+%{
+    public boolean hasHexPrefix(String text) {
+        return text.startsWith("0x");
+    }
+
+    public boolean isIntegerOutOfRange(String text) {
+        try {
+            boolean isHex = hasHexPrefix(text);
+            if (isHex) {
+                Long.parseLong(text.substring(2), 16);
+            } else {
+                Long.parseLong(text, 10);
+            }
+            return false;
+        } catch (NumberFormatException e) {
+            return true;
+        }
+    }
+
+    public boolean isBigIntegerOutOfRange(String text) {
+        boolean isHex = hasHexPrefix(text);
+        if (text.length() > MAX_ALLOWED_HEX_DIGITS) {
+            return true;
+        }
+        BigInteger parsedBigInteger = isHex ? new BigInteger(text.substring(2), 16) : new BigInteger(text, 10);
+        return parsedBigInteger.compareTo(BIG_INTEGER_MAX_VALUE) == 1 ||
+               parsedBigInteger.compareTo(BIG_INTEGER_MIN_VALUE) == -1;
+    }
+
+    public BigDecimal scale(BigDecimal v) {
+        BigDecimal t = v;
+        if (t.compareTo(NEGATIVE_MIN) >= 0 && t.compareTo(POSITIVE_MIN) <= 0) {
+            return BigDecimal.ZERO;
+        } else if (t.compareTo(LOWER_LIMIT) <= 0 || t.compareTo(UPPER_LIMIT) >= 0) {
+            return null;
+        }
+
+        int scale = t.scale();
+        if (scale > DECIMAL_FRAC_DIGITS) {
+            t = v.setScale(DECIMAL_FRAC_DIGITS, RoundingMode.HALF_UP);
+            if (t.compareTo(LOWER_LIMIT) <= 0 || t.compareTo(UPPER_LIMIT) >= 0) {
+                return null;
+            }
+        }
+        return t;
+    }
+
+    public boolean isDecimalOutOfRange(String text) {
+        int len = text.length();
+        if (len > MAX_DECIMAL_LITERAL_LENGTH) {
+            return true;
+        }
+        BigDecimal parsedDecimal = null;
+        try {
+            parsedDecimal = new BigDecimal(text);
+        } catch (NumberFormatException e) {
+            return true;
+        }
+        return scale(parsedDecimal) == null;
+    }
+%}
 %public
 %class _RellLexer
 %implements FlexLexer
@@ -26,19 +107,19 @@ EOL=\R
 WHITE_SPACE=\s+
 
 SPACE=[ \t\n\x0B\f\r]+
-BOOLEANLITERAL=true|false
 SL_COMMENT="//".*
 ML_COMMENT="/"\*([^*]|[\r\n]|(\*+([^*/]|[\r\n])))*\*+"/"
-WS=(' '|'\t'|'\r'|'\n')+
+WS=[ \t\r\n]+
 ID=[a-zA-Z_][a-zA-Z_0-9]*
 DECNUM=[0-9]+
 HEXDIG=[0-9A-Fa-f]
-BYTES=x(('[_0-9a-fA-F]+')|(\"[_0-9a-fA-F]+\"))
+BYTES=x(('([_0-9a-fA-F][_0-9a-fA-F])*')|(\"([_0-9a-fA-F][_0-9a-fA-F])*\"))
 STRBAD=\\|'\u0000' .. '\u001F'
-STRING=(\"([^\"\r\n\\]|\\.)*\")|('([^'\r\n\\]|\\.)*')
+STRING=(\"(\t|\\[btnfr\"'\\]|\\u[0-9A-Fa-f]{4}|[^\"\\\u0000-\u001F])*\")|('(\t|\\[btnfr\"'\\]|\\u[0-9A-Fa-f]{4}|[^\'\\\u0000-\u001F])*')
+INVALID_DECIMAL=[0-9]+\.[a-zA-Z]+
 DECIMAL=[0-9]*\.?[0-9]+([eE][-+]?[0-9]+)?
 COMMON_INT={DECNUM}| '0' 'x' {HEXDIG}+
-BIG_INTEGER={COMMON_INT} 'L'
+BIG_INTEGER=([0-9]+|0x[0-9A-Fa-f]+)L
 HEXDIGNUM=0[ \t\n\x0B\f\r]*x[ \t\n\x0B\f\r]*[0-9A-Fa-f]+
 
 %%
@@ -137,12 +218,35 @@ HEXDIGNUM=0[ \t\n\x0B\f\r]*x[ \t\n\x0B\f\r]*[0-9A-Fa-f]+
   {SL_COMMENT}          { return SL_COMMENT; }
   {ML_COMMENT}          { return ML_COMMENT; }
   {WS}                  { return WS; }
+  {INVALID_DECIMAL}     { return ERROR_ELEMENT; }
   {ID}                  { return ID; }
-  {DECNUM}              { return DECNUM; }
-  {HEXDIGNUM}           { return HEXDIGNUM; }
-  {BIG_INTEGER}         { return BIG_INTEGER; }
+  {BIG_INTEGER}         {
+                            yypushback(1);
+                            String matched = yytext().toString();
+                            if (isBigIntegerOutOfRange(matched)) {
+                                return ERROR_ELEMENT;
+                            }
+                            return DECNUM;
+                        }
+  {DECNUM}              {
+                            if (isIntegerOutOfRange(yytext().toString())) {
+                                return ERROR_ELEMENT;
+                            }
+                            return DECNUM;
+                        }
+  {HEXDIGNUM}           {
+                            if (isIntegerOutOfRange(yytext().toString())) {
+                                return ERROR_ELEMENT;
+                            }
+                            return HEXDIGNUM;
+                        }
   {BYTES}               { return BYTES; }
-  {DECIMAL}             { return DECIMAL;}
+  {DECIMAL}             {
+                            if (isDecimalOutOfRange(yytext().toString())) {
+                                return ERROR_ELEMENT;
+                            }
+                            return DECIMAL;
+                        }
   {STRBAD}              { return STRBAD; }
   {STRING}              { return STRING; }
   {SPACE}               { return SPACE; }

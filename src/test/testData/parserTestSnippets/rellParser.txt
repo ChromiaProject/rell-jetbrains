@@ -1,0 +1,10 @@
+Rell File
+  PsiElement(X_TK_FUNCTION)('function')
+  PsiWhiteSpace(' ')
+  PsiElement(RellTokenType.ID)('x')
+  PsiElement(X_TK_LPAR)('(')
+  PsiElement(X_TK_RPAR)(')')
+  PsiWhiteSpace(' ')
+  PsiElement(X_TK_LCURL)('{')
+  PsiErrorElement:<x statement> or '}' expected
+    <empty list>
