@@ -25,6 +25,8 @@ dependencies {
     implementation(group="net.postchain.rell", name="rell", version=rellVersion, ext="pom")
     implementation("net.postchain.rell:rell-base:$rellVersion")
     implementation("net.postchain.rell:rell-tools:$rellVersion")
+
+    testImplementation("com.fasterxml.jackson.core:jackson-databind:2.0.1")
 }
 
 group = properties("pluginGroup").get()

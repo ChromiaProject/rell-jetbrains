@@ -42,16 +42,16 @@ private fun generateHeader() {
             SL_COMMENT="regexp://.*"
             ML_COMMENT="regexp:/\*([^*]|[\r\n]|(\*+([^*/]|[\r\n])))*\*+/"
 
-            WS="regexp:(' '|'\t'|'\r'|'\n')+"
+            WS="regexp:[ \t\r\n]+"
             ${tokenizer.tkIdentifier.name}='regexp:[a-zA-Z_][a-zA-Z_0-9]*'
             DECNUM="regexp:[0-9]+"
             HEXDIGNUM="regexp:0\s*x\s*[0-9A-Fa-f]+"
             DECIMAL="regexp:[0-9]*\.?[0-9]+([eE][-+]?[0-9]+)?"
             HEXDIG="regexp:[0-9A-Fa-f]"
-            ${tokenizer.tkByteArray.name}="regexp:x(('[_0-9a-fA-F]+')|(\"[_0-9a-fA-F]+\"))"
+            ${tokenizer.tkByteArray.name}="regexp:x(('([_0-9a-fA-F][_0-9a-fA-F])*')|(\"([_0-9a-fA-F][_0-9a-fA-F])*\"))"
             STRBAD="regexp:\\|'\u0000' .. '\u001F'"
 
-            ${tokenizer.tkString.name}="regexp:(\"([^\"\r\n\\]|\\.)*\")|('([^'\r\n\\]|\\.)*')"
+            ${tokenizer.tkString.name}="regexp:(\"(\t|\\[btnfr\"\'\\]|\\u[0-9A-Fa-f]{4}|[^\"\\\u0000-\u001F])*\")|('(\t|\\[btnfr\"\'\\]|\\u[0-9A-Fa-f]{4}|[^\'\\\u0000-\u001F])*\')"
           ]
         }
     """.trimIndent()
