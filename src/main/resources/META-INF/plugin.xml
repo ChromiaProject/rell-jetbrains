@@ -28,6 +28,9 @@
         <colorSettingsPage
                 implementation="net.postchain.rellide.jetbrains.colors.RellColorSettingsPage"/>
 
+        <!-- Annotator -->
+        <annotator language="Rell" implementationClass="net.postchain.rellide.jetbrains.colors.RellAdvancedSyntaxHighlightingAnnotator" />
+
         <!-- Commenter -->
         <lang.commenter language="Rell" implementationClass="net.postchain.rellide.jetbrains.language.RellCommenter"/>
 

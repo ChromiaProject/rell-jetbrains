@@ -7,10 +7,10 @@ import com.intellij.openapi.editor.DefaultLanguageHighlighterColors as Defaults
 enum class RellColor(humanName: String, default: TextAttributesKey) {
     LINE_COMMENT("Comments//Comment", Defaults.LINE_COMMENT),
     BLOCK_COMMENT("Comments//BlockComment", Defaults.BLOCK_COMMENT),
-    NAT_SPEC_TAG("Comments//NatSpecTag", Defaults.DOC_COMMENT_TAG),
 
     ENTITY_NAME("Types//Entity name", Defaults.CLASS_NAME),
     STRUCT_NAME("Types//Struct name", Defaults.CLASS_NAME),
+    OBJECT_NAME("Types//Object name", Defaults.CLASS_NAME),
     ERROR_NAME("Types//Error name", Defaults.CLASS_NAME),
     EVENT_NAME("Types//Event name", Defaults.CLASS_NAME),
     ENUM_NAME("Types//Enum name", Defaults.CLASS_NAME),
@@ -21,6 +21,7 @@ enum class RellColor(humanName: String, default: TextAttributesKey) {
     GLOBAL("Identifiers//Global", Defaults.GLOBAL_VARIABLE),
     CONSTANT("Identifiers//Constant", Defaults.STATIC_FIELD),
     STATE_VARIABLE("Identifiers//State variable", Defaults.INSTANCE_FIELD),
+    LOCAL_VARIABLE("Identifiers//Local variable", Defaults.LOCAL_VARIABLE),
 
     FUNCTION_DECLARATION("Functions//Function declaration", Defaults.FUNCTION_DECLARATION),
     RECEIVE_FALLBACK_DECLARATION("Functions//Receive/Fallback declaration", Defaults.STATIC_METHOD),
