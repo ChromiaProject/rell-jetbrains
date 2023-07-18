@@ -11,11 +11,12 @@ enum class RellColor(humanName: String, default: TextAttributesKey) {
     ENTITY_NAME("Types//Entity name", Defaults.CLASS_NAME),
     STRUCT_NAME("Types//Struct name", Defaults.CLASS_NAME),
     OBJECT_NAME("Types//Object name", Defaults.CLASS_NAME),
-    ERROR_NAME("Types//Error name", Defaults.CLASS_NAME),
-    EVENT_NAME("Types//Event name", Defaults.CLASS_NAME),
+    NAMESPACE_NAME("Types//Namespace name", Defaults.CLASS_NAME),
+    OPERATION_NAME("Types//Operation name", Defaults.CLASS_NAME),
+    QUERY_NAME("Types//Query name", Defaults.CLASS_NAME),
     ENUM_NAME("Types//Enum name", Defaults.CLASS_NAME),
     ENUM_VALUE("Types//Enum value", Defaults.STATIC_FIELD),
-    TYPE("Types//Value type", Defaults.KEYWORD),
+    TYPE("Types//Value type", Defaults.CLASS_NAME),
     USER_DEFINED_VALUE_TYPE("Types//User-defined value type", Defaults.CLASS_NAME),
 
     GLOBAL("Identifiers//Global", Defaults.GLOBAL_VARIABLE),
@@ -24,8 +25,8 @@ enum class RellColor(humanName: String, default: TextAttributesKey) {
     LOCAL_VARIABLE("Identifiers//Local variable", Defaults.LOCAL_VARIABLE),
 
     FUNCTION_DECLARATION("Functions//Function declaration", Defaults.FUNCTION_DECLARATION),
-    RECEIVE_FALLBACK_DECLARATION("Functions//Receive/Fallback declaration", Defaults.STATIC_METHOD),
     FUNCTION_CALL("Functions//Function call", Defaults.FUNCTION_CALL),
+    PARAMETER("Functions//Parameter", Defaults.PARAMETER),
     GLOBAL_FUNCTION_CALL("Functions//Global function call", Defaults.GLOBAL_VARIABLE),
 
     BRACES("Other//Braces", Defaults.BRACES),
