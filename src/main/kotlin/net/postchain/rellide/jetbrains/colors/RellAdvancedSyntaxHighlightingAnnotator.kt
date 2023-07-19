@@ -6,30 +6,8 @@ import com.intellij.lang.annotation.HighlightSeverity
 import com.intellij.psi.PsiElement
 import com.intellij.psi.util.descendantsOfType
 import com.intellij.psi.util.parentOfType
-import net.postchain.rellide.jetbrains.language.psi.RellXAnonAttrHeader
-import net.postchain.rellide.jetbrains.language.psi.RellXAnyDef
-import net.postchain.rellide.jetbrains.language.psi.RellXBaseExprHead
-import net.postchain.rellide.jetbrains.language.psi.RellXBaseExprTail
-import net.postchain.rellide.jetbrains.language.psi.RellXBaseExprTailMember
-import net.postchain.rellide.jetbrains.language.psi.RellXBinaryOperator
-import net.postchain.rellide.jetbrains.language.psi.RellXCallArgs
-import net.postchain.rellide.jetbrains.language.psi.RellXEntityDef
-import net.postchain.rellide.jetbrains.language.psi.RellXEnumDef
-import net.postchain.rellide.jetbrains.language.psi.RellXFormalParameter
-import net.postchain.rellide.jetbrains.language.psi.RellXFunctionDef
-import net.postchain.rellide.jetbrains.language.psi.RellXImportDef
-import net.postchain.rellide.jetbrains.language.psi.RellXIncludeDef
-import net.postchain.rellide.jetbrains.language.psi.RellXName
-import net.postchain.rellide.jetbrains.language.psi.RellXNameExpr
-import net.postchain.rellide.jetbrains.language.psi.RellXNameTypeAttrHeader
-import net.postchain.rellide.jetbrains.language.psi.RellXNamespaceDef
-import net.postchain.rellide.jetbrains.language.psi.RellXObjectDef
-import net.postchain.rellide.jetbrains.language.psi.RellXOpDef
-import net.postchain.rellide.jetbrains.language.psi.RellXQualifiedName
-import net.postchain.rellide.jetbrains.language.psi.RellXQueryDef
-import net.postchain.rellide.jetbrains.language.psi.RellXStructDef
-import net.postchain.rellide.jetbrains.language.psi.RellXType
-import net.postchain.rellide.jetbrains.language.psi.RellXVarDeclarator
+import com.intellij.psi.util.siblings
+import net.postchain.rellide.jetbrains.language.psi.*
 
 class RellAdvancedSyntaxHighlightingAnnotator : Annotator {
     private val logicalOperators = setOf("and", "or", "not")
@@ -37,6 +15,8 @@ class RellAdvancedSyntaxHighlightingAnnotator : Annotator {
     override fun annotate(element: PsiElement, holder: AnnotationHolder) {
         if (holder.isBatchMode) return
         var color = when {
+            element is RellXTypeRef -> RellColor.TYPE_REFERENCE
+            element is RellXGenericType || element is RellXVirtualType -> RellColor.COLLECTION_TYPE
             element.text in logicalOperators -> RellColor.KEYWORD
             element is RellXName -> highlightNames(element)
             element is RellXBaseExprHead || element is RellXBaseExprTail  -> highlightCalls(element)
@@ -59,15 +39,14 @@ class RellAdvancedSyntaxHighlightingAnnotator : Annotator {
         val grandparent = parent?.parent
         return when {
             // AnyDef names
-            grandparent is RellXFunctionDef ||
-                    grandparent is RellXQueryDef ||
-                    grandparent is RellXOpDef ||
-                    grandparent is RellXEntityDef ||
-                    grandparent is RellXObjectDef ||
-                    parent is RellXStructDef ||
-                    parent is RellXEnumDef ||
-                    grandparent is RellXNamespaceDef ||
-                    grandparent is RellXIncludeDef -> RellColor.FUNCTION_DECLARATION
+            grandparent is RellXFunctionDef -> RellColor.FUNCTION_DECLARATION
+            parent is RellXQueryDef -> RellColor.QUERY_NAME
+            parent is RellXOpDef -> RellColor.OPERATION_NAME
+            parent is RellXEntityDef -> RellColor.ENTITY_NAME
+            parent is RellXObjectDef -> RellColor.OBJECT_NAME
+            parent is RellXStructDef -> RellColor.STRUCT_NAME
+            parent is RellXEnumDef -> getEnumColor(element)
+            grandparent is RellXNamespaceDef -> RellColor.NAMESPACE_NAME
 
             // Local variables
             parent is RellXQualifiedName && element.parentOfType<RellXVarDeclarator>() != null -> RellColor.LOCAL_VARIABLE
@@ -76,8 +55,19 @@ class RellAdvancedSyntaxHighlightingAnnotator : Annotator {
             parent is RellXNameTypeAttrHeader && element.parentOfType<RellXFormalParameter>() != null -> RellColor.PARAMETER
             grandparent is RellXAnonAttrHeader && element.parentOfType<RellXFormalParameter>() != null -> RellColor.PARAMETER
 
-            // TODO: Instance fields / State variables
+            // Struct/Entity/Enum/Object attributes
+            parent is RellXNameTypeAttrHeader && element.parentOfType<RellXBaseAttributeDefinition>() != null -> RellColor.STATE_VARIABLE
+            grandparent is RellXAnonAttrHeader && element.parentOfType<RellXBaseAttributeDefinition>() != null -> RellColor.STATE_VARIABLE
+
             else -> null
+        }
+    }
+
+    private fun getEnumColor(element: RellXName): RellColor? {
+        return if (element.siblings().find { it.text == "{" } != null) {
+            RellColor.ENUM_NAME
+        } else {
+            RellColor.STATE_VARIABLE
         }
     }
 }
