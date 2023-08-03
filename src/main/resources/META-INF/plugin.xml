@@ -52,6 +52,9 @@
         <lang.formatter language="Rell"
                         implementationClass="net.postchain.rellide.jetbrains.formatting.RellFormattingModelBuilder"/>
 
+        <!-- Spellchecking -->
+        <spellchecker.support language="Rell" implementationClass="net.postchain.rellide.jetbrains.spellchecking.RellSpellcheckingStrategy"/>
+
 <!--        <toolWindow factoryClass="net.postchain.rellide.jetbrains.toolWindow.RellToolWindowFactory" id="RellToolWindow"/>-->
 <!--        &lt;!&ndash; register a preloading activity. You need to init IntellijLanguageClient with your config, see readme &ndash;&gt;-->
 <!--        <preloadingActivity implementation="net.postchain.rellide.jetbrains.RellPreloadingActivity" id="net.postchain.rellide.jetbrains.RellPreloadingActivity"/>-->
