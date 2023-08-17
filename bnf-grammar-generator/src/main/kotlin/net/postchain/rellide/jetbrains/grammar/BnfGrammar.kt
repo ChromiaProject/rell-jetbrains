@@ -1,3 +1,4 @@
+@file:JvmName("BnfGrammarGenerator")
 package net.postchain.rellide.jetbrains.grammar
 
 import net.postchain.rell.base.utils.grammar.GrammarUtils

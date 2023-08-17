@@ -4,8 +4,6 @@ import org.jetbrains.changelog.markdownToHTML
 fun properties(key: String) = providers.gradleProperty(key)
 fun environment(key: String) = providers.environmentVariable(key)
 
-val rellVersion = "0.14.0-SNAPSHOT"
-
 plugins {
     // Java support
     id("java")
@@ -22,11 +20,7 @@ plugins {
 }
 
 dependencies {
-    implementation(group="net.postchain.rell", name="rell", version=rellVersion, ext="pom")
-    implementation("net.postchain.rell:rell-base:$rellVersion")
-    implementation("net.postchain.rell:rell-tools:$rellVersion")
-
-    testImplementation("com.fasterxml.jackson.core:jackson-databind:2.0.1")
+    testImplementation("com.fasterxml.jackson.module:jackson-module-kotlin:2.15.2")
 }
 
 group = properties("pluginGroup").get()
