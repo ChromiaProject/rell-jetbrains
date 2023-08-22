@@ -1,8 +1,8 @@
 image: adoptopenjdk/openjdk11:alpine
 
-pipelines:
-  default:
-    - step:
+definitions:
+  steps:
+    - step: &build-and-test-step
         name: Build and Test IntelliJ Plugin
         caches:
           - gradle
@@ -15,25 +15,21 @@ pipelines:
           - echo "Tests finished"
         artifacts:
           - build/distributions/*.zip
+    - step: &publish-step
+        name: Publish Plugin to Marketplace
+        deployment: production
+        script:
+          - ./gradlew publishPlugin
+          - echo "Publishing finished"
+        artifacts:
+          - build/distributions/*.zip
+
+pipelines:
+  default:
+    - step: *build-and-test-step
   branches:
     release/*:
-      - step:
-          name: Publish Plugin to Marketplace
-          script:
-            - ./gradlew publishPlugin
-            - echo "Publishing finished"
-          artifacts:
-            - build/distributions/*.zip
-#  pull-requests:
-#    '**':
-#      - step:
-#          name: Build and Test IntelliJ Plugin
-#          script:
-#            - echo "Starting build..."
-#            - ./gradlew buildPlugin
-#            - echo "Build finished"
-#            - echo "Starting testing..."
-#            - ./gradlew check
-#            - echo "Tests finished"
-#          artifacts:
-#            - build/distributions/*.zip
+      - step: *publish-step
+  pull-requests:
+    '**':
+      - step: *build-and-test-step
