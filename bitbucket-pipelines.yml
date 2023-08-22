@@ -1,0 +1,39 @@
+image: adoptopenjdk/openjdk11:alpine
+
+pipelines:
+  default:
+    - step:
+        name: Build and Test IntelliJ Plugin
+        caches:
+          - gradle
+        script:
+          - echo "Starting build..."
+          - ./gradlew buildPlugin
+          - echo "Build finished"
+          - echo "Starting testing..."
+          - ./gradlew check
+          - echo "Tests finished"
+        artifacts:
+          - build/distributions/*.zip
+  branches:
+    release/*:
+      - step:
+          name: Publish Plugin to Marketplace
+          script:
+            - ./gradlew publishPlugin
+            - echo "Publishing finished"
+          artifacts:
+            - build/distributions/*.zip
+#  pull-requests:
+#    '**':
+#      - step:
+#          name: Build and Test IntelliJ Plugin
+#          script:
+#            - echo "Starting build..."
+#            - ./gradlew buildPlugin
+#            - echo "Build finished"
+#            - echo "Starting testing..."
+#            - ./gradlew check
+#            - echo "Tests finished"
+#          artifacts:
+#            - build/distributions/*.zip
