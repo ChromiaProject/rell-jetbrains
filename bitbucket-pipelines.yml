@@ -7,6 +7,7 @@ definitions:
         caches:
           - gradle
         script:
+          - chmod +x ./gradlew
           - echo "Starting build..."
           - ./gradlew buildPlugin
           - echo "Build finished"
