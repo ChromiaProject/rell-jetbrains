@@ -2,7 +2,7 @@
 <idea-plugin>
     <id>net.postchain.rellide.jetbrains</id>
     <name>Rell Chromaway</name>
-    <vendor email="mikheil.kezherashvili@chromaway.com" url="https://chromaway.com">Chromaway</vendor>
+    <vendor email="devex@chromaway.com" url="https://chromaway.com">ChromaWay</vendor>
     <description>Rell blockchain programming language plugin</description>
 
     <depends>com.intellij.modules.platform</depends>
