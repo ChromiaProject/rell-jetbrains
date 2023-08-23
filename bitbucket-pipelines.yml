@@ -12,7 +12,7 @@ definitions:
           - ./gradlew buildPlugin
           - echo "Build finished"
           - echo "Starting testing..."
-          - ./gradlew check
+          - ./gradlew test
           - echo "Tests finished"
         artifacts:
           - build/distributions/*.zip
