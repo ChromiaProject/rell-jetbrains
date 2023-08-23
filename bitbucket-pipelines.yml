@@ -18,6 +18,7 @@ definitions:
     - step: &publish-step
         name: Publish Plugin to Marketplace
         deployment: production
+        trigger: 'manual'
         script:
           - ./gradlew publishPlugin
           - echo "Publishing finished"
