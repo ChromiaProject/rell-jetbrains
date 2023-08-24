@@ -30,6 +30,8 @@ definitions:
 pipelines:
   default:
 #    - step: *build-and-test-step
+    - step:
+        - echo "Hello World"
     - step: *publish-step
   branches:
     release/*:
