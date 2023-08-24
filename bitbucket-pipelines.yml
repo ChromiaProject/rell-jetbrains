@@ -31,7 +31,9 @@ pipelines:
   default:
 #    - step: *build-and-test-step
     - step:
-        - echo "Hello World"
+        name: Dummy first step
+        script:
+          - echo "Hello World"
     - step: *publish-step
   branches:
     release/*:
