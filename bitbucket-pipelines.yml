@@ -21,7 +21,7 @@ definitions:
         deployment: production
         trigger: 'manual'
         script:
-          - ./gradlew publishPlugin
+          - ./gradlew signPlugin
           - echo "Publishing finished"
         artifacts:
           - build/distributions/*.zip
@@ -29,6 +29,7 @@ definitions:
 pipelines:
   default:
     - step: *build-and-test-step
+    - step: *publish-step
   branches:
     release/*:
       - step: *publish-step

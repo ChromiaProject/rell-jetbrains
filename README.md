@@ -19,11 +19,10 @@
 - [ ] Click the <kbd>Watch</kbd> button on the top of the [IntelliJ Platform Plugin Template][template] to be notified about releases containing new features and fixes.
 
 <!-- Plugin description -->
-Rell programming language plugin
+Rell programming language plugin. 
 
-This specific section is a source for the [plugin.xml](/src/main/resources/META-INF/plugin.xml) file which will be extracted by the [Gradle](/build.gradle.kts) during the build process.
-
-To keep everything working, do not remove `<!-- ... -->` sections. 
+Rell is a programming language built for the relational blockchain platform Chromia. 
+It allows to you build dapps in a way that's safe, concise and intuitive.
 <!-- Plugin description end -->
 
 ## Installation

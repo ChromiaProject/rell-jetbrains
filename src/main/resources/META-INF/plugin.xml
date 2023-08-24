@@ -1,7 +1,7 @@
 <!-- Plugin Configuration File. Read more: https://plugins.jetbrains.com/docs/intellij/plugin-configuration-file.html -->
 <idea-plugin>
     <id>net.postchain.rellide.jetbrains</id>
-    <name>Rell Chromaway</name>
+    <name>Rell</name>
     <vendor email="devex@chromaway.com" url="https://chromaway.com">ChromaWay</vendor>
     <description>Rell blockchain programming language plugin</description>
 
