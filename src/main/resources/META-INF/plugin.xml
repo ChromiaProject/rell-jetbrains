@@ -60,6 +60,16 @@
                 language="Rell"
                 implementationClass="net.postchain.rellide.jetbrains.completion.KeywordCompletionContributor"/>
 
+        <!-- Custom icons -->
+        <iconProvider implementation="net.postchain.rellide.jetbrains.icons.ChromiaYmlIconProvider" />
+
+        <!-- File templates -->
+        <internalFileTemplate name="Rell File"/>
+        <internalFileTemplate name="Rell Entity"/>
+        <internalFileTemplate name="Rell Struct"/>
+        <internalFileTemplate name="Rell Object"/>
+        <internalFileTemplate name="Rell Enum"/>
+
 <!--        <toolWindow factoryClass="net.postchain.rellide.jetbrains.toolWindow.RellToolWindowFactory" id="RellToolWindow"/>-->
 <!--        &lt;!&ndash; register a preloading activity. You need to init IntellijLanguageClient with your config, see readme &ndash;&gt;-->
 <!--        <preloadingActivity implementation="net.postchain.rellide.jetbrains.RellPreloadingActivity" id="net.postchain.rellide.jetbrains.RellPreloadingActivity"/>-->
@@ -100,14 +110,11 @@
     </extensions>
 
     <actions>
-<!--        &lt;!&ndash; needed for hover &ndash;&gt;-->
-<!--        <action id="org.intellij.sdk.action.QuickDocAction" class="org.wso2.lsp4intellij.actions.LSPQuickDocAction">-->
-<!--        </action>-->
-
-<!--        &lt;!&ndash; needed for find references &ndash;&gt;-->
-<!--        <action class="org.wso2.lsp4intellij.actions.LSPReferencesAction" id="LSPFindUsages">-->
-<!--            <keyboard-shortcut first-keystroke="shift alt F7" keymap="$default"/>-->
-<!--        </action>-->
+        <action id="rell.file.create"
+                class="net.postchain.rellide.jetbrains.actions.RellCreateFileAction"
+                text="Rell file" description="Create new Rell file">
+            <add-to-group group-id="NewGroup" anchor="after" relative-to-action="NewDir"/>
+        </action>
     </actions>
 
     <applicationListeners>
