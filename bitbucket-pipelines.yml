@@ -7,11 +7,12 @@ definitions:
         caches:
           - gradle
         script:
+          - chmod +x ./gradlew
           - echo "Starting build..."
           - ./gradlew buildPlugin
           - echo "Build finished"
           - echo "Starting testing..."
-          - ./gradlew check
+          - ./gradlew test
           - echo "Tests finished"
         artifacts:
           - build/distributions/*.zip
@@ -20,14 +21,20 @@ definitions:
         deployment: production
         trigger: 'manual'
         script:
+          - chmod +x ./gradlew
           - ./gradlew publishPlugin
           - echo "Publishing finished"
         artifacts:
           - build/distributions/*.zip
 
 pipelines:
-  default:
-    - step: *build-and-test-step
+#  default:
+##    - step: *build-and-test-step
+#    - step:
+#        name: Dummy first step
+#        script:
+#          - echo "Hello World"
+#    - step: *publish-step
   branches:
     release/*:
       - step: *publish-step

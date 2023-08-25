@@ -1,8 +1,8 @@
 <!-- Plugin Configuration File. Read more: https://plugins.jetbrains.com/docs/intellij/plugin-configuration-file.html -->
 <idea-plugin>
     <id>net.postchain.rellide.jetbrains</id>
-    <name>Rell Chromaway</name>
-    <vendor email="mikheil.kezherashvili@chromaway.com" url="https://chromaway.com">Chromaway</vendor>
+    <name>Rell</name>
+    <vendor email="devex@chromaway.com" url="https://chromaway.com">ChromaWay</vendor>
     <description>Rell blockchain programming language plugin</description>
 
     <depends>com.intellij.modules.platform</depends>
@@ -60,6 +60,16 @@
                 language="Rell"
                 implementationClass="net.postchain.rellide.jetbrains.completion.KeywordCompletionContributor"/>
 
+        <!-- Custom icons -->
+        <iconProvider implementation="net.postchain.rellide.jetbrains.icons.ChromiaYmlIconProvider" />
+
+        <!-- File templates -->
+        <internalFileTemplate name="Rell File"/>
+        <internalFileTemplate name="Rell Entity"/>
+        <internalFileTemplate name="Rell Struct"/>
+        <internalFileTemplate name="Rell Object"/>
+        <internalFileTemplate name="Rell Enum"/>
+
 <!--        <toolWindow factoryClass="net.postchain.rellide.jetbrains.toolWindow.RellToolWindowFactory" id="RellToolWindow"/>-->
 <!--        &lt;!&ndash; register a preloading activity. You need to init IntellijLanguageClient with your config, see readme &ndash;&gt;-->
 <!--        <preloadingActivity implementation="net.postchain.rellide.jetbrains.RellPreloadingActivity" id="net.postchain.rellide.jetbrains.RellPreloadingActivity"/>-->
@@ -100,14 +110,11 @@
     </extensions>
 
     <actions>
-<!--        &lt;!&ndash; needed for hover &ndash;&gt;-->
-<!--        <action id="org.intellij.sdk.action.QuickDocAction" class="org.wso2.lsp4intellij.actions.LSPQuickDocAction">-->
-<!--        </action>-->
-
-<!--        &lt;!&ndash; needed for find references &ndash;&gt;-->
-<!--        <action class="org.wso2.lsp4intellij.actions.LSPReferencesAction" id="LSPFindUsages">-->
-<!--            <keyboard-shortcut first-keystroke="shift alt F7" keymap="$default"/>-->
-<!--        </action>-->
+        <action id="rell.file.create"
+                class="net.postchain.rellide.jetbrains.actions.RellCreateFileAction"
+                text="Rell file" description="Create new Rell file">
+            <add-to-group group-id="NewGroup" anchor="after" relative-to-action="NewDir"/>
+        </action>
     </actions>
 
     <applicationListeners>
