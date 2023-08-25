@@ -70,43 +70,6 @@
         <internalFileTemplate name="Rell Object"/>
         <internalFileTemplate name="Rell Enum"/>
 
-<!--        <toolWindow factoryClass="net.postchain.rellide.jetbrains.toolWindow.RellToolWindowFactory" id="RellToolWindow"/>-->
-<!--        &lt;!&ndash; register a preloading activity. You need to init IntellijLanguageClient with your config, see readme &ndash;&gt;-->
-<!--        <preloadingActivity implementation="net.postchain.rellide.jetbrains.RellPreloadingActivity" id="net.postchain.rellide.jetbrains.RellPreloadingActivity"/>-->
-
-<!--        &lt;!&ndash; register intellijLanguageClient as a Service OR as a plugin component (see readme)... &ndash;&gt;-->
-<!--        <applicationService serviceImplementation="org.wso2.lsp4intellij.IntellijLanguageClient"/>-->
-
-<!--        &lt;!&ndash; register a listener on editor events, required for lsp file sync &ndash;&gt;-->
-<!--        <editorFactoryListener implementation="org.wso2.lsp4intellij.listeners.LSPEditorListener"/>-->
-<!--        <fileDocumentManagerListener implementation="org.wso2.lsp4intellij.listeners.LSPFileDocumentManagerListener"/>-->
-
-<!--        &lt;!&ndash; for displaying notifications by lsp &ndash;&gt;-->
-<!--        <notificationGroup id="lsp" displayType="STICKY_BALLOON"/>-->
-
-<!--        &lt;!&ndash; for displaying the statusbar icon &ndash;&gt;-->
-<!--        <statusBarWidgetFactory implementation="org.wso2.lsp4intellij.statusbar.LSPServerStatusWidgetFactory"-->
-<!--                                id="org.wso2.lsp4intellij.statusbar.LSPServerStatusWidgetFactory"-->
-<!--                                order="first" />-->
-
-<!--        &lt;!&ndash; needed for completion &ndash;&gt;-->
-<!--        <completion.contributor implementationClass="org.wso2.lsp4intellij.contributors.LSPCompletionContributor"-->
-<!--                                id="org.wso2.lsp4intellij.contributors.LSPCompletionContributor" language="Rell"/>-->
-<!--        &lt;!&ndash; needed for completion as well as signature help &ndash;&gt;-->
-<!--        <typedHandler implementation="org.wso2.lsp4intellij.listeners.LSPTypedHandler"-->
-<!--                      id="LSPTypedHandler"/>-->
-
-<!--        &lt;!&ndash; needed for code diagnostics &ndash;&gt;-->
-<!--        <externalAnnotator id="LSPAnnotator" language="Rell"-->
-<!--                           implementationClass="org.wso2.lsp4intellij.contributors.annotator.LSPAnnotator"/>-->
-
-<!--        &lt;!&ndash; needed for Workspace Symbols &ndash;&gt;-->
-<!--        <gotoSymbolContributor implementation="org.wso2.lsp4intellij.contributors.symbol.LSPSymbolContributor"-->
-<!--                               id="LSPSymbolContributor"/>-->
-
-<!--        &lt;!&ndash; needed for renaming &ndash;&gt;-->
-<!--        <renameHandler implementation="org.wso2.lsp4intellij.contributors.rename.LSPRenameHandler" id="LSPRenameHandler" order="first"/>-->
-<!--        <renamePsiElementProcessor implementation="org.wso2.lsp4intellij.contributors.rename.LSPRenameProcessor" id="LSPRenameProcessor" order="first"/>-->
     </extensions>
 
     <actions>
