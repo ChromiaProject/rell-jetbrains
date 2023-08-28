@@ -35,6 +35,7 @@ pipelines:
         name: Dummy first step
         script:
           - echo "Hello World"
+          - echo "Dummy step finished"
     - step: *publish-step
   branches:
     release/*:
