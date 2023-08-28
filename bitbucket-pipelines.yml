@@ -31,7 +31,6 @@ definitions:
 
 pipelines:
   default:
-#    - step: *build-and-test-step
     - step:
         name: Dummy first step
         script:
