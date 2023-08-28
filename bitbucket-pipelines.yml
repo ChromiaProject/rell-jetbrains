@@ -22,19 +22,21 @@ definitions:
         trigger: 'manual'
         script:
           - chmod +x ./gradlew
+          - echo "Certificate chain: $CERTIFICATE_CHAIN"
+          - echo "Private Key: $PRIVATE_KEY"
           - ./gradlew publishPlugin
           - echo "Publishing finished"
         artifacts:
           - build/distributions/*.zip
 
 pipelines:
-#  default:
-##    - step: *build-and-test-step
-#    - step:
-#        name: Dummy first step
-#        script:
-#          - echo "Hello World"
-#    - step: *publish-step
+  default:
+#    - step: *build-and-test-step
+    - step:
+        name: Dummy first step
+        script:
+          - echo "Hello World"
+    - step: *publish-step
   branches:
     release/*:
       - step: *publish-step
