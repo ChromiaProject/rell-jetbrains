@@ -23,11 +23,11 @@ definitions:
         script:
           - chmod +x ./gradlew
           - echo $CERTIFICATE_CHAIN | base64 -d > ./certificate_chain.crt
-          - export CERTIFICATE_CHAIN=`cat ./certificate_chain.crt
+          - export CERTIFICATE_CHAIN=`cat ./certificate_chain.crt`
           - echo "Certificate chain"
           - echo $CERTIFICATE_CHAIN
           - echo $PRIVATE_KEY | base64 -d > ./private.pem
-          - export PRIVATE_KEY=`cat ./private.pem
+          - export PRIVATE_KEY=`cat ./private.pem`
           - echo "Private Key"
           - echo $PRIVATE_KEY
           - ./gradlew publishPlugin
