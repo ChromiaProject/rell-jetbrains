@@ -22,8 +22,8 @@ definitions:
         trigger: 'manual'
         script:
           - chmod +x ./gradlew
-          - echo "Certificate chain: $CERTIFICATE_CHAIN"
-          - echo "Private Key: $PRIVATE_KEY"
+          - echo "Certificate chain $CERTIFICATE_CHAIN"
+          - echo "Private Key $PRIVATE_KEY"
           - ./gradlew publishPlugin
           - echo "Publishing finished"
         artifacts:
