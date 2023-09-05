@@ -7,6 +7,7 @@ import com.intellij.psi.PsiComment
 import com.intellij.psi.TokenType
 import com.intellij.psi.codeStyle.CodeStyleSettings
 import com.intellij.psi.formatter.FormatterUtil
+import com.intellij.psi.tree.IElementType
 import net.postchain.rellide.jetbrains.language.psi.RellTypes.*
 import java.util.*
 
@@ -79,9 +80,44 @@ class RellFormattingBlock(
             // Entity/Struct
             type == X_ATTRIBUTE_DEFINITION && parentType == X_STRUCT_DEF -> Indent.getNormalIndent()
 
+            // At expression what block item
+            type == X_AT_EXPR_WHAT_COMPLEX_ITEM -> Indent.getNormalIndent()
+
+            // Return type indentation of function/operation/query
+            type == X_TYPE && isTopLevelDefinition(parentType) -> {
+                if (astNode?.treeNext?.treeNext?.findChildByType(X_FUNCTION_BODY_SHORT) != null) {
+                    Indent.getNormalIndent()
+                } else {
+                    Indent.getSpaceIndent(8)
+                }
+            }
+
+            // Formal parameters
+            type == X_FORMAL_PARAMETER -> Indent.getNormalIndent()
+
+            // What section
+            type == X_AT_EXPR_WHAT -> Indent.getNormalIndent()
+
+            // Function body
+            type == X_FUNCTION_BODY_SHORT -> {
+                if (parent?.treePrev?.treePrev?.elementType == X_TYPE) {
+                    Indent.getSpaceIndent(8)
+                } else {
+                    Indent.getNormalIndent()
+                }
+            }
+
             else -> Indent.getNoneIndent()
         }
         return result
+    }
+
+    private fun isTopLevelDefinition(type: IElementType?): Boolean {
+        return type != null && type in listOf(
+            X_OP_DEF,
+            X_QUERY_DEF,
+            X_FUNCTION_DEF
+        );
     }
 
     private val indentBlockTypes = listOf(
