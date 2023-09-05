@@ -107,6 +107,15 @@ class RellFormattingBlock(
                 }
             }
 
+            // Return block with named parameters
+            type == X_CALL_ARG -> {
+                if (astNode.firstChildNode.elementType == X_NAME) {
+                    Indent.getNormalIndent()
+                } else {
+                    Indent.getNoneIndent()
+                }
+            }
+
             else -> Indent.getNoneIndent()
         }
         return result
