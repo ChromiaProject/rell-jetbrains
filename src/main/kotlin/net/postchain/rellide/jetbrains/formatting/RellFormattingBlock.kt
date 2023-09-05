@@ -95,8 +95,10 @@ class RellFormattingBlock(
             // Formal parameters
             type == X_FORMAL_PARAMETER -> Indent.getNormalIndent()
 
+            type == X_BASE_EXPR_TAIL -> Indent.getNormalIndent()
+
             // What section
-            type == X_AT_EXPR_WHAT -> Indent.getNormalIndent()
+            type == X_AT_EXPR_WHAT || type == X_UPDATE_WHAT_EXPR -> Indent.getNormalIndent()
 
             // Function body
             type == X_FUNCTION_BODY_SHORT -> {
@@ -108,7 +110,7 @@ class RellFormattingBlock(
             }
 
             // Return block with named parameters
-            type == X_CALL_ARG -> {
+            type == X_CALL_ARG || type == X_CREATE_EXPR_ARG -> {
                 if (astNode.firstChildNode.elementType == X_NAME) {
                     Indent.getNormalIndent()
                 } else {
