@@ -28,7 +28,8 @@ class RellFormattingBlock(
         X_EXPRESSION_REF,
         X_REL_ANY_CLAUSE,
         X_WHEN_STMT_CASE,
-        X_WHEN_EXPR_CASE
+        X_WHEN_EXPR_CASE,
+        X_AT_EXPR_WHERE
     )
 
     override fun getSubBlocks(): List<Block> = nodeSubBlocks
@@ -121,6 +122,11 @@ class RellFormattingBlock(
                     Indent.getNoneIndent()
                 }
             }
+
+            type == X_CALL_ARG_VALUE -> Indent.getNormalIndent()
+
+            // Tuple expression
+            type == X_TUPLE_EXPR_FIELD -> Indent.getNormalIndent()
 
             else -> Indent.getNoneIndent()
         }
