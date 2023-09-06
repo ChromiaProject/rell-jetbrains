@@ -7,6 +7,7 @@ import com.intellij.psi.PsiComment
 import com.intellij.psi.TokenType
 import com.intellij.psi.codeStyle.CodeStyleSettings
 import com.intellij.psi.formatter.FormatterUtil
+import com.intellij.psi.tree.IElementType
 import net.postchain.rellide.jetbrains.language.psi.RellTypes.*
 import java.util.*
 
@@ -26,7 +27,9 @@ class RellFormattingBlock(
         X_STATEMENT_REF,
         X_EXPRESSION_REF,
         X_REL_ANY_CLAUSE,
-        X_WHEN_STMT_CASE
+        X_WHEN_STMT_CASE,
+        X_WHEN_EXPR_CASE,
+        X_AT_EXPR_WHERE
     )
 
     override fun getSubBlocks(): List<Block> = nodeSubBlocks
@@ -79,9 +82,63 @@ class RellFormattingBlock(
             // Entity/Struct
             type == X_ATTRIBUTE_DEFINITION && parentType == X_STRUCT_DEF -> Indent.getNormalIndent()
 
+            // At expression what block item
+            type == X_AT_EXPR_WHAT_COMPLEX_ITEM -> Indent.getNormalIndent()
+
+            // Return type indentation of function/operation/query
+            type == X_TYPE && isTopLevelDefinition(parentType) -> {
+                if (astNode.treeNext?.treeNext?.findChildByType(X_FUNCTION_BODY_SHORT) != null) {
+                    Indent.getNormalIndent()
+                } else {
+                    Indent.getSpaceIndent(8)
+                }
+            }
+
+            // Formal parameters
+            type == X_FORMAL_PARAMETER -> Indent.getNormalIndent()
+
+            type == X_BASE_EXPR_TAIL -> Indent.getNormalIndent()
+
+            // What section
+            type == X_AT_EXPR_WHAT || type == X_UPDATE_WHAT_EXPR -> Indent.getNormalIndent()
+
+            // Function body
+            type == X_FUNCTION_BODY_SHORT -> {
+                if (parent?.treePrev?.treePrev?.elementType == X_TYPE) {
+                    Indent.getSpaceIndent(8)
+                } else {
+                    Indent.getNormalIndent()
+                }
+            }
+
+            // Annotation parameters
+            type == X_ANNOTATION_ARG -> Indent.getNormalIndent()
+
+            // Return block with named parameters
+            type == X_CALL_ARG || type == X_CREATE_EXPR_ARG -> {
+                if (astNode.firstChildNode.elementType == X_NAME) {
+                    Indent.getNormalIndent()
+                } else {
+                    Indent.getNoneIndent()
+                }
+            }
+
+            type == X_CALL_ARG_VALUE -> Indent.getNormalIndent()
+
+            // Tuple expression
+            type == X_TUPLE_EXPR_FIELD -> Indent.getNormalIndent()
+
             else -> Indent.getNoneIndent()
         }
         return result
+    }
+
+    private fun isTopLevelDefinition(type: IElementType?): Boolean {
+        return type != null && type in listOf(
+            X_OP_DEF,
+            X_QUERY_DEF,
+            X_FUNCTION_DEF
+        );
     }
 
     private val indentBlockTypes = listOf(
