@@ -27,7 +27,8 @@ class RellFormattingBlock(
         X_STATEMENT_REF,
         X_EXPRESSION_REF,
         X_REL_ANY_CLAUSE,
-        X_WHEN_STMT_CASE
+        X_WHEN_STMT_CASE,
+        X_WHEN_EXPR_CASE
     )
 
     override fun getSubBlocks(): List<Block> = nodeSubBlocks
