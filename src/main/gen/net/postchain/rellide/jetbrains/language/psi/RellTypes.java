@@ -235,6 +235,7 @@ public interface RellTypes {
   IElementType SL_COMMENT = new RellTokenType("SL_COMMENT");
   IElementType STRBAD = new RellTokenType("STRBAD");
   IElementType STRING = new RellTokenType("STRING");
+  IElementType STRING_NOT_CLOSED = new RellTokenType("STRING_NOT_CLOSED");
 
   class Factory {
     public static PsiElement createElement(ASTNode node) {
