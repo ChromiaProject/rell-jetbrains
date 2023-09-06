@@ -1,8 +1,8 @@
 # Rell Jetbrains
 
 
-[![Version](https://img.shields.io/jetbrains/plugin/v/PLUGIN_ID.svg)](https://plugins.jetbrains.com/plugin/net.postchain.rellide.jetbrains)
-[![Downloads](https://img.shields.io/jetbrains/plugin/d/PLUGIN_ID.svg)](https://plugins.jetbrains.com/plugin/net.postchain.rellide.jetbrains)
+[![Version](https://img.shields.io/jetbrains/plugin/v/net.postchain.rellide.jetbrains.svg)](https://plugins.jetbrains.com/plugin/net.postchain.rellide.jetbrains)
+[![Downloads](https://img.shields.io/jetbrains/plugin/d/net.postchain.rellide.jetbrains.svg)](https://plugins.jetbrains.com/plugin/net.postchain.rellide.jetbrains)
 
 ![./docs/screens/rell-intellij.PNG](./docs/screens/rell-intellij.PNG)
 
