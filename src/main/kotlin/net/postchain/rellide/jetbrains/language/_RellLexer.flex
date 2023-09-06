@@ -116,6 +116,7 @@ HEXDIG=[0-9A-Fa-f]
 BYTES=x(('([_0-9a-fA-F][_0-9a-fA-F])*')|(\"([_0-9a-fA-F][_0-9a-fA-F])*\"))
 STRBAD=\\|'\u0000' .. '\u001F'
 STRING=(\"(\t|\\[btnfr\"'\\]|\\u[0-9A-Fa-f]{4}|[^\"\\\u0000-\u001F])*\")|('(\t|\\[btnfr\"'\\]|\\u[0-9A-Fa-f]{4}|[^\'\\\u0000-\u001F])*')
+STRING_NOT_CLOSED=(\"(\t|\\[btnfr\"'\\]|\\u[0-9A-Fa-f]{4}|[^\"\\\u0000-\u001F])*)|('(\t|\\[btnfr\"'\\]|\\u[0-9A-Fa-f]{4}|[^\'\\\u0000-\u001F])*)
 INVALID_DECIMAL=[0-9]+\.[a-zA-Z]+
 DECIMAL=[0-9]*\.?[0-9]+([eE][-+]?[0-9]+)?
 COMMON_INT={DECNUM}| '0' 'x' {HEXDIG}+
@@ -247,6 +248,7 @@ HEXDIGNUM=0[ \t\n\x0B\f\r]*x[ \t\n\x0B\f\r]*[0-9A-Fa-f]+
                             }
                             return DECIMAL;
                         }
+  {STRING_NOT_CLOSED}   { return STRING_NOT_CLOSED; }
   {STRBAD}              { return STRBAD; }
   {STRING}              { return STRING; }
   {SPACE}               { return SPACE; }
