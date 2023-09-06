@@ -86,7 +86,7 @@ class RellFormattingBlock(
 
             // Return type indentation of function/operation/query
             type == X_TYPE && isTopLevelDefinition(parentType) -> {
-                if (astNode?.treeNext?.treeNext?.findChildByType(X_FUNCTION_BODY_SHORT) != null) {
+                if (astNode.treeNext?.treeNext?.findChildByType(X_FUNCTION_BODY_SHORT) != null) {
                     Indent.getNormalIndent()
                 } else {
                     Indent.getSpaceIndent(8)
@@ -109,6 +109,9 @@ class RellFormattingBlock(
                     Indent.getNormalIndent()
                 }
             }
+
+            // Annotation parameters
+            type == X_ANNOTATION_ARG -> Indent.getNormalIndent()
 
             // Return block with named parameters
             type == X_CALL_ARG || type == X_CREATE_EXPR_ARG -> {
