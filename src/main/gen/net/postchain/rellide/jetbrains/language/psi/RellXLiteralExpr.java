@@ -20,9 +20,6 @@ public interface RellXLiteralExpr extends PsiElement {
   RellXIntExpr getXIntExpr();
 
   @Nullable
-  RellXNullLiteralExpr getXNullLiteralExpr();
-
-  @Nullable
   RellXStringExpr getXStringExpr();
 
 }

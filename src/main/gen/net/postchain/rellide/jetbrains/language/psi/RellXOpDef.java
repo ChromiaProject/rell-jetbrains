@@ -16,7 +16,4 @@ public interface RellXOpDef extends PsiElement {
   @NotNull
   RellXName getXName();
 
-  @NotNull
-  RellXTkOPERATION getXTkOPERATION();
-
 }

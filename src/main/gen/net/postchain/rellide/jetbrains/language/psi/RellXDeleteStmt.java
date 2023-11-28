@@ -10,7 +10,4 @@ public interface RellXDeleteStmt extends PsiElement {
   @NotNull
   RellXUpdateTarget getXUpdateTarget();
 
-  @NotNull
-  RellXTkDELETE getXTkDELETE();
-
 }

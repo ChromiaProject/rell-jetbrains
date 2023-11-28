@@ -33,10 +33,4 @@ public class RellXUpImportModuleImpl extends ASTWrapperPsiElement implements Rel
     return findChildByClass(RellXQualifiedName.class);
   }
 
-  @Override
-  @NotNull
-  public List<RellXTkCARET> getXTkCARETList() {
-    return PsiTreeUtil.getChildrenOfTypeAsList(this, RellXTkCARET.class);
-  }
-
 }

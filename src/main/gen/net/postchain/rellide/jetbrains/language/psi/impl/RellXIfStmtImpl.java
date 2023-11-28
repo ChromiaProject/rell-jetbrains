@@ -39,16 +39,4 @@ public class RellXIfStmtImpl extends ASTWrapperPsiElement implements RellXIfStmt
     return PsiTreeUtil.getChildrenOfTypeAsList(this, RellXStatementRef.class);
   }
 
-  @Override
-  @Nullable
-  public RellXTkElse getXTkElse() {
-    return findChildByClass(RellXTkElse.class);
-  }
-
-  @Override
-  @NotNull
-  public RellXTkIF getXTkIF() {
-    return findNotNullChildByClass(RellXTkIF.class);
-  }
-
 }

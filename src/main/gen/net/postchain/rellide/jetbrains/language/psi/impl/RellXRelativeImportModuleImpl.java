@@ -33,10 +33,4 @@ public class RellXRelativeImportModuleImpl extends ASTWrapperPsiElement implemen
     return findChildByClass(RellXQualifiedName.class);
   }
 
-  @Override
-  @NotNull
-  public RellXTkDOT getXTkDOT() {
-    return findNotNullChildByClass(RellXTkDOT.class);
-  }
-
 }

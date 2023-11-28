@@ -13,7 +13,4 @@ public interface RellXTupleExprFieldNameEqExpr extends PsiElement {
   @NotNull
   RellXName getXName();
 
-  @NotNull
-  RellXTkASSIGN getXTkASSIGN();
-
 }

@@ -33,10 +33,4 @@ public class RellXVirtualTypeImpl extends ASTWrapperPsiElement implements RellXV
     return findNotNullChildByClass(RellXTypeRef.class);
   }
 
-  @Override
-  @NotNull
-  public RellXTkVIRTUAL getXTkVIRTUAL() {
-    return findNotNullChildByClass(RellXTkVIRTUAL.class);
-  }
-
 }

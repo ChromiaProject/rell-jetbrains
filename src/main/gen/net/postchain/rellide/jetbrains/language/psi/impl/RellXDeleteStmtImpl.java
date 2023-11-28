@@ -33,10 +33,4 @@ public class RellXDeleteStmtImpl extends ASTWrapperPsiElement implements RellXDe
     return findNotNullChildByClass(RellXUpdateTarget.class);
   }
 
-  @Override
-  @NotNull
-  public RellXTkDELETE getXTkDELETE() {
-    return findNotNullChildByClass(RellXTkDELETE.class);
-  }
-
 }

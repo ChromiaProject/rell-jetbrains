@@ -10,7 +10,4 @@ public interface RellXBlockStmt extends PsiElement {
   @NotNull
   List<RellXStatementRef> getXStatementRefList();
 
-  @NotNull
-  RellXTkLCURL getXTkLCURL();
-
 }

@@ -7,16 +7,4 @@ import com.intellij.psi.PsiElement;
 
 public interface RellXAtExprAt extends PsiElement {
 
-  @Nullable
-  RellXTkAT getXTkAT();
-
-  @Nullable
-  RellXTkMUL getXTkMUL();
-
-  @Nullable
-  RellXTkPLUS getXTkPLUS();
-
-  @Nullable
-  RellXTkQUESTION getXTkQUESTION();
-
 }

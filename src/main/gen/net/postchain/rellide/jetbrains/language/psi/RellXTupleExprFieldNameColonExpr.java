@@ -13,7 +13,4 @@ public interface RellXTupleExprFieldNameColonExpr extends PsiElement {
   @NotNull
   RellXName getXName();
 
-  @NotNull
-  RellXTkCOLON getXTkCOLON();
-
 }

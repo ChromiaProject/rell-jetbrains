@@ -45,10 +45,4 @@ public class RellXForStmtImpl extends ASTWrapperPsiElement implements RellXForSt
     return findNotNullChildByClass(RellXVarDeclarator.class);
   }
 
-  @Override
-  @NotNull
-  public RellXTkFOR getXTkFOR() {
-    return findNotNullChildByClass(RellXTkFOR.class);
-  }
-
 }

@@ -48,7 +48,6 @@ public interface RellTypes {
   IElementType X_BASE_EXPR_TAIL_AT = new RellElementType("X_BASE_EXPR_TAIL_AT");
   IElementType X_BASE_EXPR_TAIL_CALL = new RellElementType("X_BASE_EXPR_TAIL_CALL");
   IElementType X_BASE_EXPR_TAIL_MEMBER = new RellElementType("X_BASE_EXPR_TAIL_MEMBER");
-  IElementType X_BASE_EXPR_TAIL_NOT_NULL = new RellElementType("X_BASE_EXPR_TAIL_NOT_NULL");
   IElementType X_BASE_EXPR_TAIL_NO_CALL_NO_AT = new RellElementType("X_BASE_EXPR_TAIL_NO_CALL_NO_AT");
   IElementType X_BASE_EXPR_TAIL_SAFE_MEMBER = new RellElementType("X_BASE_EXPR_TAIL_SAFE_MEMBER");
   IElementType X_BASE_EXPR_TAIL_SUBSCRIPT = new RellElementType("X_BASE_EXPR_TAIL_SUBSCRIPT");
@@ -72,7 +71,6 @@ public interface RellTypes {
   IElementType X_CREATE_STMT = new RellElementType("X_CREATE_STMT");
   IElementType X_DECIMAL_EXPR = new RellElementType("X_DECIMAL_EXPR");
   IElementType X_DELETE_STMT = new RellElementType("X_DELETE_STMT");
-  IElementType X_DOLLAR_EXPR = new RellElementType("X_DOLLAR_EXPR");
   IElementType X_EMPTY_MAP_LITERAL_EXPR = new RellElementType("X_EMPTY_MAP_LITERAL_EXPR");
   IElementType X_EMPTY_STMT = new RellElementType("X_EMPTY_STMT");
   IElementType X_ENTITY_ANNOTATIONS = new RellElementType("X_ENTITY_ANNOTATIONS");
@@ -122,7 +120,6 @@ public interface RellTypes {
   IElementType X_NAME_TYPE = new RellElementType("X_NAME_TYPE");
   IElementType X_NAME_TYPE_ATTR_HEADER = new RellElementType("X_NAME_TYPE_ATTR_HEADER");
   IElementType X_NON_EMPTY_MAP_LITERAL_EXPR = new RellElementType("X_NON_EMPTY_MAP_LITERAL_EXPR");
-  IElementType X_NULL_LITERAL_EXPR = new RellElementType("X_NULL_LITERAL_EXPR");
   IElementType X_OBJECT_DEF = new RellElementType("X_OBJECT_DEF");
   IElementType X_OPERAND_EXPR = new RellElementType("X_OPERAND_EXPR");
   IElementType X_OP_DEF = new RellElementType("X_OP_DEF");
@@ -142,52 +139,7 @@ public interface RellTypes {
   IElementType X_STRING_EXPR = new RellElementType("X_STRING_EXPR");
   IElementType X_STRUCT_DEF = new RellElementType("X_STRUCT_DEF");
   IElementType X_STRUCT_KEYWORD = new RellElementType("X_STRUCT_KEYWORD");
-  IElementType X_TK_ARROW = new RellElementType("X_TK_ARROW");
-  IElementType X_TK_ASSIGN = new RellElementType("X_TK_ASSIGN");
-  IElementType X_TK_AT = new RellElementType("X_TK_AT");
-  IElementType X_TK_BREAK = new RellElementType("X_TK_BREAK");
-  IElementType X_TK_CARET = new RellElementType("X_TK_CARET");
-  IElementType X_TK_COLON = new RellElementType("X_TK_COLON");
-  IElementType X_TK_COMMA = new RellElementType("X_TK_COMMA");
-  IElementType X_TK_CONTINUE = new RellElementType("X_TK_CONTINUE");
-  IElementType X_TK_CREATE = new RellElementType("X_TK_CREATE");
-  IElementType X_TK_DELETE = new RellElementType("X_TK_DELETE");
-  IElementType X_TK_DOT = new RellElementType("X_TK_DOT");
-  IElementType X_TK_ELSE = new RellElementType("X_TK_ELSE");
-  IElementType X_TK_ENUM = new RellElementType("X_TK_ENUM");
-  IElementType X_TK_FOR = new RellElementType("X_TK_FOR");
-  IElementType X_TK_FUNCTION = new RellElementType("X_TK_FUNCTION");
-  IElementType X_TK_GUARD = new RellElementType("X_TK_GUARD");
-  IElementType X_TK_IF = new RellElementType("X_TK_IF");
-  IElementType X_TK_IMPORT = new RellElementType("X_TK_IMPORT");
-  IElementType X_TK_IN = new RellElementType("X_TK_IN");
-  IElementType X_TK_INCLUDE = new RellElementType("X_TK_INCLUDE");
-  IElementType X_TK_LBRACK = new RellElementType("X_TK_LBRACK");
-  IElementType X_TK_LCURL = new RellElementType("X_TK_LCURL");
-  IElementType X_TK_LIMIT = new RellElementType("X_TK_LIMIT");
-  IElementType X_TK_LPAR = new RellElementType("X_TK_LPAR");
-  IElementType X_TK_MODULE = new RellElementType("X_TK_MODULE");
-  IElementType X_TK_MUL = new RellElementType("X_TK_MUL");
-  IElementType X_TK_MUTABLE = new RellElementType("X_TK_MUTABLE");
-  IElementType X_TK_NAMESPACE = new RellElementType("X_TK_NAMESPACE");
-  IElementType X_TK_OBJECT = new RellElementType("X_TK_OBJECT");
-  IElementType X_TK_OFFSET = new RellElementType("X_TK_OFFSET");
-  IElementType X_TK_OPERATION = new RellElementType("X_TK_OPERATION");
-  IElementType X_TK_PLUS = new RellElementType("X_TK_PLUS");
-  IElementType X_TK_QUERY = new RellElementType("X_TK_QUERY");
-  IElementType X_TK_QUESTION = new RellElementType("X_TK_QUESTION");
-  IElementType X_TK_RBRACK = new RellElementType("X_TK_RBRACK");
-  IElementType X_TK_RCURL = new RellElementType("X_TK_RCURL");
-  IElementType X_TK_RETURN = new RellElementType("X_TK_RETURN");
-  IElementType X_TK_RPAR = new RellElementType("X_TK_RPAR");
-  IElementType X_TK_SEMI = new RellElementType("X_TK_SEMI");
   IElementType X_TK_STRING = new RellElementType("X_TK_STRING");
-  IElementType X_TK_STRUCT = new RellElementType("X_TK_STRUCT");
-  IElementType X_TK_UPDATE = new RellElementType("X_TK_UPDATE");
-  IElementType X_TK_VAL = new RellElementType("X_TK_VAL");
-  IElementType X_TK_VIRTUAL = new RellElementType("X_TK_VIRTUAL");
-  IElementType X_TK_WHEN = new RellElementType("X_TK_WHEN");
-  IElementType X_TK_WHILE = new RellElementType("X_TK_WHILE");
   IElementType X_TUPLE_EXPR_FIELD = new RellElementType("X_TUPLE_EXPR_FIELD");
   IElementType X_TUPLE_EXPR_FIELD_EXPR = new RellElementType("X_TUPLE_EXPR_FIELD_EXPR");
   IElementType X_TUPLE_EXPR_FIELD_NAME_COLON_EXPR = new RellElementType("X_TUPLE_EXPR_FIELD_NAME_COLON_EXPR");
@@ -236,6 +188,54 @@ public interface RellTypes {
   IElementType STRBAD = new RellTokenType("STRBAD");
   IElementType STRING = new RellTokenType("STRING");
   IElementType STRING_NOT_CLOSED = new RellTokenType("STRING_NOT_CLOSED");
+  IElementType X_BASEEXPRTAILNOTNULL = new RellTokenType("!!");
+  IElementType X_DOLLAREXPR = new RellTokenType("$");
+  IElementType X_NULLLITERALEXPR = new RellTokenType("null");
+  IElementType X_TKARROW = new RellTokenType("->");
+  IElementType X_TKASSIGN = new RellTokenType("=");
+  IElementType X_TKAT = new RellTokenType("@");
+  IElementType X_TKBREAK = new RellTokenType("break");
+  IElementType X_TKCARET = new RellTokenType("^");
+  IElementType X_TKCOLON = new RellTokenType(":");
+  IElementType X_TKCOMMA = new RellTokenType(",");
+  IElementType X_TKCONTINUE = new RellTokenType("continue");
+  IElementType X_TKCREATE = new RellTokenType("create");
+  IElementType X_TKDELETE = new RellTokenType("delete");
+  IElementType X_TKDOT = new RellTokenType(".");
+  IElementType X_TKELSE = new RellTokenType("else");
+  IElementType X_TKENUM = new RellTokenType("enum");
+  IElementType X_TKFOR = new RellTokenType("for");
+  IElementType X_TKFUNCTION = new RellTokenType("function");
+  IElementType X_TKGUARD = new RellTokenType("guard");
+  IElementType X_TKIF = new RellTokenType("if");
+  IElementType X_TKIMPORT = new RellTokenType("import");
+  IElementType X_TKIN = new RellTokenType("in");
+  IElementType X_TKINCLUDE = new RellTokenType("include");
+  IElementType X_TKLBRACK = new RellTokenType("[");
+  IElementType X_TKLCURL = new RellTokenType("{");
+  IElementType X_TKLIMIT = new RellTokenType("limit");
+  IElementType X_TKLPAR = new RellTokenType("(");
+  IElementType X_TKMODULE = new RellTokenType("module");
+  IElementType X_TKMUL = new RellTokenType("*");
+  IElementType X_TKMUTABLE = new RellTokenType("mutable");
+  IElementType X_TKNAMESPACE = new RellTokenType("namespace");
+  IElementType X_TKOBJECT = new RellTokenType("object");
+  IElementType X_TKOFFSET = new RellTokenType("offset");
+  IElementType X_TKOPERATION = new RellTokenType("operation");
+  IElementType X_TKPLUS = new RellTokenType("+");
+  IElementType X_TKQUERY = new RellTokenType("query");
+  IElementType X_TKQUESTION = new RellTokenType("?");
+  IElementType X_TKRBRACK = new RellTokenType("]");
+  IElementType X_TKRCURL = new RellTokenType("}");
+  IElementType X_TKRETURN = new RellTokenType("return");
+  IElementType X_TKRPAR = new RellTokenType(")");
+  IElementType X_TKSEMI = new RellTokenType(";");
+  IElementType X_TKSTRUCT = new RellTokenType("struct");
+  IElementType X_TKUPDATE = new RellTokenType("update");
+  IElementType X_TKVAL = new RellTokenType("val");
+  IElementType X_TKVIRTUAL = new RellTokenType("virtual");
+  IElementType X_TKWHEN = new RellTokenType("when");
+  IElementType X_TKWHILE = new RellTokenType("while");
 
   class Factory {
     public static PsiElement createElement(ASTNode node) {
@@ -360,9 +360,6 @@ public interface RellTypes {
       else if (type == X_BASE_EXPR_TAIL_MEMBER) {
         return new RellXBaseExprTailMemberImpl(node);
       }
-      else if (type == X_BASE_EXPR_TAIL_NOT_NULL) {
-        return new RellXBaseExprTailNotNullImpl(node);
-      }
       else if (type == X_BASE_EXPR_TAIL_NO_CALL_NO_AT) {
         return new RellXBaseExprTailNoCallNoAtImpl(node);
       }
@@ -431,9 +428,6 @@ public interface RellTypes {
       }
       else if (type == X_DELETE_STMT) {
         return new RellXDeleteStmtImpl(node);
-      }
-      else if (type == X_DOLLAR_EXPR) {
-        return new RellXDollarExprImpl(node);
       }
       else if (type == X_EMPTY_MAP_LITERAL_EXPR) {
         return new RellXEmptyMapLiteralExprImpl(node);
@@ -582,9 +576,6 @@ public interface RellTypes {
       else if (type == X_NON_EMPTY_MAP_LITERAL_EXPR) {
         return new RellXNonEmptyMapLiteralExprImpl(node);
       }
-      else if (type == X_NULL_LITERAL_EXPR) {
-        return new RellXNullLiteralExprImpl(node);
-      }
       else if (type == X_OBJECT_DEF) {
         return new RellXObjectDefImpl(node);
       }
@@ -642,143 +633,8 @@ public interface RellTypes {
       else if (type == X_STRUCT_KEYWORD) {
         return new RellXStructKeywordImpl(node);
       }
-      else if (type == X_TK_ARROW) {
-        return new RellXTkArrowImpl(node);
-      }
-      else if (type == X_TK_ASSIGN) {
-        return new RellXTkASSIGNImpl(node);
-      }
-      else if (type == X_TK_AT) {
-        return new RellXTkATImpl(node);
-      }
-      else if (type == X_TK_BREAK) {
-        return new RellXTkBREAKImpl(node);
-      }
-      else if (type == X_TK_CARET) {
-        return new RellXTkCARETImpl(node);
-      }
-      else if (type == X_TK_COLON) {
-        return new RellXTkCOLONImpl(node);
-      }
-      else if (type == X_TK_COMMA) {
-        return new RellXTkCOMMAImpl(node);
-      }
-      else if (type == X_TK_CONTINUE) {
-        return new RellXTkCONTINUEImpl(node);
-      }
-      else if (type == X_TK_CREATE) {
-        return new RellXTkCREATEImpl(node);
-      }
-      else if (type == X_TK_DELETE) {
-        return new RellXTkDELETEImpl(node);
-      }
-      else if (type == X_TK_DOT) {
-        return new RellXTkDOTImpl(node);
-      }
-      else if (type == X_TK_ELSE) {
-        return new RellXTkElseImpl(node);
-      }
-      else if (type == X_TK_ENUM) {
-        return new RellXTkENUMImpl(node);
-      }
-      else if (type == X_TK_FOR) {
-        return new RellXTkFORImpl(node);
-      }
-      else if (type == X_TK_FUNCTION) {
-        return new RellXTkFUNCTIONImpl(node);
-      }
-      else if (type == X_TK_GUARD) {
-        return new RellXTkGUARDImpl(node);
-      }
-      else if (type == X_TK_IF) {
-        return new RellXTkIFImpl(node);
-      }
-      else if (type == X_TK_IMPORT) {
-        return new RellXTkIMPORTImpl(node);
-      }
-      else if (type == X_TK_IN) {
-        return new RellXTkINImpl(node);
-      }
-      else if (type == X_TK_INCLUDE) {
-        return new RellXTkINCLUDEImpl(node);
-      }
-      else if (type == X_TK_LBRACK) {
-        return new RellXTkLBRACKImpl(node);
-      }
-      else if (type == X_TK_LCURL) {
-        return new RellXTkLCURLImpl(node);
-      }
-      else if (type == X_TK_LIMIT) {
-        return new RellXTkLimitImpl(node);
-      }
-      else if (type == X_TK_LPAR) {
-        return new RellXTkLPARImpl(node);
-      }
-      else if (type == X_TK_MODULE) {
-        return new RellXTkMODULEImpl(node);
-      }
-      else if (type == X_TK_MUL) {
-        return new RellXTkMULImpl(node);
-      }
-      else if (type == X_TK_MUTABLE) {
-        return new RellXTkMUTABLEImpl(node);
-      }
-      else if (type == X_TK_NAMESPACE) {
-        return new RellXTkNAMESPACEImpl(node);
-      }
-      else if (type == X_TK_OBJECT) {
-        return new RellXTkOBJECTImpl(node);
-      }
-      else if (type == X_TK_OFFSET) {
-        return new RellXTkOffsetImpl(node);
-      }
-      else if (type == X_TK_OPERATION) {
-        return new RellXTkOPERATIONImpl(node);
-      }
-      else if (type == X_TK_PLUS) {
-        return new RellXTkPLUSImpl(node);
-      }
-      else if (type == X_TK_QUERY) {
-        return new RellXTkQUERYImpl(node);
-      }
-      else if (type == X_TK_QUESTION) {
-        return new RellXTkQUESTIONImpl(node);
-      }
-      else if (type == X_TK_RBRACK) {
-        return new RellXTkRBRACKImpl(node);
-      }
-      else if (type == X_TK_RCURL) {
-        return new RellXTkRCURLImpl(node);
-      }
-      else if (type == X_TK_RETURN) {
-        return new RellXTkRETURNImpl(node);
-      }
-      else if (type == X_TK_RPAR) {
-        return new RellXTkRPARImpl(node);
-      }
-      else if (type == X_TK_SEMI) {
-        return new RellXTkSEMIImpl(node);
-      }
       else if (type == X_TK_STRING) {
         return new RellXTkSTRINGImpl(node);
-      }
-      else if (type == X_TK_STRUCT) {
-        return new RellXTkSTRUCTImpl(node);
-      }
-      else if (type == X_TK_UPDATE) {
-        return new RellXTkUPDATEImpl(node);
-      }
-      else if (type == X_TK_VAL) {
-        return new RellXTkVALImpl(node);
-      }
-      else if (type == X_TK_VIRTUAL) {
-        return new RellXTkVIRTUALImpl(node);
-      }
-      else if (type == X_TK_WHEN) {
-        return new RellXTkWHENImpl(node);
-      }
-      else if (type == X_TK_WHILE) {
-        return new RellXTkWHILEImpl(node);
       }
       else if (type == X_TUPLE_EXPR_FIELD) {
         return new RellXTupleExprFieldImpl(node);

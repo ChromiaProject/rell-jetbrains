@@ -33,10 +33,4 @@ public class RellXWhenExprCasesImpl extends ASTWrapperPsiElement implements Rell
     return PsiTreeUtil.getChildrenOfTypeAsList(this, RellXWhenExprCase.class);
   }
 
-  @Override
-  @NotNull
-  public List<RellXTkSEMI> getXTkSEMIList() {
-    return PsiTreeUtil.getChildrenOfTypeAsList(this, RellXTkSEMI.class);
-  }
-
 }

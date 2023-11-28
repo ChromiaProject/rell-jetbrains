@@ -51,10 +51,4 @@ public class RellXQueryDefImpl extends ASTWrapperPsiElement implements RellXQuer
     return findChildByClass(RellXType.class);
   }
 
-  @Override
-  @NotNull
-  public RellXTkQUERY getXTkQUERY() {
-    return findNotNullChildByClass(RellXTkQUERY.class);
-  }
-
 }

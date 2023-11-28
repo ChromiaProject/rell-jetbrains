@@ -45,10 +45,4 @@ public class RellXOpDefImpl extends ASTWrapperPsiElement implements RellXOpDef {
     return findNotNullChildByClass(RellXName.class);
   }
 
-  @Override
-  @NotNull
-  public RellXTkOPERATION getXTkOPERATION() {
-    return findNotNullChildByClass(RellXTkOPERATION.class);
-  }
-
 }

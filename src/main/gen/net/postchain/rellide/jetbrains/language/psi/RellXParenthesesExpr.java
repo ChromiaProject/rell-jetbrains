@@ -13,7 +13,4 @@ public interface RellXParenthesesExpr extends PsiElement {
   @Nullable
   RellXTupleExprTail getXTupleExprTail();
 
-  @NotNull
-  RellXTkLPAR getXTkLPAR();
-
 }

@@ -33,10 +33,4 @@ public class RellXListLiteralExprImpl extends ASTWrapperPsiElement implements Re
     return PsiTreeUtil.getChildrenOfTypeAsList(this, RellXExpressionRef.class);
   }
 
-  @Override
-  @NotNull
-  public RellXTkLBRACK getXTkLBRACK() {
-    return findNotNullChildByClass(RellXTkLBRACK.class);
-  }
-
 }

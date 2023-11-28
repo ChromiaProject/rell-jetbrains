@@ -32,13 +32,61 @@
     STRBAD="regexp:\\|'\u0000' .. '\u001F'"
     STRING_NOT_CLOSED="regexp:(\"(\t|\\[btnfr\"\'\\]|\\u[0-9A-Fa-f]{4}|[^\"\\\u0000-\u001F])*)|('(\t|\\[btnfr\"\'\\]|\\u[0-9A-Fa-f]{4}|[^\'\\\u0000-\u001F])*)"
     STRING="regexp:(\"(\t|\\[btnfr\"\'\\]|\\u[0-9A-Fa-f]{4}|[^\"\\\u0000-\u001F])*\")|('(\t|\\[btnfr\"\'\\]|\\u[0-9A-Fa-f]{4}|[^\'\\\u0000-\u001F])*\')"
+
+    X_tkCOMMA=','
+    X_NullLiteralExpr='null'
+    X_tkMODULE='module'
+    X_tkMUTABLE='mutable'
+    X_tkLPAR='('
+    X_tkVIRTUAL='virtual'
+    X_tkSTRUCT='struct'
+    X_tkQUESTION='?'
+    X_DollarExpr='$'
+    X_tkDOT='.'
+    X_tkASSIGN='='
+    X_tkCOLON=':'
+    X_tkCREATE='create'
+    X_tkLBRACK='['
+    X_BaseExprTailNotNull='!!'
+    X_tkAT='@'
+    X_tkMUL='*'
+    X_tkPLUS='+'
+    X_tkIF='if'
+    X_tkWHEN='when'
+    X_tkSEMI=';'
+    X_tkIN='in'
+    X_tkOBJECT='object'
+    X_tkENUM='enum'
+    X_tkFUNCTION='function'
+    X_tkLCURL='{'
+    X_tkRETURN='return'
+    X_tkWHILE='while'
+    X_tkFOR='for'
+    X_tkBREAK='break'
+    X_tkCONTINUE='continue'
+    X_tkUPDATE='update'
+    X_tkDELETE='delete'
+    X_tkGUARD='guard'
+    X_tkNAMESPACE='namespace'
+    X_tkIMPORT='import'
+    X_tkCARET='^'
+    X_tkOPERATION='operation'
+    X_tkQUERY='query'
+    X_tkINCLUDE='include'
+    X_tkVAL='val'
+    X_tkElse='else'
+    X_tkLimit='limit'
+    X_tkOffset='offset'
+    X_tkArrow='->'
+    X_tkRPAR=')'
+    X_tkRCURL='}'
+    X_tkRBRACK=']'
   ]
 }
-
 X_RootParser ::= (X_ModuleHeader)? (X_AnnotatedDef)*
 
 
-X_ModuleHeader ::= (X_Modifier)* X_tkMODULE ';'
+X_ModuleHeader ::= (X_Modifier)* X_tkMODULE X_tkSEMI
 
 
 X_Modifier ::= 'abstract'
@@ -46,13 +94,13 @@ X_Modifier ::= 'abstract'
    | X_Annotation
 
 
-X_Annotation ::= '@' X_Name (X_AnnotationArgs)?
+X_Annotation ::= X_tkAT X_Name (X_AnnotationArgs)?
 
 
 X_Name ::= ID
 
 
-X_AnnotationArgs ::= '(' (X_AnnotationArg (',' X_AnnotationArg)*)? ')'
+X_AnnotationArgs ::= X_tkLPAR (X_AnnotationArg (X_tkCOMMA X_AnnotationArg)*)? X_tkRPAR
 
 
 X_AnnotationArg ::= X_AnnotationArgValue
@@ -86,16 +134,10 @@ X_StringExpr ::= STRING
 X_BytesExpr ::= BYTES
 
 
-X_NullLiteralExpr ::= 'null'
-
-
 X_AnnotationArgName ::= X_QualifiedName
 
 
-X_QualifiedName ::= X_Name ('.' X_Name)*
-
-
-X_tkMODULE ::= 'module'
+X_QualifiedName ::= X_Name (X_tkDOT X_Name)*
 
 
 X_AnnotatedDef ::= (X_Modifier)* X_AnyDef
@@ -121,14 +163,15 @@ X_EntityKeyword ::= 'entity'
    | 'class'
 
 
-X_EntityAnnotations ::= '(' X_Name (',' X_Name)* ')'
+X_EntityAnnotations ::= X_tkLPAR X_Name (X_tkCOMMA X_Name)* X_tkRPAR
 
 
 X_EntityBody ::= X_EntityBodyFull
    | X_EntityBodyShort
 
+X_EntityBodyShort ::= X_tkSEMI
 
-X_EntityBodyFull ::= '{' (X_RelAnyClause)* '}'
+X_EntityBodyFull ::= X_tkLCURL (X_RelAnyClause)* X_tkRCURL
 
 
 X_RelAnyClause ::= X_RelAttributeClause
@@ -138,20 +181,17 @@ X_RelAnyClause ::= X_RelAttributeClause
 X_RelAttributeClause ::= X_AttributeDefinition
 
 
-X_AttributeDefinition ::= X_BaseAttributeDefinition ';'
+X_AttributeDefinition ::= X_BaseAttributeDefinition X_tkSEMI
 
 
-X_BaseAttributeDefinition ::= (X_tkMUTABLE)? X_AttrHeader ('=' X_ExpressionRef)?
-
-
-X_tkMUTABLE ::= 'mutable'
+X_BaseAttributeDefinition ::= (X_tkMUTABLE)? X_AttrHeader (X_tkASSIGN X_ExpressionRef)?
 
 
 X_AttrHeader ::= X_NameTypeAttrHeader
    | X_AnonAttrHeader
 
 
-X_NameTypeAttrHeader ::= X_Name ':' X_Type
+X_NameTypeAttrHeader ::= X_Name X_tkCOLON X_Type
 
 
 X_Type ::= X_ComplexNullableType
@@ -159,16 +199,13 @@ X_Type ::= X_ComplexNullableType
    | X_BasicType
 
 
-X_ComplexNullableType ::= X_tkLPAR X_TypeRef ')' '?'
-
-
-X_tkLPAR ::= '('
+X_ComplexNullableType ::= X_tkLPAR X_TypeRef X_tkRPAR X_tkQUESTION
 
 
 X_TypeRef ::= X_Type
 
 
-X_FunctionType ::= X_tkLPAR (X_TypeRef (',' X_TypeRef)*)? ')' '->' X_TypeRef
+X_FunctionType ::= X_tkLPAR (X_TypeRef (X_tkCOMMA X_TypeRef)*)? X_tkRPAR X_tkArrow X_TypeRef
 
 
 X_BasicType ::= X_PrimaryType (X_tkQUESTION)*
@@ -181,37 +218,28 @@ X_PrimaryType ::= X_GenericType
    | X_MirrorStructType
 
 
-X_GenericType ::= X_QualifiedName '<' X_TypeRef (',' X_TypeRef)* '>'
+X_GenericType ::= X_QualifiedName '<' X_TypeRef (X_tkCOMMA X_TypeRef)* '>'
 
 
 X_NameType ::= X_QualifiedName
 
 
-X_TupleType ::= X_tkLPAR X_TupleTypeField (X_TupleTypeTail)? ')'
+X_TupleType ::= X_tkLPAR X_TupleTypeField (X_TupleTypeTail)? X_tkRPAR
 
 
-X_TupleTypeField ::= (X_Name ':')? X_TypeRef
+X_TupleTypeField ::= (X_Name X_tkCOLON)? X_TypeRef
 
 
-X_TupleTypeTail ::= ',' (X_TupleTypeField (',' X_TupleTypeField)*)?
+X_TupleTypeTail ::= X_tkCOMMA (X_TupleTypeField (X_tkCOMMA X_TupleTypeField)*)?
 
 
 X_VirtualType ::= X_tkVIRTUAL '<' X_TypeRef '>'
-
-
-X_tkVIRTUAL ::= 'virtual'
 
 
 X_MirrorStructType ::= X_MirrorStructType0
 
 
 X_MirrorStructType0 ::= X_tkSTRUCT '<' (X_tkMUTABLE)? X_TypeRef '>'
-
-
-X_tkSTRUCT ::= 'struct'
-
-
-X_tkQUESTION ::= '?'
 
 
 X_AnonAttrHeader ::= X_QualifiedName (X_tkQUESTION)?
@@ -226,7 +254,7 @@ X_Expression ::= X_UnaryExpr (X_BinaryExprOperand)*
 X_UnaryExpr ::= (X_UnaryPrefixOperator)* X_OperandExpr
 
 
-X_UnaryPrefixOperator ::= '+'
+X_UnaryPrefixOperator ::= X_tkPLUS
    | '-'
    | 'not'
    | X_IncrementOperator
@@ -267,35 +295,29 @@ X_BaseExprHead ::= X_GenericTypeExpr
 X_GenericTypeExpr ::= X_GenericType (X_BaseExprTailMember | X_BaseExprTailCall)
 
 
-X_BaseExprTailMember ::= '.' X_Name
+X_BaseExprTailMember ::= X_tkDOT X_Name
 
 
 X_BaseExprTailCall ::= X_CallArgs
 
 
-X_CallArgs ::= '(' (X_CallArg (',' X_CallArg)*)? ')'
+X_CallArgs ::= X_tkLPAR (X_CallArg (X_tkCOMMA X_CallArg)*)? X_tkRPAR
 
 
-X_CallArg ::= (X_Name '=')? X_CallArgValue
+X_CallArg ::= (X_Name X_tkASSIGN)? X_CallArgValue
 
 
-X_CallArgValue ::= '*'
+X_CallArgValue ::= X_tkMUL
    | X_ExpressionRef
 
 
 X_NameExpr ::= X_Name
 
 
-X_DollarExpr ::= '$'
-
-
 X_AttrExpr ::= X_tkDOT X_Name
 
 
-X_tkDOT ::= '.'
-
-
-X_ParenthesesExpr ::= X_tkLPAR X_TupleExprField (X_TupleExprTail)? ')'
+X_ParenthesesExpr ::= X_tkLPAR X_TupleExprField (X_TupleExprTail)? X_tkRPAR
 
 
 X_TupleExprField ::= X_TupleExprFieldNameEqExpr
@@ -306,43 +328,31 @@ X_TupleExprField ::= X_TupleExprFieldNameEqExpr
 X_TupleExprFieldNameEqExpr ::= X_Name X_tkASSIGN X_ExpressionRef
 
 
-X_tkASSIGN ::= '='
-
-
 X_TupleExprFieldNameColonExpr ::= X_Name X_tkCOLON X_ExpressionRef
-
-
-X_tkCOLON ::= ':'
 
 
 X_TupleExprFieldExpr ::= X_ExpressionRef
 
 
-X_TupleExprTail ::= ',' (X_TupleExprField (',' X_TupleExprField)*)?
+X_TupleExprTail ::= X_tkCOMMA (X_TupleExprField (X_tkCOMMA X_TupleExprField)*)?
 
 
-X_CreateExpr ::= X_tkCREATE X_QualifiedName '(' (X_CreateExprArg (',' X_CreateExprArg)*)? ')'
+X_CreateExpr ::= X_tkCREATE X_QualifiedName X_tkLPAR (X_CreateExprArg (X_tkCOMMA X_CreateExprArg)*)? X_tkRPAR
 
 
-X_tkCREATE ::= 'create'
+X_CreateExprArg ::= ((X_tkDOT)? X_Name X_tkASSIGN)? X_CallArgValue
 
 
-X_CreateExprArg ::= (('.')? X_Name '=')? X_CallArgValue
+X_ListLiteralExpr ::= X_tkLBRACK (X_ExpressionRef (X_tkCOMMA X_ExpressionRef)*)? X_tkRBRACK
 
 
-X_ListLiteralExpr ::= X_tkLBRACK (X_ExpressionRef (',' X_ExpressionRef)*)? ']'
+X_EmptyMapLiteralExpr ::= X_tkLBRACK X_tkCOLON X_tkRBRACK
 
 
-X_tkLBRACK ::= '['
+X_NonEmptyMapLiteralExpr ::= X_tkLBRACK X_MapLiteralExprEntry (X_tkCOMMA X_MapLiteralExprEntry)* X_tkRBRACK
 
 
-X_EmptyMapLiteralExpr ::= X_tkLBRACK ':' ']'
-
-
-X_NonEmptyMapLiteralExpr ::= X_tkLBRACK X_MapLiteralExprEntry (',' X_MapLiteralExprEntry)* ']'
-
-
-X_MapLiteralExprEntry ::= X_ExpressionRef ':' X_ExpressionRef
+X_MapLiteralExprEntry ::= X_ExpressionRef X_tkCOLON X_ExpressionRef
 
 
 X_MirrorStructExpr ::= X_MirrorStructType0
@@ -360,10 +370,7 @@ X_BaseExprTail ::= X_BaseExprTailMember
    | X_BaseExprTailAt
 
 
-X_BaseExprTailSubscript ::= X_tkLBRACK X_ExpressionRef ']'
-
-
-X_BaseExprTailNotNull ::= '!!'
+X_BaseExprTailSubscript ::= X_tkLBRACK X_ExpressionRef X_tkRBRACK
 
 
 X_BaseExprTailSafeMember ::= '?.' X_Name
@@ -382,76 +389,56 @@ X_BaseExprTailAt ::= X_AtExprAt X_AtExprWhere (X_AtExprWhat)? (X_AtExprModifiers
 X_AtExprAt ::= X_tkAT X_tkQUESTION
    | X_tkAT X_tkMUL
    | X_tkAT X_tkPLUS
-   | '@'
+   | X_tkAT
 
 
-X_tkAT ::= '@'
-
-
-X_tkMUL ::= '*'
-
-
-X_tkPLUS ::= '+'
-
-
-X_AtExprWhere ::= '{' (X_ExpressionRef (',' X_ExpressionRef)*)? '}'
+X_AtExprWhere ::= X_tkLCURL (X_ExpressionRef (X_tkCOMMA X_ExpressionRef)*)? X_tkRCURL
 
 
 X_AtExprWhat ::= X_AtExprWhatSimple
    | X_AtExprWhatComplex
 
 
-X_AtExprWhatSimple ::= ('.' X_Name)+
+X_AtExprWhatSimple ::= (X_tkDOT X_Name)+
 
 
-X_AtExprWhatComplex ::= '(' X_AtExprWhatComplexItem (',' X_AtExprWhatComplexItem)* ')'
+X_AtExprWhatComplex ::= X_tkLPAR X_AtExprWhatComplexItem (X_tkCOMMA X_AtExprWhatComplexItem)* X_tkRPAR
 
 
 X_AtExprWhatComplexItem ::= (X_Annotation)* (X_AtExprWhatName)? X_ExpressionRef
 
 
-X_AtExprWhatName ::= X_Name '='
+X_AtExprWhatName ::= X_Name X_tkASSIGN
 
 
-X_AtExprModifiers ::= 'limit' X_ExpressionRef (X_AtExprOffset)?
-   | 'offset' X_ExpressionRef (X_AtExprLimit)?
+X_AtExprModifiers ::= X_tkLimit X_ExpressionRef (X_AtExprOffset)?
+   | X_tkOffset X_ExpressionRef (X_AtExprLimit)?
 
 
-X_AtExprOffset ::= 'offset' X_ExpressionRef
+X_AtExprOffset ::= X_tkOffset X_ExpressionRef
 
 
-X_AtExprLimit ::= 'limit' X_ExpressionRef
+X_AtExprLimit ::= X_tkLimit X_ExpressionRef
 
 
-X_IfExpr ::= X_tkIF '(' X_ExpressionRef ')' X_ExpressionRef 'else' X_ExpressionRef
+X_IfExpr ::= X_tkIF X_tkLPAR X_ExpressionRef X_tkRPAR X_ExpressionRef X_tkElse X_ExpressionRef
 
 
-X_tkIF ::= 'if'
+X_WhenExpr ::= X_tkWHEN (X_tkLPAR X_ExpressionRef X_tkRPAR)? X_tkLCURL X_WhenExprCases X_tkRCURL
 
 
-X_WhenExpr ::= X_tkWHEN ('(' X_ExpressionRef ')')? '{' X_WhenExprCases '}'
+X_WhenExprCases ::= X_WhenExprCase ((X_tkSEMI)+ X_WhenExprCase)* (X_tkSEMI)*
 
 
-X_tkWHEN ::= 'when'
-
-
-X_WhenExprCases ::= X_WhenExprCase ((';')+ X_WhenExprCase)* (X_tkSEMI)*
-
-
-X_WhenExprCase ::= X_WhenCondition '->' X_ExpressionRef
+X_WhenExprCase ::= X_WhenCondition X_tkArrow X_ExpressionRef
 
 
 X_WhenCondition ::= X_WhenConditionExpr
    | X_WhenConditionElse
 
+X_WhenConditionElse ::= X_tkElse
 
-X_WhenConditionExpr ::= X_ExpressionRef (',' X_ExpressionRef)*
-
-
-X_WhenConditionElse ::= 'else'
-
-
-X_tkSEMI ::= ';'
+X_WhenConditionExpr ::= X_ExpressionRef (X_tkCOMMA X_ExpressionRef)*
 
 
 X_BinaryExprOperand ::= X_BinaryOperator X_UnaryExpr
@@ -465,77 +452,59 @@ X_BinaryOperator ::= '=='
    | '>'
    | '==='
    | '!=='
-   | '+'
+   | X_tkPLUS
    | '-'
-   | '*'
+   | X_tkMUL
    | '/'
    | '%'
    | 'and'
    | 'or'
-   | 'in'
+   | X_tkIN
    | 'not' X_tkIN
    | '?:'
 
 
-X_tkIN ::= 'in'
-
-
-X_RelKeyIndexClause ::= X_KeyIndexKind X_BaseAttributeDefinition (',' X_BaseAttributeDefinition)* ';'
+X_RelKeyIndexClause ::= X_KeyIndexKind X_BaseAttributeDefinition (X_tkCOMMA X_BaseAttributeDefinition)* X_tkSEMI
 
 
 X_KeyIndexKind ::= 'key'
    | 'index'
 
 
-X_EntityBodyShort ::= ';'
+
+X_ObjectDef ::= X_tkOBJECT X_Name X_tkLCURL (X_AttributeDefinition)* X_tkRCURL
 
 
-X_ObjectDef ::= X_tkOBJECT X_Name '{' (X_AttributeDefinition)* '}'
+
+X_StructDef ::= X_StructKeyword X_Name X_tkLCURL (X_AttributeDefinition)* X_tkRCURL
 
 
-X_tkOBJECT ::= 'object'
-
-
-X_StructDef ::= X_StructKeyword X_Name '{' (X_AttributeDefinition)* '}'
-
-
-X_StructKeyword ::= 'struct'
+X_StructKeyword ::= X_tkSTRUCT
    | 'record'
 
 
-X_EnumDef ::= X_tkENUM X_Name '{' (X_Name (',' X_Name)*)? (X_tkCOMMA)? '}'
+X_EnumDef ::= X_tkENUM X_Name X_tkLCURL (X_Name (X_tkCOMMA X_Name)*)? (X_tkCOMMA)? X_tkRCURL
 
 
-X_tkENUM ::= 'enum'
+X_FunctionDef ::= X_tkFUNCTION (X_QualifiedName)? X_tkLPAR (X_FormalParameter (X_tkCOMMA X_FormalParameter)*)? X_tkRPAR (X_tkCOLON X_Type)? X_FunctionBody
 
 
-X_tkCOMMA ::= ','
-
-
-X_FunctionDef ::= X_tkFUNCTION (X_QualifiedName)? '(' (X_FormalParameter (',' X_FormalParameter)*)? ')' (':' X_Type)? X_FunctionBody
-
-
-X_tkFUNCTION ::= 'function'
-
-
-X_FormalParameter ::= X_AttrHeader ('=' X_Expression)?
+X_FormalParameter ::= X_AttrHeader (X_tkASSIGN X_Expression)?
 
 
 X_FunctionBody ::= X_FunctionBodyShort
    | X_FunctionBodyFull
    | X_FunctionBodyNone
 
+X_FunctionBodyNone ::= X_tkSEMI
 
-X_FunctionBodyShort ::= '=' X_Expression ';'
+X_FunctionBodyShort ::= X_tkASSIGN X_Expression X_tkSEMI
 
 
 X_FunctionBodyFull ::= X_BlockStmt
 
 
-X_BlockStmt ::= X_tkLCURL (X_StatementRef)* '}'
-
-
-X_tkLCURL ::= '{'
+X_BlockStmt ::= X_tkLCURL (X_StatementRef)* X_tkRCURL
 
 
 X_StatementRef ::= X_Statement
@@ -559,14 +528,12 @@ X_Statement ::= X_EmptyStmt
    | X_CreateStmt
    | X_GuardStmt
 
+X_EmptyStmt ::= X_tkSEMI
 
-X_EmptyStmt ::= ';'
-
-
-X_VarStmt ::= X_VarVal X_VarDeclarator ('=' X_Expression)? ';'
+X_VarStmt ::= X_VarVal X_VarDeclarator (X_tkASSIGN X_Expression)? X_tkSEMI
 
 
-X_VarVal ::= 'val'
+X_VarVal ::= X_tkVAL
    | 'var'
 
 
@@ -577,13 +544,13 @@ X_VarDeclarator ::= X_SimpleVarDeclarator
 X_SimpleVarDeclarator ::= X_AttrHeader
 
 
-X_TupleVarDeclarator ::= X_tkLPAR X_VarDeclarator (',' X_VarDeclarator)* ')'
+X_TupleVarDeclarator ::= X_tkLPAR X_VarDeclarator (X_tkCOMMA X_VarDeclarator)* X_tkRPAR
 
 
-X_AssignStmt ::= X_BaseExpr X_AssignOp X_Expression ';'
+X_AssignStmt ::= X_BaseExpr X_AssignOp X_Expression X_tkSEMI
 
 
-X_AssignOp ::= '='
+X_AssignOp ::= X_tkASSIGN
    | '+='
    | '-='
    | '*='
@@ -591,48 +558,32 @@ X_AssignOp ::= '='
    | '%='
 
 
-X_ReturnStmt ::= X_tkRETURN (X_Expression)? ';'
+X_ReturnStmt ::= X_tkRETURN (X_Expression)? X_tkSEMI
 
 
-X_tkRETURN ::= 'return'
-
-X_IfStmt ::= X_tkIF '(' X_Expression ')' X_StatementRef (X_tkElse X_StatementRef)?
+X_IfStmt ::= X_tkIF X_tkLPAR X_Expression X_tkRPAR X_StatementRef (X_tkElse X_StatementRef)?
 
 
-X_WhenStmt ::= X_tkWHEN ('(' X_ExpressionRef ')')? '{' (X_WhenStmtCase)* '}'
+X_WhenStmt ::= X_tkWHEN (X_tkLPAR X_ExpressionRef X_tkRPAR)? X_tkLCURL (X_WhenStmtCase)* X_tkRCURL
 
 
-X_WhenStmtCase ::= X_WhenCondition '->' X_StatementRef (X_tkSEMI)*
+X_WhenStmtCase ::= X_WhenCondition X_tkArrow X_StatementRef (X_tkSEMI)*
 
 
-X_WhileStmt ::= X_tkWHILE '(' X_Expression ')' X_StatementRef
+X_WhileStmt ::= X_tkWHILE X_tkLPAR X_Expression X_tkRPAR X_StatementRef
 
 
-X_tkWHILE ::= 'while'
+X_ForStmt ::= X_tkFOR X_tkLPAR X_VarDeclarator X_tkIN X_Expression X_tkRPAR X_StatementRef
 
 
-X_ForStmt ::= X_tkFOR '(' X_VarDeclarator 'in' X_Expression ')' X_StatementRef
+X_BreakStmt ::= X_tkBREAK X_tkSEMI
 
 
-X_tkFOR ::= 'for'
+X_ContinueStmt ::= X_tkCONTINUE X_tkSEMI
 
 
-X_BreakStmt ::= X_tkBREAK ';'
+X_UpdateStmt ::= X_tkUPDATE X_UpdateTarget X_tkLPAR (X_UpdateWhatExpr (X_tkCOMMA X_UpdateWhatExpr)*)? X_tkRPAR X_tkSEMI
 
-
-X_tkBREAK ::= 'break'
-
-
-X_ContinueStmt ::= X_tkCONTINUE ';'
-
-
-X_tkCONTINUE ::= 'continue'
-
-
-X_UpdateStmt ::= X_tkUPDATE X_UpdateTarget '(' (X_UpdateWhatExpr (',' X_UpdateWhatExpr)*)? ')' ';'
-
-
-X_tkUPDATE ::= 'update'
 
 
 X_UpdateTarget ::= X_UpdateTargetAt
@@ -649,10 +600,10 @@ X_AtExprFrom ::= X_AtExprFromSingle
 X_AtExprFromSingle ::= X_QualifiedName
 
 
-X_AtExprFromMulti ::= X_tkLPAR X_AtExprFromItem (',' X_AtExprFromItem)* ')'
+X_AtExprFromMulti ::= X_tkLPAR X_AtExprFromItem (X_tkCOMMA X_AtExprFromItem)* X_tkRPAR
 
 
-X_AtExprFromItem ::= (X_Name ':')? X_QualifiedName
+X_AtExprFromItem ::= (X_Name X_tkCOLON)? X_QualifiedName
 
 
 X_UpdateTargetExpr ::= X_BaseExprNoCallNoAt
@@ -671,43 +622,28 @@ X_BaseExprTailNoCallNoAt ::= X_BaseExprTailMember
 X_UpdateWhatExpr ::= (X_UpdateWhatNameOp)? X_Expression
 
 
-X_UpdateWhatNameOp ::= ('.')? X_Name X_AssignOp
+X_UpdateWhatNameOp ::= (X_tkDOT)? X_Name X_AssignOp
 
 
-X_DeleteStmt ::= X_tkDELETE X_UpdateTarget ';'
+X_DeleteStmt ::= X_tkDELETE X_UpdateTarget X_tkSEMI
 
 
-X_tkDELETE ::= 'delete'
+X_IncrementStmt ::= X_IncrementOperator X_BaseExpr X_tkSEMI
 
 
-X_IncrementStmt ::= X_IncrementOperator X_BaseExpr ';'
+X_CallStmt ::= X_BaseExpr X_tkSEMI
 
 
-X_CallStmt ::= X_BaseExpr ';'
-
-
-X_CreateStmt ::= X_CreateExpr ';'
+X_CreateStmt ::= X_CreateExpr X_tkSEMI
 
 
 X_GuardStmt ::= X_tkGUARD X_BlockStmt
 
 
-X_tkGUARD ::= 'guard'
+X_NamespaceDef ::= X_tkNAMESPACE (X_QualifiedName)? X_tkLCURL (X_AnnotatedDef)* X_tkRCURL
 
 
-X_FunctionBodyNone ::= ';'
-
-
-X_NamespaceDef ::= X_tkNAMESPACE (X_QualifiedName)? '{' (X_AnnotatedDef)* '}'
-
-
-X_tkNAMESPACE ::= 'namespace'
-
-
-X_ImportDef ::= X_tkIMPORT (X_Name ':')? X_ImportModule (X_ImportTarget)? ';'
-
-
-X_tkIMPORT ::= 'import'
+X_ImportDef ::= X_tkIMPORT (X_Name X_tkCOLON)? X_ImportModule (X_ImportTarget)? X_tkSEMI
 
 
 X_ImportModule ::= X_AbsoluteImportModule
@@ -721,53 +657,36 @@ X_AbsoluteImportModule ::= X_QualifiedName
 X_RelativeImportModule ::= X_tkDOT (X_QualifiedName)?
 
 
-X_UpImportModule ::= (X_tkCARET)+ ('.' X_QualifiedName)?
+X_UpImportModule ::= (X_tkCARET)+ (X_tkDOT X_QualifiedName)?
 
 
-X_tkCARET ::= '^'
+X_ImportTarget ::= X_tkDOT (X_ImportTargetExact | X_ImportTargetWildcard)
+
+X_ImportTargetWildcard ::= X_tkMUL
+
+X_ImportTargetExact ::= X_tkLCURL (X_ImportTargetExactItem (X_tkCOMMA X_ImportTargetExactItem)*)? X_tkRCURL
 
 
-X_ImportTarget ::= '.' (X_ImportTargetExact | X_ImportTargetWildcard)
+X_ImportTargetExactItem ::= (X_Name X_tkCOLON)? X_QualifiedName (X_tkDOT X_tkMUL)?
 
 
-X_ImportTargetExact ::= '{' (X_ImportTargetExactItem (',' X_ImportTargetExactItem)*)? '}'
+X_OpDef ::= X_tkOPERATION X_Name X_tkLPAR (X_FormalParameter (X_tkCOMMA X_FormalParameter)*)? X_tkRPAR X_BlockStmt
 
 
-X_ImportTargetExactItem ::= (X_Name ':')? X_QualifiedName ('.' X_tkMUL)?
-
-
-X_ImportTargetWildcard ::= '*'
-
-
-X_OpDef ::= X_tkOPERATION X_Name '(' (X_FormalParameter (',' X_FormalParameter)*)? ')' X_BlockStmt
-
-
-X_tkOPERATION ::= 'operation'
-
-
-X_QueryDef ::= X_tkQUERY X_Name '(' (X_FormalParameter (',' X_FormalParameter)*)? ')' (':' X_Type)? X_QueryBody
-
-
-X_tkQUERY ::= 'query'
+X_QueryDef ::= X_tkQUERY X_Name X_tkLPAR (X_FormalParameter (X_tkCOMMA X_FormalParameter)*)? X_tkRPAR (X_tkCOLON X_Type)? X_QueryBody
 
 
 X_QueryBody ::= X_FunctionBodyShort
    | X_FunctionBodyFull
 
 
-X_IncludeDef ::= X_tkINCLUDE X_tkSTRING ';'
-
-
-X_tkINCLUDE ::= 'include'
+X_IncludeDef ::= X_tkINCLUDE X_tkSTRING X_tkSEMI
 
 
 X_tkSTRING ::= STRING
 
 
-X_ConstantDef ::= X_tkVAL X_Name (':' X_TypeRef)? '=' X_ExpressionRef ';'
-
-
-X_tkVAL ::= 'val'
+X_ConstantDef ::= X_tkVAL X_Name (X_tkCOLON X_TypeRef)? X_tkASSIGN X_ExpressionRef X_tkSEMI
 
 COMMON_INT ::= HEXDIGNUM | DECNUM;
 BIG_INTEGER ::= COMMON_INT 'L';
@@ -775,10 +694,3 @@ NUMBER ::= COMMON_INT;
 
 STRCHAR ::= '\t' | '\\' ('b'|'t'|'n'|'f'|'r'|'"'|"'"|'\\' | 'u' HEXDIG HEXDIG HEXDIG HEXDIG)
 
-X_tkElse ::= 'else'
-X_tkLimit ::= 'limit'
-X_tkOffset ::= 'offset'
-X_tkArrow ::= '->'
-X_tkRPAR ::= ')'
-X_tkRCURL ::= '}'
-X_tkRBRACK ::= ']'

@@ -39,10 +39,4 @@ public class RellXParenthesesExprImpl extends ASTWrapperPsiElement implements Re
     return findChildByClass(RellXTupleExprTail.class);
   }
 
-  @Override
-  @NotNull
-  public RellXTkLPAR getXTkLPAR() {
-    return findNotNullChildByClass(RellXTkLPAR.class);
-  }
-
 }

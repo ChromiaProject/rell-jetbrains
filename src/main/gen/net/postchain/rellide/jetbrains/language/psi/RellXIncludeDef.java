@@ -8,9 +8,6 @@ import com.intellij.psi.PsiElement;
 public interface RellXIncludeDef extends PsiElement {
 
   @NotNull
-  RellXTkINCLUDE getXTkINCLUDE();
-
-  @NotNull
   RellXTkSTRING getXTkSTRING();
 
 }

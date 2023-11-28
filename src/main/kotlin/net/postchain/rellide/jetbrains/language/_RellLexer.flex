@@ -125,28 +125,61 @@ HEXDIGNUM=0[ \t\n\x0B\f\r]*x[ \t\n\x0B\f\r]*[0-9A-Fa-f]+
 
 %%
 <YYINITIAL> {
-  {WHITE_SPACE}         { return WHITE_SPACE; }
+  {WHITE_SPACE}             { return WHITE_SPACE; }
 
-  "->"                  { return X_TK_ARROW; }
-  ")"                   { return X_TK_RPAR; }
-  "}"                   { return X_TK_RCURL; }
-  "]"                   { return X_TK_RBRACK; }
+  ","                       { return X_TKCOMMA; }
+  "null"                    { return X_NULLLITERALEXPR; }
+  "module"                  { return X_TKMODULE; }
+  "mutable"                 { return X_TKMUTABLE; }
+  "("                       { return X_TKLPAR; }
+  "virtual"                 { return X_TKVIRTUAL; }
+  "struct"                  { return X_TKSTRUCT; }
+  "?"                       { return X_TKQUESTION; }
+  "$"                       { return X_DOLLAREXPR; }
+  "."                       { return X_TKDOT; }
+  "="                       { return X_TKASSIGN; }
+  ":"                       { return X_TKCOLON; }
+  "create"                  { return X_TKCREATE; }
+  "["                       { return X_TKLBRACK; }
+  "!!"                      { return X_BASEEXPRTAILNOTNULL; }
+  "@"                       { return X_TKAT; }
+  "*"                       { return X_TKMUL; }
+  "+"                       { return X_TKPLUS; }
+  "if"                      { return X_TKIF; }
+  "when"                    { return X_TKWHEN; }
+  ";"                       { return X_TKSEMI; }
+  "in"                      { return X_TKIN; }
+  "object"                  { return X_TKOBJECT; }
+  "enum"                    { return X_TKENUM; }
+  "function"                { return X_TKFUNCTION; }
+  "{"                       { return X_TKLCURL; }
+  "return"                  { return X_TKRETURN; }
+  "while"                   { return X_TKWHILE; }
+  "for"                     { return X_TKFOR; }
+  "break"                   { return X_TKBREAK; }
+  "continue"                { return X_TKCONTINUE; }
+  "update"                  { return X_TKUPDATE; }
+  "delete"                  { return X_TKDELETE; }
+  "guard"                   { return X_TKGUARD; }
+  "namespace"               { return X_TKNAMESPACE; }
+  "import"                  { return X_TKIMPORT; }
+  "^"                       { return X_TKCARET; }
+  "operation"               { return X_TKOPERATION; }
+  "query"                   { return X_TKQUERY; }
+  "include"                 { return X_TKINCLUDE; }
+  "val"                     { return X_TKVAL; }
+  "else"                    { return X_TKELSE; }
+  "limit"                   { return X_TKLIMIT; }
+  "offset"                  { return X_TKOFFSET; }
+  "->"                      { return X_TKARROW; }
+  ")"                       { return X_TKRPAR; }
+  "}"                       { return X_TKRCURL; }
+  "]"                       { return X_TKRBRACK; }
 
-  "("               { return X_TK_LPAR; }
-  "{"               { return X_TK_LCURL ; }
-  "["               { return X_TK_LBRACK ; }
-  "@"               { return X_TK_AT; }
-  "$"               { return X_DOLLAR_EXPR; }
-  ":"               { return X_TK_COLON; }
-  ";"               { return X_TK_SEMI ; }
-  ","               { return X_TK_COMMA ; }
-  "."               { return X_TK_DOT ; }
-  "?"               { return X_TK_QUESTION ; }
+
   "?:"               { return X_BINARY_OPERATOR ; }
   "?."               { return X_BASE_EXPR_TAIL_SAFE_MEMBER ; }
-  "!!"               { return X_BASE_EXPR_TAIL_NOT_NULL ; }
   "??"               { return X_UNARY_POSTFIX_OPERATOR ; }
-  "^"               { return X_TK_CARET ; }
 
   "=="               { return X_BINARY_OPERATOR ; }
   "!="               { return X_BINARY_OPERATOR ; }
@@ -157,9 +190,8 @@ HEXDIGNUM=0[ \t\n\x0B\f\r]*x[ \t\n\x0B\f\r]*[0-9A-Fa-f]+
   "==="               { return X_BINARY_OPERATOR ; }
   "!=="               { return X_BINARY_OPERATOR ; }
 
-  "+"               { return X_BINARY_OPERATOR ; }
+
   "-"               { return X_BINARY_OPERATOR ; }
-  "*"               { return X_BINARY_OPERATOR ; }
   "/"               { return X_BINARY_OPERATOR ; }
   "%"               { return X_BINARY_OPERATOR ; }
   "++"               { return X_INCREMENT_OPERATOR ; }
@@ -169,7 +201,6 @@ HEXDIGNUM=0[ \t\n\x0B\f\r]*x[ \t\n\x0B\f\r]*[0-9A-Fa-f]+
   "or"               { return X_BINARY_OPERATOR ; }
   "not"               { return X_UNARY_PREFIX_OPERATOR ; }
 
-  "="               { return X_ASSIGN_OP ; }
   "+="               { return X_ASSIGN_OP ; }
   "-="               { return X_ASSIGN_OP ; }
   "*="               { return X_ASSIGN_OP ; }
@@ -177,44 +208,17 @@ HEXDIGNUM=0[ \t\n\x0B\f\r]*x[ \t\n\x0B\f\r]*[0-9A-Fa-f]+
   "%="               { return X_ASSIGN_OP ; }
 
   "abstract"               { return X_MODIFIER ; }
-  "break"               { return X_TK_BREAK ; }
   "class"               { return X_ENTITY_KEYWORD; }
-  "continue"               { return X_TK_CONTINUE ; }
-  "create"               { return X_TK_CREATE ; }
-  "delete"               { return X_TK_DELETE ; }
-  "else"               { return X_TK_ELSE ; }
   "entity"               { return X_ENTITY_KEYWORD; }
-  "enum"               { return X_TK_ENUM; }
   "false"              { return X_LITERAL_EXPR; }
   "true"              { return X_LITERAL_EXPR; }
-  "for"               { return X_TK_FOR ; }
-  "function"               { return X_TK_FUNCTION ; }
-  "guard"               { return X_TK_GUARD ; }
-  "if"               { return X_TK_IF; }
-  "import"               { return X_TK_IMPORT ; }
-  "in"               { return X_TK_IN ; }
-  "include"               { return X_TK_INCLUDE ; }
   "index"               { return X_KEY_INDEX_KIND ; }
   "key"               { return X_KEY_INDEX_KIND ; }
-  "limit"               { return X_AT_EXPR_LIMIT ; }
-  "module"               { return X_TK_MODULE ; }
-  "mutable"               { return X_TK_MUTABLE ; }
-  "namespace"               { return X_TK_NAMESPACE ; }
-  "null"               { return X_NULL_LITERAL_EXPR ; }
-  "object"               { return X_TK_OBJECT ; }
-  "offset"               { return X_AT_EXPR_OFFSET ; }
-  "operation"               { return X_TK_OPERATION ; }
   "override"               { return X_MODIFIER ; }
-  "query"               { return X_TK_QUERY ; }
   "record"               { return X_STRUCT_KEYWORD ; }
-  "return"               { return X_TK_RETURN ; }
-  "struct"               { return X_STRUCT_KEYWORD ; }
-  "update"               { return X_TK_UPDATE ; }
-  "val"               { return X_TK_VAL ; }
   "var"               { return X_VAR_VAL ; }
-  "virtual"               { return X_TK_VIRTUAL ; }
-  "when"               { return X_TK_WHEN ; }
-  "while"               { return X_TK_WHILE ; }
+
+
 
   {SL_COMMENT}          { return SL_COMMENT; }
   {ML_COMMENT}          { return ML_COMMENT; }
@@ -252,7 +256,7 @@ HEXDIGNUM=0[ \t\n\x0B\f\r]*x[ \t\n\x0B\f\r]*[0-9A-Fa-f]+
   {STRBAD}              { return STRBAD; }
   {STRING}              { return STRING; }
   {SPACE}               { return SPACE; }
-}
 
+}
 
 [^] { return BAD_CHARACTER; }

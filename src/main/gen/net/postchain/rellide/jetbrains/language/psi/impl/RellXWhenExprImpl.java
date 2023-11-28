@@ -39,10 +39,4 @@ public class RellXWhenExprImpl extends ASTWrapperPsiElement implements RellXWhen
     return findNotNullChildByClass(RellXWhenExprCases.class);
   }
 
-  @Override
-  @NotNull
-  public RellXTkWHEN getXTkWHEN() {
-    return findNotNullChildByClass(RellXTkWHEN.class);
-  }
-
 }

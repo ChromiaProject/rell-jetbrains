@@ -33,10 +33,4 @@ public class RellXReturnStmtImpl extends ASTWrapperPsiElement implements RellXRe
     return findChildByClass(RellXExpression.class);
   }
 
-  @Override
-  @NotNull
-  public RellXTkRETURN getXTkRETURN() {
-    return findNotNullChildByClass(RellXTkRETURN.class);
-  }
-
 }

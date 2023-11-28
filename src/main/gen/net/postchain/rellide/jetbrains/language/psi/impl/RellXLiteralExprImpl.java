@@ -53,12 +53,6 @@ public class RellXLiteralExprImpl extends ASTWrapperPsiElement implements RellXL
 
   @Override
   @Nullable
-  public RellXNullLiteralExpr getXNullLiteralExpr() {
-    return findChildByClass(RellXNullLiteralExpr.class);
-  }
-
-  @Override
-  @Nullable
   public RellXStringExpr getXStringExpr() {
     return findChildByClass(RellXStringExpr.class);
   }

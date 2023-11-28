@@ -33,10 +33,4 @@ public class RellXComplexNullableTypeImpl extends ASTWrapperPsiElement implement
     return findNotNullChildByClass(RellXTypeRef.class);
   }
 
-  @Override
-  @NotNull
-  public RellXTkLPAR getXTkLPAR() {
-    return findNotNullChildByClass(RellXTkLPAR.class);
-  }
-
 }

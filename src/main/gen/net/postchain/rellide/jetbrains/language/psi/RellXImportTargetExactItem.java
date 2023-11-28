@@ -13,7 +13,4 @@ public interface RellXImportTargetExactItem extends PsiElement {
   @NotNull
   RellXQualifiedName getXQualifiedName();
 
-  @Nullable
-  RellXTkMUL getXTkMUL();
-
 }

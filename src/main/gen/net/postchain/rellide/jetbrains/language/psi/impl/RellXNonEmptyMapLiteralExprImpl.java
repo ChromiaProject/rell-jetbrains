@@ -33,10 +33,4 @@ public class RellXNonEmptyMapLiteralExprImpl extends ASTWrapperPsiElement implem
     return PsiTreeUtil.getChildrenOfTypeAsList(this, RellXMapLiteralExprEntry.class);
   }
 
-  @Override
-  @NotNull
-  public RellXTkLBRACK getXTkLBRACK() {
-    return findNotNullChildByClass(RellXTkLBRACK.class);
-  }
-
 }

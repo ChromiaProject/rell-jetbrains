@@ -10,7 +10,4 @@ public interface RellXUpImportModule extends PsiElement {
   @Nullable
   RellXQualifiedName getXQualifiedName();
 
-  @NotNull
-  List<RellXTkCARET> getXTkCARETList();
-
 }

@@ -19,7 +19,4 @@ public interface RellXQueryDef extends PsiElement {
   @Nullable
   RellXType getXType();
 
-  @NotNull
-  RellXTkQUERY getXTkQUERY();
-
 }

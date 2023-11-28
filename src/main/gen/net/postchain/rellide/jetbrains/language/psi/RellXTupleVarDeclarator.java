@@ -10,7 +10,4 @@ public interface RellXTupleVarDeclarator extends PsiElement {
   @NotNull
   List<RellXVarDeclarator> getXVarDeclaratorList();
 
-  @NotNull
-  RellXTkLPAR getXTkLPAR();
-
 }

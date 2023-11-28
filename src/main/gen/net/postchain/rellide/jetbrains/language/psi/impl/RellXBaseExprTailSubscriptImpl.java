@@ -33,10 +33,4 @@ public class RellXBaseExprTailSubscriptImpl extends ASTWrapperPsiElement impleme
     return findNotNullChildByClass(RellXExpressionRef.class);
   }
 
-  @Override
-  @NotNull
-  public RellXTkLBRACK getXTkLBRACK() {
-    return findNotNullChildByClass(RellXTkLBRACK.class);
-  }
-
 }

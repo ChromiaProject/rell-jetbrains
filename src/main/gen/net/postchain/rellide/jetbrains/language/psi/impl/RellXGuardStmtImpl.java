@@ -33,10 +33,4 @@ public class RellXGuardStmtImpl extends ASTWrapperPsiElement implements RellXGua
     return findNotNullChildByClass(RellXBlockStmt.class);
   }
 
-  @Override
-  @NotNull
-  public RellXTkGUARD getXTkGUARD() {
-    return findNotNullChildByClass(RellXTkGUARD.class);
-  }
-
 }

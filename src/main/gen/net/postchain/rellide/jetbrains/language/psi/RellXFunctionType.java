@@ -10,7 +10,4 @@ public interface RellXFunctionType extends PsiElement {
   @NotNull
   List<RellXTypeRef> getXTypeRefList();
 
-  @NotNull
-  RellXTkLPAR getXTkLPAR();
-
 }

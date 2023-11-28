@@ -27,10 +27,4 @@ public class RellXBreakStmtImpl extends ASTWrapperPsiElement implements RellXBre
     else super.accept(visitor);
   }
 
-  @Override
-  @NotNull
-  public RellXTkBREAK getXTkBREAK() {
-    return findNotNullChildByClass(RellXTkBREAK.class);
-  }
-
 }

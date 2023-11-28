@@ -33,10 +33,4 @@ public class RellXAttrExprImpl extends ASTWrapperPsiElement implements RellXAttr
     return findNotNullChildByClass(RellXName.class);
   }
 
-  @Override
-  @NotNull
-  public RellXTkDOT getXTkDOT() {
-    return findNotNullChildByClass(RellXTkDOT.class);
-  }
-
 }

@@ -10,7 +10,4 @@ public interface RellXAnonAttrHeader extends PsiElement {
   @NotNull
   RellXQualifiedName getXQualifiedName();
 
-  @Nullable
-  RellXTkQUESTION getXTkQUESTION();
-
 }

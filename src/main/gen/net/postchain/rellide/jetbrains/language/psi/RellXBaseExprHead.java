@@ -23,9 +23,6 @@ public interface RellXBaseExprHead extends PsiElement {
   RellXDecimalExpr getXDecimalExpr();
 
   @Nullable
-  RellXDollarExpr getXDollarExpr();
-
-  @Nullable
   RellXEmptyMapLiteralExpr getXEmptyMapLiteralExpr();
 
   @Nullable
@@ -45,9 +42,6 @@ public interface RellXBaseExprHead extends PsiElement {
 
   @Nullable
   RellXNonEmptyMapLiteralExpr getXNonEmptyMapLiteralExpr();
-
-  @Nullable
-  RellXNullLiteralExpr getXNullLiteralExpr();
 
   @Nullable
   RellXParenthesesExpr getXParenthesesExpr();

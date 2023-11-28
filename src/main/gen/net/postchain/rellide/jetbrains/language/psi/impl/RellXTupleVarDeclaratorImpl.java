@@ -33,10 +33,4 @@ public class RellXTupleVarDeclaratorImpl extends ASTWrapperPsiElement implements
     return PsiTreeUtil.getChildrenOfTypeAsList(this, RellXVarDeclarator.class);
   }
 
-  @Override
-  @NotNull
-  public RellXTkLPAR getXTkLPAR() {
-    return findNotNullChildByClass(RellXTkLPAR.class);
-  }
-
 }

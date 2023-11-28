@@ -33,10 +33,4 @@ public class RellXModuleHeaderImpl extends ASTWrapperPsiElement implements RellX
     return PsiTreeUtil.getChildrenOfTypeAsList(this, RellXModifier.class);
   }
 
-  @Override
-  @NotNull
-  public RellXTkMODULE getXTkMODULE() {
-    return findNotNullChildByClass(RellXTkMODULE.class);
-  }
-
 }

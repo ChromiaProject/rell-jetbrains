@@ -27,10 +27,4 @@ public class RellXEmptyMapLiteralExprImpl extends ASTWrapperPsiElement implement
     else super.accept(visitor);
   }
 
-  @Override
-  @NotNull
-  public RellXTkLBRACK getXTkLBRACK() {
-    return findNotNullChildByClass(RellXTkLBRACK.class);
-  }
-
 }

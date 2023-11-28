@@ -16,7 +16,4 @@ public interface RellXImportDef extends PsiElement {
   @Nullable
   RellXName getXName();
 
-  @NotNull
-  RellXTkIMPORT getXTkIMPORT();
-
 }

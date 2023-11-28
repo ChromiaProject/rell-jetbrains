@@ -39,10 +39,4 @@ public class RellXWhenStmtCaseImpl extends ASTWrapperPsiElement implements RellX
     return findNotNullChildByClass(RellXWhenCondition.class);
   }
 
-  @Override
-  @NotNull
-  public List<RellXTkSEMI> getXTkSEMIList() {
-    return PsiTreeUtil.getChildrenOfTypeAsList(this, RellXTkSEMI.class);
-  }
-
 }

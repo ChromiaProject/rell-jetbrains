@@ -10,10 +10,4 @@ public interface RellXEnumDef extends PsiElement {
   @NotNull
   List<RellXName> getXNameList();
 
-  @Nullable
-  RellXTkCOMMA getXTkCOMMA();
-
-  @NotNull
-  RellXTkENUM getXTkENUM();
-
 }

@@ -33,16 +33,4 @@ public class RellXEnumDefImpl extends ASTWrapperPsiElement implements RellXEnumD
     return PsiTreeUtil.getChildrenOfTypeAsList(this, RellXName.class);
   }
 
-  @Override
-  @Nullable
-  public RellXTkCOMMA getXTkCOMMA() {
-    return findChildByClass(RellXTkCOMMA.class);
-  }
-
-  @Override
-  @NotNull
-  public RellXTkENUM getXTkENUM() {
-    return findNotNullChildByClass(RellXTkENUM.class);
-  }
-
 }

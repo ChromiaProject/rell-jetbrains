@@ -10,10 +10,4 @@ public interface RellXMirrorStructType0 extends PsiElement {
   @NotNull
   RellXTypeRef getXTypeRef();
 
-  @Nullable
-  RellXTkMUTABLE getXTkMUTABLE();
-
-  @NotNull
-  RellXTkSTRUCT getXTkSTRUCT();
-
 }

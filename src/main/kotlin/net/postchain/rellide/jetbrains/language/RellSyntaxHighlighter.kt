@@ -20,13 +20,13 @@ object RellSyntaxHighlighter : SyntaxHighlighterBase() {
         SL_COMMENT to RellColor.LINE_COMMENT,
         ML_COMMENT to RellColor.BLOCK_COMMENT,
 
-        X_TK_LBRACK to RellColor.BRACKETS,
-        X_TK_RBRACK to RellColor.BRACKETS,
-        X_TK_LPAR to RellColor.PARENTHESES,
-        X_TK_RPAR to RellColor.PARENTHESES,
-        X_TK_LCURL to RellColor.BRACES,
-        X_TK_RCURL to RellColor.BRACES,
-        X_TK_SEMI to RellColor.SEMICOLON,
+        X_TKLBRACK to RellColor.BRACKETS,
+        X_TKRBRACK to RellColor.BRACKETS,
+        X_TKLPAR to RellColor.PARENTHESES,
+        X_TKRPAR to RellColor.PARENTHESES,
+        X_TKLCURL to RellColor.BRACES,
+        X_TKRCURL to RellColor.BRACES,
+        X_TKSEMI to RellColor.SEMICOLON,
 
         X_INT_EXPR to RellColor.NUMBER,
         X_BIG_INT_EXPR to RellColor.NUMBER,
@@ -46,12 +46,12 @@ object RellSyntaxHighlighter : SyntaxHighlighterBase() {
     ).mapValues { it.value.textAttributesKey }
 
     fun keywords() = setOf<IElementType>(
-            X_TK_BREAK, X_TK_IF, X_TK_ELSE, X_TK_CONTINUE, X_TK_CREATE, X_TK_DELETE,
-            X_TK_ENUM, X_TK_FOR, X_TK_FUNCTION, X_TK_IMPORT, X_TK_MODULE,
+            X_TKBREAK, X_TKIF, X_TKELSE, X_TKCONTINUE, X_TKCREATE, X_TKDELETE,
+            X_TKENUM, X_TKFOR, X_TKFUNCTION, X_TKIMPORT, X_TKMODULE,
             X_ENTITY_KEYWORD, X_AT_EXPR_LIMIT, X_AT_EXPR_OFFSET, X_STRUCT_KEYWORD,
-            X_TK_ENUM, X_TK_WHILE, X_TK_WHEN, X_TK_GUARD, X_TK_IN,
-            X_TK_INCLUDE, X_TK_QUERY, X_TK_STRUCT, X_TK_OPERATION, X_TK_OBJECT,
-            X_TK_NAMESPACE, X_TK_MUTABLE, X_TK_RETURN, X_TK_VIRTUAL, X_TK_VAL, X_TK_UPDATE, X_KEY_INDEX_KIND, X_VAR_VAL,
+            X_TKENUM, X_TKWHILE, X_TKWHEN, X_TKGUARD, X_TKIN,
+            X_TKINCLUDE, X_TKQUERY, X_TKSTRUCT, X_TKOPERATION, X_TKOBJECT,
+            X_TKNAMESPACE, X_TKMUTABLE, X_TKRETURN, X_TKVIRTUAL, X_TKVAL, X_TKUPDATE, X_KEY_INDEX_KIND, X_VAR_VAL,
             X_MODIFIER
     )
 
@@ -59,11 +59,11 @@ object RellSyntaxHighlighter : SyntaxHighlighterBase() {
         BIG_INTEGER, COMMON_INT, DECIMAL, DECNUM, NUMBER, HEXDIGNUM
     )
 
-    private fun literals() = setOf<IElementType>(X_NULL_LITERAL_EXPR, X_LITERAL_EXPR,
+    private fun literals() = setOf<IElementType>(X_NULLLITERALEXPR, X_LITERAL_EXPR,
             X_LIST_LITERAL_EXPR, X_EMPTY_MAP_LITERAL_EXPR, X_NON_EMPTY_MAP_LITERAL_EXPR)
 
     private fun operators() = setOf<IElementType>(
-            X_TK_ASSIGN, X_ASSIGN_OP, X_TK_PLUS, X_TK_MUL, X_BINARY_OPERATOR, X_INCREMENT_OPERATOR,
+            X_TKASSIGN, X_ASSIGN_OP, X_TKPLUS, X_TKMUL, X_BINARY_OPERATOR, X_INCREMENT_OPERATOR,
             X_UNARY_PREFIX_OPERATOR, X_AT_EXPR_AT
     )
 }
