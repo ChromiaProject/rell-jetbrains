@@ -51,10 +51,4 @@ public class RellXFunctionDefImpl extends ASTWrapperPsiElement implements RellXF
     return findChildByClass(RellXType.class);
   }
 
-  @Override
-  @NotNull
-  public RellXTkFUNCTION getXTkFUNCTION() {
-    return findNotNullChildByClass(RellXTkFUNCTION.class);
-  }
-
 }

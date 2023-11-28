@@ -10,7 +10,4 @@ public interface RellXReturnStmt extends PsiElement {
   @Nullable
   RellXExpression getXExpression();
 
-  @NotNull
-  RellXTkRETURN getXTkRETURN();
-
 }

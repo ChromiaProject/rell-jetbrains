@@ -16,7 +16,4 @@ public interface RellXConstantDef extends PsiElement {
   @Nullable
   RellXTypeRef getXTypeRef();
 
-  @NotNull
-  RellXTkVAL getXTkVAL();
-
 }

@@ -59,12 +59,6 @@ public class RellXBaseExprHeadImpl extends ASTWrapperPsiElement implements RellX
 
   @Override
   @Nullable
-  public RellXDollarExpr getXDollarExpr() {
-    return findChildByClass(RellXDollarExpr.class);
-  }
-
-  @Override
-  @Nullable
   public RellXEmptyMapLiteralExpr getXEmptyMapLiteralExpr() {
     return findChildByClass(RellXEmptyMapLiteralExpr.class);
   }
@@ -103,12 +97,6 @@ public class RellXBaseExprHeadImpl extends ASTWrapperPsiElement implements RellX
   @Nullable
   public RellXNonEmptyMapLiteralExpr getXNonEmptyMapLiteralExpr() {
     return findChildByClass(RellXNonEmptyMapLiteralExpr.class);
-  }
-
-  @Override
-  @Nullable
-  public RellXNullLiteralExpr getXNullLiteralExpr() {
-    return findChildByClass(RellXNullLiteralExpr.class);
   }
 
   @Override

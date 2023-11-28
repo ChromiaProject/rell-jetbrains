@@ -10,7 +10,4 @@ public interface RellXAtExprFromMulti extends PsiElement {
   @NotNull
   List<RellXAtExprFromItem> getXAtExprFromItemList();
 
-  @NotNull
-  RellXTkLPAR getXTkLPAR();
-
 }

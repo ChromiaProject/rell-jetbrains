@@ -39,10 +39,4 @@ public class RellXBaseAttributeDefinitionImpl extends ASTWrapperPsiElement imple
     return findChildByClass(RellXExpressionRef.class);
   }
 
-  @Override
-  @Nullable
-  public RellXTkMUTABLE getXTkMUTABLE() {
-    return findChildByClass(RellXTkMUTABLE.class);
-  }
-
 }

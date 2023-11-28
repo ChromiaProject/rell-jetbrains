@@ -13,7 +13,4 @@ public interface RellXCreateExpr extends PsiElement {
   @NotNull
   RellXQualifiedName getXQualifiedName();
 
-  @NotNull
-  RellXTkCREATE getXTkCREATE();
-
 }

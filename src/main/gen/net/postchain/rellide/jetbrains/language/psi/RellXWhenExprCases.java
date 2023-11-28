@@ -10,7 +10,4 @@ public interface RellXWhenExprCases extends PsiElement {
   @NotNull
   List<RellXWhenExprCase> getXWhenExprCaseList();
 
-  @NotNull
-  List<RellXTkSEMI> getXTkSEMIList();
-
 }

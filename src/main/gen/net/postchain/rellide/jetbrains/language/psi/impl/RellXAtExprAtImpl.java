@@ -27,28 +27,4 @@ public class RellXAtExprAtImpl extends ASTWrapperPsiElement implements RellXAtEx
     else super.accept(visitor);
   }
 
-  @Override
-  @Nullable
-  public RellXTkAT getXTkAT() {
-    return findChildByClass(RellXTkAT.class);
-  }
-
-  @Override
-  @Nullable
-  public RellXTkMUL getXTkMUL() {
-    return findChildByClass(RellXTkMUL.class);
-  }
-
-  @Override
-  @Nullable
-  public RellXTkPLUS getXTkPLUS() {
-    return findChildByClass(RellXTkPLUS.class);
-  }
-
-  @Override
-  @Nullable
-  public RellXTkQUESTION getXTkQUESTION() {
-    return findChildByClass(RellXTkQUESTION.class);
-  }
-
 }

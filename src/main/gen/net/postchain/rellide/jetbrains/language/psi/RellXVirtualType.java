@@ -10,7 +10,4 @@ public interface RellXVirtualType extends PsiElement {
   @NotNull
   RellXTypeRef getXTypeRef();
 
-  @NotNull
-  RellXTkVIRTUAL getXTkVIRTUAL();
-
 }

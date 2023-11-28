@@ -33,10 +33,4 @@ public class RellXIfExprImpl extends ASTWrapperPsiElement implements RellXIfExpr
     return PsiTreeUtil.getChildrenOfTypeAsList(this, RellXExpressionRef.class);
   }
 
-  @Override
-  @NotNull
-  public RellXTkIF getXTkIF() {
-    return findNotNullChildByClass(RellXTkIF.class);
-  }
-
 }

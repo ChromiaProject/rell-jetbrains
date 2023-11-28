@@ -39,10 +39,4 @@ public class RellXWhileStmtImpl extends ASTWrapperPsiElement implements RellXWhi
     return findNotNullChildByClass(RellXStatementRef.class);
   }
 
-  @Override
-  @NotNull
-  public RellXTkWHILE getXTkWHILE() {
-    return findNotNullChildByClass(RellXTkWHILE.class);
-  }
-
 }

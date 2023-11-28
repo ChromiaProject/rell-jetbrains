@@ -11,9 +11,6 @@ public interface RellXBaseExprTailNoCallNoAt extends PsiElement {
   RellXBaseExprTailMember getXBaseExprTailMember();
 
   @Nullable
-  RellXBaseExprTailNotNull getXBaseExprTailNotNull();
-
-  @Nullable
   RellXBaseExprTailSafeMember getXBaseExprTailSafeMember();
 
   @Nullable

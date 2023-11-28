@@ -39,10 +39,4 @@ public class RellXTupleTypeImpl extends ASTWrapperPsiElement implements RellXTup
     return findChildByClass(RellXTupleTypeTail.class);
   }
 
-  @Override
-  @NotNull
-  public RellXTkLPAR getXTkLPAR() {
-    return findNotNullChildByClass(RellXTkLPAR.class);
-  }
-
 }

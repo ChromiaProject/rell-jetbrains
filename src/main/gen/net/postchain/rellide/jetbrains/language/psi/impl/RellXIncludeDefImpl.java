@@ -29,12 +29,6 @@ public class RellXIncludeDefImpl extends ASTWrapperPsiElement implements RellXIn
 
   @Override
   @NotNull
-  public RellXTkINCLUDE getXTkINCLUDE() {
-    return findNotNullChildByClass(RellXTkINCLUDE.class);
-  }
-
-  @Override
-  @NotNull
   public RellXTkSTRING getXTkSTRING() {
     return findNotNullChildByClass(RellXTkSTRING.class);
   }

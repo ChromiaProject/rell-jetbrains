@@ -27,10 +27,4 @@ public class RellXBinaryOperatorImpl extends ASTWrapperPsiElement implements Rel
     else super.accept(visitor);
   }
 
-  @Override
-  @Nullable
-  public RellXTkIN getXTkIN() {
-    return findChildByClass(RellXTkIN.class);
-  }
-
 }

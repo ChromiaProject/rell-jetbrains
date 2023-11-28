@@ -19,7 +19,4 @@ public interface RellXFunctionDef extends PsiElement {
   @Nullable
   RellXType getXType();
 
-  @NotNull
-  RellXTkFUNCTION getXTkFUNCTION();
-
 }

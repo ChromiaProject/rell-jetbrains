@@ -10,7 +10,4 @@ public interface RellXModuleHeader extends PsiElement {
   @NotNull
   List<RellXModifier> getXModifierList();
 
-  @NotNull
-  RellXTkMODULE getXTkMODULE();
-
 }

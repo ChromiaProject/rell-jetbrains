@@ -15,9 +15,9 @@ class RellPairedBraceMatcher : PairedBraceMatcher {
 
     companion object {
         private val PAIRS = arrayOf(
-                BracePair(X_TK_LPAR, X_TK_RPAR, false),
-                BracePair(X_TK_LBRACK, X_TK_RBRACK, false),
-                BracePair(X_TK_LCURL, X_TK_RCURL, false)
+                BracePair(X_TKLPAR, X_TKRPAR, false),
+                BracePair(X_TKLBRACK, X_TKRBRACK, false),
+                BracePair(X_TKLCURL, X_TKRCURL, false)
         )
     }
 }

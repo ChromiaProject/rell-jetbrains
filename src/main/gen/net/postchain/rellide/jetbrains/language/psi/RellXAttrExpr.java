@@ -10,7 +10,4 @@ public interface RellXAttrExpr extends PsiElement {
   @NotNull
   RellXName getXName();
 
-  @NotNull
-  RellXTkDOT getXTkDOT();
-
 }

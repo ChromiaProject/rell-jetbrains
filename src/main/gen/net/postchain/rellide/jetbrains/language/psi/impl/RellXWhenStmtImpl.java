@@ -39,10 +39,4 @@ public class RellXWhenStmtImpl extends ASTWrapperPsiElement implements RellXWhen
     return PsiTreeUtil.getChildrenOfTypeAsList(this, RellXWhenStmtCase.class);
   }
 
-  @Override
-  @NotNull
-  public RellXTkWHEN getXTkWHEN() {
-    return findNotNullChildByClass(RellXTkWHEN.class);
-  }
-
 }

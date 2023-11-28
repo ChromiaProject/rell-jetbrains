@@ -171,10 +171,6 @@ public class RellVisitor extends PsiElementVisitor {
     visitPsiElement(o);
   }
 
-  public void visitXBaseExprTailNotNull(@NotNull RellXBaseExprTailNotNull o) {
-    visitPsiElement(o);
-  }
-
   public void visitXBaseExprTailSafeMember(@NotNull RellXBaseExprTailSafeMember o) {
     visitPsiElement(o);
   }
@@ -260,10 +256,6 @@ public class RellVisitor extends PsiElementVisitor {
   }
 
   public void visitXDeleteStmt(@NotNull RellXDeleteStmt o) {
-    visitPsiElement(o);
-  }
-
-  public void visitXDollarExpr(@NotNull RellXDollarExpr o) {
     visitPsiElement(o);
   }
 
@@ -460,10 +452,6 @@ public class RellVisitor extends PsiElementVisitor {
   }
 
   public void visitXNonEmptyMapLiteralExpr(@NotNull RellXNonEmptyMapLiteralExpr o) {
-    visitPsiElement(o);
-  }
-
-  public void visitXNullLiteralExpr(@NotNull RellXNullLiteralExpr o) {
     visitPsiElement(o);
   }
 
@@ -683,187 +671,7 @@ public class RellVisitor extends PsiElementVisitor {
     visitPsiElement(o);
   }
 
-  public void visitXTkASSIGN(@NotNull RellXTkASSIGN o) {
-    visitPsiElement(o);
-  }
-
-  public void visitXTkAT(@NotNull RellXTkAT o) {
-    visitPsiElement(o);
-  }
-
-  public void visitXTkArrow(@NotNull RellXTkArrow o) {
-    visitPsiElement(o);
-  }
-
-  public void visitXTkBREAK(@NotNull RellXTkBREAK o) {
-    visitPsiElement(o);
-  }
-
-  public void visitXTkCARET(@NotNull RellXTkCARET o) {
-    visitPsiElement(o);
-  }
-
-  public void visitXTkCOLON(@NotNull RellXTkCOLON o) {
-    visitPsiElement(o);
-  }
-
-  public void visitXTkCOMMA(@NotNull RellXTkCOMMA o) {
-    visitPsiElement(o);
-  }
-
-  public void visitXTkCONTINUE(@NotNull RellXTkCONTINUE o) {
-    visitPsiElement(o);
-  }
-
-  public void visitXTkCREATE(@NotNull RellXTkCREATE o) {
-    visitPsiElement(o);
-  }
-
-  public void visitXTkDELETE(@NotNull RellXTkDELETE o) {
-    visitPsiElement(o);
-  }
-
-  public void visitXTkDOT(@NotNull RellXTkDOT o) {
-    visitPsiElement(o);
-  }
-
-  public void visitXTkENUM(@NotNull RellXTkENUM o) {
-    visitPsiElement(o);
-  }
-
-  public void visitXTkElse(@NotNull RellXTkElse o) {
-    visitPsiElement(o);
-  }
-
-  public void visitXTkFOR(@NotNull RellXTkFOR o) {
-    visitPsiElement(o);
-  }
-
-  public void visitXTkFUNCTION(@NotNull RellXTkFUNCTION o) {
-    visitPsiElement(o);
-  }
-
-  public void visitXTkGUARD(@NotNull RellXTkGUARD o) {
-    visitPsiElement(o);
-  }
-
-  public void visitXTkIF(@NotNull RellXTkIF o) {
-    visitPsiElement(o);
-  }
-
-  public void visitXTkIMPORT(@NotNull RellXTkIMPORT o) {
-    visitPsiElement(o);
-  }
-
-  public void visitXTkIN(@NotNull RellXTkIN o) {
-    visitPsiElement(o);
-  }
-
-  public void visitXTkINCLUDE(@NotNull RellXTkINCLUDE o) {
-    visitPsiElement(o);
-  }
-
-  public void visitXTkLBRACK(@NotNull RellXTkLBRACK o) {
-    visitPsiElement(o);
-  }
-
-  public void visitXTkLCURL(@NotNull RellXTkLCURL o) {
-    visitPsiElement(o);
-  }
-
-  public void visitXTkLPAR(@NotNull RellXTkLPAR o) {
-    visitPsiElement(o);
-  }
-
-  public void visitXTkLimit(@NotNull RellXTkLimit o) {
-    visitPsiElement(o);
-  }
-
-  public void visitXTkMODULE(@NotNull RellXTkMODULE o) {
-    visitPsiElement(o);
-  }
-
-  public void visitXTkMUL(@NotNull RellXTkMUL o) {
-    visitPsiElement(o);
-  }
-
-  public void visitXTkMUTABLE(@NotNull RellXTkMUTABLE o) {
-    visitPsiElement(o);
-  }
-
-  public void visitXTkNAMESPACE(@NotNull RellXTkNAMESPACE o) {
-    visitPsiElement(o);
-  }
-
-  public void visitXTkOBJECT(@NotNull RellXTkOBJECT o) {
-    visitPsiElement(o);
-  }
-
-  public void visitXTkOPERATION(@NotNull RellXTkOPERATION o) {
-    visitPsiElement(o);
-  }
-
-  public void visitXTkOffset(@NotNull RellXTkOffset o) {
-    visitPsiElement(o);
-  }
-
-  public void visitXTkPLUS(@NotNull RellXTkPLUS o) {
-    visitPsiElement(o);
-  }
-
-  public void visitXTkQUERY(@NotNull RellXTkQUERY o) {
-    visitPsiElement(o);
-  }
-
-  public void visitXTkQUESTION(@NotNull RellXTkQUESTION o) {
-    visitPsiElement(o);
-  }
-
-  public void visitXTkRBRACK(@NotNull RellXTkRBRACK o) {
-    visitPsiElement(o);
-  }
-
-  public void visitXTkRCURL(@NotNull RellXTkRCURL o) {
-    visitPsiElement(o);
-  }
-
-  public void visitXTkRETURN(@NotNull RellXTkRETURN o) {
-    visitPsiElement(o);
-  }
-
-  public void visitXTkRPAR(@NotNull RellXTkRPAR o) {
-    visitPsiElement(o);
-  }
-
-  public void visitXTkSEMI(@NotNull RellXTkSEMI o) {
-    visitPsiElement(o);
-  }
-
   public void visitXTkSTRING(@NotNull RellXTkSTRING o) {
-    visitPsiElement(o);
-  }
-
-  public void visitXTkSTRUCT(@NotNull RellXTkSTRUCT o) {
-    visitPsiElement(o);
-  }
-
-  public void visitXTkUPDATE(@NotNull RellXTkUPDATE o) {
-    visitPsiElement(o);
-  }
-
-  public void visitXTkVAL(@NotNull RellXTkVAL o) {
-    visitPsiElement(o);
-  }
-
-  public void visitXTkVIRTUAL(@NotNull RellXTkVIRTUAL o) {
-    visitPsiElement(o);
-  }
-
-  public void visitXTkWHEN(@NotNull RellXTkWHEN o) {
-    visitPsiElement(o);
-  }
-
-  public void visitXTkWHILE(@NotNull RellXTkWHILE o) {
     visitPsiElement(o);
   }
 

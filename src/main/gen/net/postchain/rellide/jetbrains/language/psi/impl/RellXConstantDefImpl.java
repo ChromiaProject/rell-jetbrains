@@ -45,10 +45,4 @@ public class RellXConstantDefImpl extends ASTWrapperPsiElement implements RellXC
     return findChildByClass(RellXTypeRef.class);
   }
 
-  @Override
-  @NotNull
-  public RellXTkVAL getXTkVAL() {
-    return findNotNullChildByClass(RellXTkVAL.class);
-  }
-
 }

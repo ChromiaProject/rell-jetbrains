@@ -47,12 +47,6 @@ public class RellXBaseExprTailImpl extends ASTWrapperPsiElement implements RellX
 
   @Override
   @Nullable
-  public RellXBaseExprTailNotNull getXBaseExprTailNotNull() {
-    return findChildByClass(RellXBaseExprTailNotNull.class);
-  }
-
-  @Override
-  @Nullable
   public RellXBaseExprTailSafeMember getXBaseExprTailSafeMember() {
     return findChildByClass(RellXBaseExprTailSafeMember.class);
   }

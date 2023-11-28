@@ -33,10 +33,4 @@ public class RellXBlockStmtImpl extends ASTWrapperPsiElement implements RellXBlo
     return PsiTreeUtil.getChildrenOfTypeAsList(this, RellXStatementRef.class);
   }
 
-  @Override
-  @NotNull
-  public RellXTkLCURL getXTkLCURL() {
-    return findNotNullChildByClass(RellXTkLCURL.class);
-  }
-
 }

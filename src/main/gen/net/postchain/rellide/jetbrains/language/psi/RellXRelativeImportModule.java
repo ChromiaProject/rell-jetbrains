@@ -10,7 +10,4 @@ public interface RellXRelativeImportModule extends PsiElement {
   @Nullable
   RellXQualifiedName getXQualifiedName();
 
-  @NotNull
-  RellXTkDOT getXTkDOT();
-
 }

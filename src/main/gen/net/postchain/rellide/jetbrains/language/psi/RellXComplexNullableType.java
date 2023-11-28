@@ -10,7 +10,4 @@ public interface RellXComplexNullableType extends PsiElement {
   @NotNull
   RellXTypeRef getXTypeRef();
 
-  @NotNull
-  RellXTkLPAR getXTkLPAR();
-
 }

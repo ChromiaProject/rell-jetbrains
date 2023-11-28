@@ -45,10 +45,4 @@ public class RellXImportDefImpl extends ASTWrapperPsiElement implements RellXImp
     return findChildByClass(RellXName.class);
   }
 
-  @Override
-  @NotNull
-  public RellXTkIMPORT getXTkIMPORT() {
-    return findNotNullChildByClass(RellXTkIMPORT.class);
-  }
-
 }

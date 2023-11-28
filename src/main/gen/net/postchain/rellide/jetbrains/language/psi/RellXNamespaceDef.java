@@ -13,7 +13,4 @@ public interface RellXNamespaceDef extends PsiElement {
   @Nullable
   RellXQualifiedName getXQualifiedName();
 
-  @NotNull
-  RellXTkNAMESPACE getXTkNAMESPACE();
-
 }

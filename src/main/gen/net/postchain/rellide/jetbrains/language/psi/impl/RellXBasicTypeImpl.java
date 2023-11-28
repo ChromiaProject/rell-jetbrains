@@ -33,10 +33,4 @@ public class RellXBasicTypeImpl extends ASTWrapperPsiElement implements RellXBas
     return findNotNullChildByClass(RellXPrimaryType.class);
   }
 
-  @Override
-  @NotNull
-  public List<RellXTkQUESTION> getXTkQUESTIONList() {
-    return PsiTreeUtil.getChildrenOfTypeAsList(this, RellXTkQUESTION.class);
-  }
-
 }

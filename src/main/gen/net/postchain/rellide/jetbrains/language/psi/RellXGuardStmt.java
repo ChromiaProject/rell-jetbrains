@@ -10,7 +10,4 @@ public interface RellXGuardStmt extends PsiElement {
   @NotNull
   RellXBlockStmt getXBlockStmt();
 
-  @NotNull
-  RellXTkGUARD getXTkGUARD();
-
 }

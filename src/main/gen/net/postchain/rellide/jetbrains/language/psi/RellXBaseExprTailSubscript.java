@@ -10,7 +10,4 @@ public interface RellXBaseExprTailSubscript extends PsiElement {
   @NotNull
   RellXExpressionRef getXExpressionRef();
 
-  @NotNull
-  RellXTkLBRACK getXTkLBRACK();
-
 }

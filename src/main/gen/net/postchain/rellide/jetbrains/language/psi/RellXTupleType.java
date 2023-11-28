@@ -13,7 +13,4 @@ public interface RellXTupleType extends PsiElement {
   @Nullable
   RellXTupleTypeTail getXTupleTypeTail();
 
-  @NotNull
-  RellXTkLPAR getXTkLPAR();
-
 }

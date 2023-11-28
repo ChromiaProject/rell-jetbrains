@@ -13,7 +13,4 @@ public interface RellXWhenStmtCase extends PsiElement {
   @NotNull
   RellXWhenCondition getXWhenCondition();
 
-  @NotNull
-  List<RellXTkSEMI> getXTkSEMIList();
-
 }

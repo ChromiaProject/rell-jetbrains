@@ -10,7 +10,4 @@ public interface RellXNonEmptyMapLiteralExpr extends PsiElement {
   @NotNull
   List<RellXMapLiteralExprEntry> getXMapLiteralExprEntryList();
 
-  @NotNull
-  RellXTkLBRACK getXTkLBRACK();
-
 }

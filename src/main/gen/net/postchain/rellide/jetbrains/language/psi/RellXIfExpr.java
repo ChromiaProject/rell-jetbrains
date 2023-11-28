@@ -10,7 +10,4 @@ public interface RellXIfExpr extends PsiElement {
   @NotNull
   List<RellXExpressionRef> getXExpressionRefList();
 
-  @NotNull
-  RellXTkIF getXTkIF();
-
 }

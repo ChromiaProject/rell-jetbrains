@@ -39,10 +39,4 @@ public class RellXTupleExprFieldNameEqExprImpl extends ASTWrapperPsiElement impl
     return findNotNullChildByClass(RellXName.class);
   }
 
-  @Override
-  @NotNull
-  public RellXTkASSIGN getXTkASSIGN() {
-    return findNotNullChildByClass(RellXTkASSIGN.class);
-  }
-
 }

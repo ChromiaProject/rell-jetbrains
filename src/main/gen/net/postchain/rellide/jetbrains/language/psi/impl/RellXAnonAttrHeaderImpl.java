@@ -33,10 +33,4 @@ public class RellXAnonAttrHeaderImpl extends ASTWrapperPsiElement implements Rel
     return findNotNullChildByClass(RellXQualifiedName.class);
   }
 
-  @Override
-  @Nullable
-  public RellXTkQUESTION getXTkQUESTION() {
-    return findChildByClass(RellXTkQUESTION.class);
-  }
-
 }

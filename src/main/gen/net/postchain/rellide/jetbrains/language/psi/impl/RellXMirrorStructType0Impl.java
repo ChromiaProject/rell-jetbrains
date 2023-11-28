@@ -33,16 +33,4 @@ public class RellXMirrorStructType0Impl extends ASTWrapperPsiElement implements 
     return findNotNullChildByClass(RellXTypeRef.class);
   }
 
-  @Override
-  @Nullable
-  public RellXTkMUTABLE getXTkMUTABLE() {
-    return findChildByClass(RellXTkMUTABLE.class);
-  }
-
-  @Override
-  @NotNull
-  public RellXTkSTRUCT getXTkSTRUCT() {
-    return findNotNullChildByClass(RellXTkSTRUCT.class);
-  }
-
 }

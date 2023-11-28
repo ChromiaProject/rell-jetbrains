@@ -10,7 +10,4 @@ public interface RellXListLiteralExpr extends PsiElement {
   @NotNull
   List<RellXExpressionRef> getXExpressionRefList();
 
-  @NotNull
-  RellXTkLBRACK getXTkLBRACK();
-
 }

@@ -33,10 +33,4 @@ public class RellXAtExprFromMultiImpl extends ASTWrapperPsiElement implements Re
     return PsiTreeUtil.getChildrenOfTypeAsList(this, RellXAtExprFromItem.class);
   }
 
-  @Override
-  @NotNull
-  public RellXTkLPAR getXTkLPAR() {
-    return findNotNullChildByClass(RellXTkLPAR.class);
-  }
-
 }

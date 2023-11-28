@@ -10,7 +10,4 @@ public interface RellXBasicType extends PsiElement {
   @NotNull
   RellXPrimaryType getXPrimaryType();
 
-  @NotNull
-  List<RellXTkQUESTION> getXTkQUESTIONList();
-
 }

@@ -7,7 +7,4 @@ import com.intellij.psi.PsiElement;
 
 public interface RellXEmptyMapLiteralExpr extends PsiElement {
 
-  @NotNull
-  RellXTkLBRACK getXTkLBRACK();
-
 }

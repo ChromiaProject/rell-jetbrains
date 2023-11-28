@@ -13,7 +13,4 @@ public interface RellXWhileStmt extends PsiElement {
   @NotNull
   RellXStatementRef getXStatementRef();
 
-  @NotNull
-  RellXTkWHILE getXTkWHILE();
-
 }

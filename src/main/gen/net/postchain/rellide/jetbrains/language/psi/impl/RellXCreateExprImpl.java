@@ -39,10 +39,4 @@ public class RellXCreateExprImpl extends ASTWrapperPsiElement implements RellXCr
     return findNotNullChildByClass(RellXQualifiedName.class);
   }
 
-  @Override
-  @NotNull
-  public RellXTkCREATE getXTkCREATE() {
-    return findNotNullChildByClass(RellXTkCREATE.class);
-  }
-
 }

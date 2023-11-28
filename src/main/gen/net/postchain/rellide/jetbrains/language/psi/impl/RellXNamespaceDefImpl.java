@@ -39,10 +39,4 @@ public class RellXNamespaceDefImpl extends ASTWrapperPsiElement implements RellX
     return findChildByClass(RellXQualifiedName.class);
   }
 
-  @Override
-  @NotNull
-  public RellXTkNAMESPACE getXTkNAMESPACE() {
-    return findNotNullChildByClass(RellXTkNAMESPACE.class);
-  }
-
 }

@@ -16,7 +16,4 @@ public interface RellXForStmt extends PsiElement {
   @NotNull
   RellXVarDeclarator getXVarDeclarator();
 
-  @NotNull
-  RellXTkFOR getXTkFOR();
-
 }

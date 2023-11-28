@@ -27,10 +27,4 @@ public class RellXContinueStmtImpl extends ASTWrapperPsiElement implements RellX
     else super.accept(visitor);
   }
 
-  @Override
-  @NotNull
-  public RellXTkCONTINUE getXTkCONTINUE() {
-    return findNotNullChildByClass(RellXTkCONTINUE.class);
-  }
-
 }

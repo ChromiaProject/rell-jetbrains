@@ -39,10 +39,4 @@ public class RellXImportTargetExactItemImpl extends ASTWrapperPsiElement impleme
     return findNotNullChildByClass(RellXQualifiedName.class);
   }
 
-  @Override
-  @Nullable
-  public RellXTkMUL getXTkMUL() {
-    return findChildByClass(RellXTkMUL.class);
-  }
-
 }

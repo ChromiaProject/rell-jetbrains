@@ -39,10 +39,4 @@ public class RellXObjectDefImpl extends ASTWrapperPsiElement implements RellXObj
     return findNotNullChildByClass(RellXName.class);
   }
 
-  @Override
-  @NotNull
-  public RellXTkOBJECT getXTkOBJECT() {
-    return findNotNullChildByClass(RellXTkOBJECT.class);
-  }
-
 }

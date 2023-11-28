@@ -39,10 +39,4 @@ public class RellXTupleExprFieldNameColonExprImpl extends ASTWrapperPsiElement i
     return findNotNullChildByClass(RellXName.class);
   }
 
-  @Override
-  @NotNull
-  public RellXTkCOLON getXTkCOLON() {
-    return findNotNullChildByClass(RellXTkCOLON.class);
-  }
-
 }
