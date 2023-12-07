@@ -82,6 +82,9 @@ class RellFormattingBlock(
             // Entity/Struct
             type == X_ATTRIBUTE_DEFINITION && parentType == X_STRUCT_DEF -> Indent.getNormalIndent()
 
+            // Object
+            type == X_ATTRIBUTE_DEFINITION && parentType == X_OBJECT_DEF -> Indent.getNormalIndent()
+
             // At expression what block item
             type == X_AT_EXPR_WHAT_COMPLEX_ITEM -> Indent.getNormalIndent()
 
