@@ -28,21 +28,15 @@ public class RellXTupleExprFieldImpl extends ASTWrapperPsiElement implements Rel
   }
 
   @Override
-  @Nullable
-  public RellXTupleExprFieldExpr getXTupleExprFieldExpr() {
-    return findChildByClass(RellXTupleExprFieldExpr.class);
+  @NotNull
+  public RellXExpressionRef getXExpressionRef() {
+    return findNotNullChildByClass(RellXExpressionRef.class);
   }
 
   @Override
   @Nullable
-  public RellXTupleExprFieldNameColonExpr getXTupleExprFieldNameColonExpr() {
-    return findChildByClass(RellXTupleExprFieldNameColonExpr.class);
-  }
-
-  @Override
-  @Nullable
-  public RellXTupleExprFieldNameEqExpr getXTupleExprFieldNameEqExpr() {
-    return findChildByClass(RellXTupleExprFieldNameEqExpr.class);
+  public RellXName getXName() {
+    return findChildByClass(RellXName.class);
   }
 
 }

@@ -11,9 +11,9 @@ public interface RellXUpdateTargetAt extends PsiElement {
   RellXAtExprAt getXAtExprAt();
 
   @NotNull
-  RellXAtExprFrom getXAtExprFrom();
+  RellXAtExprWhere getXAtExprWhere();
 
   @NotNull
-  RellXAtExprWhere getXAtExprWhere();
+  RellXUpdateFrom getXUpdateFrom();
 
 }

@@ -72,6 +72,9 @@ class RellFormattingBlock(
             // Enum
             type == X_NAME && parentType == X_ENUM_DEF -> Indent.getNormalIndent()
 
+            // At expression from block
+            parentType == X_AT_EXPR_FROM -> Indent.getNormalIndent()
+
             // Block types
             child is PsiComment && type in blockTypes -> Indent.getNormalIndent()
             childType in blockTypes -> Indent.getNormalIndent()
@@ -153,7 +156,8 @@ class RellFormattingBlock(
         X_NAMESPACE_DEF,
         X_WHEN_STMT,
         X_AT_EXPR_WHERE,
-        X_AT_EXPR_WHAT_COMPLEX
+        X_AT_EXPR_WHAT_COMPLEX,
+        X_AT_EXPR_FROM
     )
 
     private fun newChildIndent(childIndex: Int): Indent? {

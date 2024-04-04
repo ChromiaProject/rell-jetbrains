@@ -35,14 +35,14 @@ public class RellXUpdateTargetAtImpl extends ASTWrapperPsiElement implements Rel
 
   @Override
   @NotNull
-  public RellXAtExprFrom getXAtExprFrom() {
-    return findNotNullChildByClass(RellXAtExprFrom.class);
+  public RellXAtExprWhere getXAtExprWhere() {
+    return findNotNullChildByClass(RellXAtExprWhere.class);
   }
 
   @Override
   @NotNull
-  public RellXAtExprWhere getXAtExprWhere() {
-    return findNotNullChildByClass(RellXAtExprWhere.class);
+  public RellXUpdateFrom getXUpdateFrom() {
+    return findNotNullChildByClass(RellXUpdateFrom.class);
   }
 
 }

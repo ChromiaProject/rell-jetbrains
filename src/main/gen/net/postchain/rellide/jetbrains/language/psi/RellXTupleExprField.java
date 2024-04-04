@@ -7,13 +7,10 @@ import com.intellij.psi.PsiElement;
 
 public interface RellXTupleExprField extends PsiElement {
 
-  @Nullable
-  RellXTupleExprFieldExpr getXTupleExprFieldExpr();
+  @NotNull
+  RellXExpressionRef getXExpressionRef();
 
   @Nullable
-  RellXTupleExprFieldNameColonExpr getXTupleExprFieldNameColonExpr();
-
-  @Nullable
-  RellXTupleExprFieldNameEqExpr getXTupleExprFieldNameEqExpr();
+  RellXName getXName();
 
 }

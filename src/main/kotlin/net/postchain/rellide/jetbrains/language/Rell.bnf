@@ -272,6 +272,7 @@ X_OperandExpr ::= X_BaseExpr
 X_BaseExpr ::= X_BaseExprHead (X_BaseExprTail)*
 
 X_BaseExprHead ::= X_GenericTypeExpr
+   | X_AtExpr
    | X_NameExpr
    | X_DollarExpr
    | X_AttrExpr
@@ -310,6 +311,17 @@ X_CallArg ::= (X_Name X_tkASSIGN)? X_CallArgValue
 X_CallArgValue ::= X_tkMUL
    | X_ExpressionRef
 
+X_AtExpr ::= X_AtExprFrom X_BaseExprTailAt
+
+
+X_AtExprFrom ::= X_tkLPAR X_AtExprFromItem (X_tkCOMMA X_AtExprFromItem)* (X_tkCOMMA)? X_tkRPAR
+
+
+X_AtExprFromItem ::= (X_Annotation)* (X_Name X_tkCOLON)? X_ExpressionRef
+
+
+X_AtExprWhatSimple ::= X_tkDOT X_Name (X_tkDOT X_Name)*
+
 
 X_NameExpr ::= X_Name
 
@@ -320,18 +332,7 @@ X_AttrExpr ::= X_tkDOT X_Name
 X_ParenthesesExpr ::= X_tkLPAR X_TupleExprField (X_TupleExprTail)? X_tkRPAR
 
 
-X_TupleExprField ::= X_TupleExprFieldNameEqExpr
-   | X_TupleExprFieldNameColonExpr
-   | X_TupleExprFieldExpr
-
-
-X_TupleExprFieldNameEqExpr ::= X_Name X_tkASSIGN X_ExpressionRef
-
-
-X_TupleExprFieldNameColonExpr ::= X_Name X_tkCOLON X_ExpressionRef
-
-
-X_TupleExprFieldExpr ::= X_ExpressionRef
+X_TupleExprField ::= (X_Name X_tkASSIGN)? X_ExpressionRef
 
 
 X_TupleExprTail ::= X_tkCOMMA (X_TupleExprField (X_tkCOMMA X_TupleExprField)*)?
@@ -397,9 +398,6 @@ X_AtExprWhere ::= X_tkLCURL (X_ExpressionRef (X_tkCOMMA X_ExpressionRef)*)? X_tk
 
 X_AtExprWhat ::= X_AtExprWhatSimple
    | X_AtExprWhatComplex
-
-
-X_AtExprWhatSimple ::= (X_tkDOT X_Name)+
 
 
 X_AtExprWhatComplex ::= X_tkLPAR X_AtExprWhatComplexItem (X_tkCOMMA X_AtExprWhatComplexItem)* X_tkRPAR
@@ -590,21 +588,19 @@ X_UpdateTarget ::= X_UpdateTargetAt
    | X_UpdateTargetExpr
 
 
-X_UpdateTargetAt ::= X_AtExprFrom X_AtExprAt X_AtExprWhere
+X_UpdateTargetAt ::= X_UpdateFrom X_AtExprAt X_AtExprWhere
 
 
-X_AtExprFrom ::= X_AtExprFromSingle
-   | X_AtExprFromMulti
+X_UpdateFrom ::= X_UpdateFromSingle
+   | X_UpdateFromMulti
 
 
-X_AtExprFromSingle ::= X_QualifiedName
+X_UpdateFromSingle ::= X_QualifiedName
 
 
-X_AtExprFromMulti ::= X_tkLPAR X_AtExprFromItem (X_tkCOMMA X_AtExprFromItem)* X_tkRPAR
+X_UpdateFromMulti ::= X_tkLPAR X_UpdateFromItem (',' X_UpdateFromItem)* X_tkRPAR
 
-
-X_AtExprFromItem ::= (X_Name X_tkCOLON)? X_QualifiedName
-
+X_UpdateFromItem ::= (X_Name X_tkCOLON)? X_QualifiedName
 
 X_UpdateTargetExpr ::= X_BaseExprNoCallNoAt
 

@@ -21,8 +21,10 @@
       "complexWhatEnabled" : true,
       "mountConflictError" : true,
       "appModuleInTestsError" : false,
+      "useTestDependencyExtensions" : false,
       "symbolInfoFile" : "main.rell",
-      "ideDefIdConflictError" : true
+      "ideDefIdConflictError" : true,
+      "allowOlderCompatibilityVersion" : true
     },
     "messages" : [ ],
     "parsing" : {
@@ -51,8 +53,10 @@
       "complexWhatEnabled" : true,
       "mountConflictError" : true,
       "appModuleInTestsError" : false,
+      "useTestDependencyExtensions" : false,
       "symbolInfoFile" : "main.rell",
-      "ideDefIdConflictError" : true
+      "ideDefIdConflictError" : true,
+      "allowOlderCompatibilityVersion" : true
     },
     "messages" : [ ],
     "parsing" : {
@@ -81,8 +85,10 @@
       "complexWhatEnabled" : true,
       "mountConflictError" : true,
       "appModuleInTestsError" : false,
+      "useTestDependencyExtensions" : false,
       "symbolInfoFile" : "main.rell",
-      "ideDefIdConflictError" : true
+      "ideDefIdConflictError" : true,
+      "allowOlderCompatibilityVersion" : true
     },
     "messages" : [ ],
     "parsing" : {
@@ -111,8 +117,10 @@
       "complexWhatEnabled" : true,
       "mountConflictError" : true,
       "appModuleInTestsError" : false,
+      "useTestDependencyExtensions" : false,
       "symbolInfoFile" : "main.rell",
-      "ideDefIdConflictError" : true
+      "ideDefIdConflictError" : true,
+      "allowOlderCompatibilityVersion" : true
     },
     "messages" : [ ],
     "parsing" : {
@@ -141,8 +149,10 @@
       "complexWhatEnabled" : true,
       "mountConflictError" : true,
       "appModuleInTestsError" : false,
+      "useTestDependencyExtensions" : false,
       "symbolInfoFile" : "main.rell",
-      "ideDefIdConflictError" : true
+      "ideDefIdConflictError" : true,
+      "allowOlderCompatibilityVersion" : true
     },
     "messages" : [ ],
     "parsing" : {
@@ -171,10 +181,51 @@
       "complexWhatEnabled" : true,
       "mountConflictError" : true,
       "appModuleInTestsError" : false,
+      "useTestDependencyExtensions" : false,
       "symbolInfoFile" : "main.rell",
-      "ideDefIdConflictError" : true
+      "ideDefIdConflictError" : true,
+      "allowOlderCompatibilityVersion" : true
     },
     "messages" : [ ],
+    "parsing" : {
+      "main.rell" : [ ]
+    }
+  },
+  {
+    "files" : {
+      "main.rell" : "val X = assert_null(_nullable_int(null));"
+    },
+    "modules" : {
+      "modules" : [
+        ""
+      ],
+      "test_root_modules" : [ ],
+      "test_sub_modules" : true
+    },
+    "options" : {
+      "gtv" : false,
+      "deprecatedError" : false,
+      "ide" : false,
+      "atAttrShadowing" : "FULL",
+      "testLib" : true,
+      "hiddenLib" : true,
+      "allowDbModificationsInObjectExprs" : true,
+      "complexWhatEnabled" : true,
+      "mountConflictError" : true,
+      "appModuleInTestsError" : false,
+      "useTestDependencyExtensions" : false,
+      "symbolInfoFile" : "main.rell",
+      "ideDefIdConflictError" : true,
+      "allowOlderCompatibilityVersion" : true
+    },
+    "messages" : [
+      {
+        "pos" : "main.rell(1:9)",
+        "type" : "ERROR",
+        "code" : "type:def:const:unit:X",
+        "text" : "Type of global constant cannot be unit"
+      }
+    ],
     "parsing" : {
       "main.rell" : [ ]
     }
@@ -201,8 +252,10 @@
       "complexWhatEnabled" : true,
       "mountConflictError" : true,
       "appModuleInTestsError" : false,
+      "useTestDependencyExtensions" : false,
       "symbolInfoFile" : "main.rell",
-      "ideDefIdConflictError" : true
+      "ideDefIdConflictError" : true,
+      "allowOlderCompatibilityVersion" : true
     },
     "messages" : [
       {
@@ -210,12 +263,6 @@
         "type" : "ERROR",
         "code" : "type:def:const:unit:X",
         "text" : "Type of global constant cannot be unit"
-      },
-      {
-        "pos" : "main.rell(1:9)",
-        "type" : "ERROR",
-        "code" : "def:const:bad_expr:0::X:fn:rell.test.assert_not_null",
-        "text" : "Bad expression for a global constant: function 'rell.test.assert_not_null'"
       }
     ],
     "parsing" : {
@@ -244,8 +291,10 @@
       "complexWhatEnabled" : true,
       "mountConflictError" : true,
       "appModuleInTestsError" : false,
+      "useTestDependencyExtensions" : false,
       "symbolInfoFile" : "main.rell",
-      "ideDefIdConflictError" : true
+      "ideDefIdConflictError" : true,
+      "allowOlderCompatibilityVersion" : true
     },
     "messages" : [
       {
@@ -253,12 +302,6 @@
         "type" : "ERROR",
         "code" : "type:def:const:unit:X",
         "text" : "Type of global constant cannot be unit"
-      },
-      {
-        "pos" : "main.rell(1:9)",
-        "type" : "ERROR",
-        "code" : "def:const:bad_expr:0::X:fn:rell.test.assert_equals",
-        "text" : "Bad expression for a global constant: function 'rell.test.assert_equals'"
       }
     ],
     "parsing" : {
@@ -287,8 +330,10 @@
       "complexWhatEnabled" : true,
       "mountConflictError" : true,
       "appModuleInTestsError" : false,
+      "useTestDependencyExtensions" : false,
       "symbolInfoFile" : "main.rell",
-      "ideDefIdConflictError" : true
+      "ideDefIdConflictError" : true,
+      "allowOlderCompatibilityVersion" : true
     },
     "messages" : [
       {
@@ -296,12 +341,6 @@
         "type" : "ERROR",
         "code" : "type:def:const:unit:X",
         "text" : "Type of global constant cannot be unit"
-      },
-      {
-        "pos" : "main.rell(1:9)",
-        "type" : "ERROR",
-        "code" : "def:const:bad_expr:0::X:fn:rell.test.assert_not_equals",
-        "text" : "Bad expression for a global constant: function 'rell.test.assert_not_equals'"
       }
     ],
     "parsing" : {
@@ -330,8 +369,10 @@
       "complexWhatEnabled" : true,
       "mountConflictError" : true,
       "appModuleInTestsError" : false,
+      "useTestDependencyExtensions" : false,
       "symbolInfoFile" : "main.rell",
-      "ideDefIdConflictError" : true
+      "ideDefIdConflictError" : true,
+      "allowOlderCompatibilityVersion" : true
     },
     "messages" : [
       {
@@ -339,12 +380,6 @@
         "type" : "ERROR",
         "code" : "type:def:const:unit:X",
         "text" : "Type of global constant cannot be unit"
-      },
-      {
-        "pos" : "main.rell(1:9)",
-        "type" : "ERROR",
-        "code" : "def:const:bad_expr:0::X:fn:rell.test.assert_lt",
-        "text" : "Bad expression for a global constant: function 'rell.test.assert_lt'"
       }
     ],
     "parsing" : {
@@ -373,8 +408,10 @@
       "complexWhatEnabled" : true,
       "mountConflictError" : true,
       "appModuleInTestsError" : false,
+      "useTestDependencyExtensions" : false,
       "symbolInfoFile" : "main.rell",
-      "ideDefIdConflictError" : true
+      "ideDefIdConflictError" : true,
+      "allowOlderCompatibilityVersion" : true
     },
     "messages" : [
       {
@@ -382,12 +419,108 @@
         "type" : "ERROR",
         "code" : "type:def:const:unit:X",
         "text" : "Type of global constant cannot be unit"
+      }
+    ],
+    "parsing" : {
+      "main.rell" : [ ]
+    }
+  },
+  {
+    "files" : {
+      "main.rell" : "val X = assert_fails(integer.from_hex('1234', *));"
+    },
+    "modules" : {
+      "modules" : [
+        ""
+      ],
+      "test_root_modules" : [ ],
+      "test_sub_modules" : true
+    },
+    "options" : {
+      "gtv" : false,
+      "deprecatedError" : false,
+      "ide" : false,
+      "atAttrShadowing" : "FULL",
+      "testLib" : true,
+      "hiddenLib" : true,
+      "allowDbModificationsInObjectExprs" : true,
+      "complexWhatEnabled" : true,
+      "mountConflictError" : true,
+      "appModuleInTestsError" : false,
+      "useTestDependencyExtensions" : false,
+      "symbolInfoFile" : "main.rell",
+      "ideDefIdConflictError" : true,
+      "allowOlderCompatibilityVersion" : true
+    },
+    "messages" : [
+      {
+        "pos" : "main.rell(1:5)",
+        "type" : "ERROR",
+        "code" : "def:const:bad_type:not_pure:[0::X]:[rell.test.failure]",
+        "text" : "Bad type for a global constant: rell.test.failure"
       },
       {
         "pos" : "main.rell(1:9)",
         "type" : "ERROR",
-        "code" : "def:const:bad_expr:0::X:fn:rell.test.assert_gt_lt",
-        "text" : "Bad expression for a global constant: function 'rell.test.assert_gt_lt'"
+        "code" : "def:const:bad_expr:[0::X]:fn:sys:[rell.test.assert_fails]",
+        "text" : "Bad expression for a global constant: function 'rell.test.assert_fails'"
+      },
+      {
+        "pos" : "main.rell(1:30)",
+        "type" : "ERROR",
+        "code" : "def:const:bad_expr:[0::X]:partial_call",
+        "text" : "Bad expression for a global constant"
+      }
+    ],
+    "parsing" : {
+      "main.rell" : [ ]
+    }
+  },
+  {
+    "files" : {
+      "main.rell" : "val X = assert_fails('hello', integer.from_hex('1234', *));"
+    },
+    "modules" : {
+      "modules" : [
+        ""
+      ],
+      "test_root_modules" : [ ],
+      "test_sub_modules" : true
+    },
+    "options" : {
+      "gtv" : false,
+      "deprecatedError" : false,
+      "ide" : false,
+      "atAttrShadowing" : "FULL",
+      "testLib" : true,
+      "hiddenLib" : true,
+      "allowDbModificationsInObjectExprs" : true,
+      "complexWhatEnabled" : true,
+      "mountConflictError" : true,
+      "appModuleInTestsError" : false,
+      "useTestDependencyExtensions" : false,
+      "symbolInfoFile" : "main.rell",
+      "ideDefIdConflictError" : true,
+      "allowOlderCompatibilityVersion" : true
+    },
+    "messages" : [
+      {
+        "pos" : "main.rell(1:5)",
+        "type" : "ERROR",
+        "code" : "def:const:bad_type:not_pure:[0::X]:[rell.test.failure]",
+        "text" : "Bad type for a global constant: rell.test.failure"
+      },
+      {
+        "pos" : "main.rell(1:9)",
+        "type" : "ERROR",
+        "code" : "def:const:bad_expr:[0::X]:fn:sys:[rell.test.assert_fails]",
+        "text" : "Bad expression for a global constant: function 'rell.test.assert_fails'"
+      },
+      {
+        "pos" : "main.rell(1:39)",
+        "type" : "ERROR",
+        "code" : "def:const:bad_expr:[0::X]:partial_call",
+        "text" : "Bad expression for a global constant"
       }
     ],
     "parsing" : {

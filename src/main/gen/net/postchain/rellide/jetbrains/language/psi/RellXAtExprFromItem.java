@@ -7,10 +7,13 @@ import com.intellij.psi.PsiElement;
 
 public interface RellXAtExprFromItem extends PsiElement {
 
-  @Nullable
-  RellXName getXName();
+  @NotNull
+  List<RellXAnnotation> getXAnnotationList();
 
   @NotNull
-  RellXQualifiedName getXQualifiedName();
+  RellXExpressionRef getXExpressionRef();
+
+  @Nullable
+  RellXName getXName();
 
 }

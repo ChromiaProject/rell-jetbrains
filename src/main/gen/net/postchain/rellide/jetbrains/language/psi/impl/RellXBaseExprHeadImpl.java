@@ -29,6 +29,12 @@ public class RellXBaseExprHeadImpl extends ASTWrapperPsiElement implements RellX
 
   @Override
   @Nullable
+  public RellXAtExpr getXAtExpr() {
+    return findChildByClass(RellXAtExpr.class);
+  }
+
+  @Override
+  @Nullable
   public RellXAttrExpr getXAttrExpr() {
     return findChildByClass(RellXAttrExpr.class);
   }

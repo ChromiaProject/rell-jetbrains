@@ -28,15 +28,21 @@ public class RellXAtExprFromItemImpl extends ASTWrapperPsiElement implements Rel
   }
 
   @Override
-  @Nullable
-  public RellXName getXName() {
-    return findChildByClass(RellXName.class);
+  @NotNull
+  public List<RellXAnnotation> getXAnnotationList() {
+    return PsiTreeUtil.getChildrenOfTypeAsList(this, RellXAnnotation.class);
   }
 
   @Override
   @NotNull
-  public RellXQualifiedName getXQualifiedName() {
-    return findNotNullChildByClass(RellXQualifiedName.class);
+  public RellXExpressionRef getXExpressionRef() {
+    return findNotNullChildByClass(RellXExpressionRef.class);
+  }
+
+  @Override
+  @Nullable
+  public RellXName getXName() {
+    return findChildByClass(RellXName.class);
   }
 
 }
