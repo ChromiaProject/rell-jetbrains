@@ -21,20 +21,22 @@
       "complexWhatEnabled" : true,
       "mountConflictError" : true,
       "appModuleInTestsError" : false,
+      "useTestDependencyExtensions" : false,
       "symbolInfoFile" : "main.rell",
-      "ideDefIdConflictError" : true
+      "ideDefIdConflictError" : true,
+      "allowOlderCompatibilityVersion" : true
     },
     "messages" : [
       {
         "pos" : "main.rell(1:9)",
         "type" : "ERROR",
-        "code" : "op_ctx_noop",
+        "code" : "op_ctx:noop",
         "text" : "Can access 'op_context' only in an operation, function or entity"
       },
       {
         "pos" : "main.rell(1:9)",
         "type" : "ERROR",
-        "code" : "def:const:bad_expr:0::X:fn:prop:op_context.last_block_time",
+        "code" : "def:const:bad_expr:[0::X]:fn:prop:[op_context.last_block_time]",
         "text" : "Bad expression for a global constant"
       }
     ],
@@ -64,20 +66,22 @@
       "complexWhatEnabled" : true,
       "mountConflictError" : true,
       "appModuleInTestsError" : false,
+      "useTestDependencyExtensions" : false,
       "symbolInfoFile" : "main.rell",
-      "ideDefIdConflictError" : true
+      "ideDefIdConflictError" : true,
+      "allowOlderCompatibilityVersion" : true
     },
     "messages" : [
       {
         "pos" : "main.rell(1:9)",
         "type" : "ERROR",
-        "code" : "op_ctx_noop",
+        "code" : "op_ctx:noop",
         "text" : "Can access 'op_context' only in an operation, function or entity"
       },
       {
         "pos" : "main.rell(1:9)",
         "type" : "ERROR",
-        "code" : "def:const:bad_expr:0::X:fn:prop:op_context.block_height",
+        "code" : "def:const:bad_expr:[0::X]:fn:prop:[op_context.block_height]",
         "text" : "Bad expression for a global constant"
       }
     ],
@@ -107,20 +111,22 @@
       "complexWhatEnabled" : true,
       "mountConflictError" : true,
       "appModuleInTestsError" : false,
+      "useTestDependencyExtensions" : false,
       "symbolInfoFile" : "main.rell",
-      "ideDefIdConflictError" : true
+      "ideDefIdConflictError" : true,
+      "allowOlderCompatibilityVersion" : true
     },
     "messages" : [
       {
         "pos" : "main.rell(1:9)",
         "type" : "ERROR",
-        "code" : "op_ctx_noop",
+        "code" : "op_ctx:noop",
         "text" : "Can access 'op_context' only in an operation, function or entity"
       },
       {
         "pos" : "main.rell(1:9)",
         "type" : "ERROR",
-        "code" : "def:const:bad_expr:0::X:fn:prop:op_context.op_index",
+        "code" : "def:const:bad_expr:[0::X]:fn:prop:[op_context.op_index]",
         "text" : "Bad expression for a global constant"
       }
     ],
@@ -150,26 +156,28 @@
       "complexWhatEnabled" : true,
       "mountConflictError" : true,
       "appModuleInTestsError" : false,
+      "useTestDependencyExtensions" : false,
       "symbolInfoFile" : "main.rell",
-      "ideDefIdConflictError" : true
+      "ideDefIdConflictError" : true,
+      "allowOlderCompatibilityVersion" : true
     },
     "messages" : [
       {
         "pos" : "main.rell(1:5)",
         "type" : "ERROR",
-        "code" : "def:const:bad_type:not_pure:0::X:transaction",
+        "code" : "def:const:bad_type:not_pure:[0::X]:[transaction]",
         "text" : "Bad type for a global constant: transaction"
       },
       {
         "pos" : "main.rell(1:9)",
         "type" : "ERROR",
-        "code" : "op_ctx_noop",
+        "code" : "op_ctx:noop",
         "text" : "Can access 'op_context' only in an operation, function or entity"
       },
       {
         "pos" : "main.rell(1:9)",
         "type" : "ERROR",
-        "code" : "def:const:bad_expr:0::X:fn:prop:op_context.transaction",
+        "code" : "def:const:bad_expr:[0::X]:fn:prop:[op_context.transaction]",
         "text" : "Bad expression for a global constant"
       }
     ],
@@ -199,20 +207,22 @@
       "complexWhatEnabled" : true,
       "mountConflictError" : true,
       "appModuleInTestsError" : false,
+      "useTestDependencyExtensions" : false,
       "symbolInfoFile" : "main.rell",
-      "ideDefIdConflictError" : true
+      "ideDefIdConflictError" : true,
+      "allowOlderCompatibilityVersion" : true
     },
     "messages" : [
       {
         "pos" : "main.rell(1:20)",
         "type" : "ERROR",
-        "code" : "op_ctx_noop",
+        "code" : "op_ctx:noop",
         "text" : "Can access 'op_context' only in an operation, function or entity"
       },
       {
         "pos" : "main.rell(1:20)",
         "type" : "ERROR",
-        "code" : "def:const:bad_expr:0::X:fn:sys:op_context.is_signer",
+        "code" : "def:const:bad_expr:[0::X]:fn:sys:[op_context.is_signer]",
         "text" : "Bad expression for a global constant: function 'op_context.is_signer'"
       }
     ],
@@ -242,26 +252,28 @@
       "complexWhatEnabled" : true,
       "mountConflictError" : true,
       "appModuleInTestsError" : false,
+      "useTestDependencyExtensions" : false,
       "symbolInfoFile" : "main.rell",
-      "ideDefIdConflictError" : true
+      "ideDefIdConflictError" : true,
+      "allowOlderCompatibilityVersion" : true
     },
     "messages" : [
       {
         "pos" : "main.rell(1:9)",
         "type" : "WARNING",
-        "code" : "deprecated:FUNCTION:is_signer:op_context.is_signer",
-        "text" : "Function 'is_signer' is deprecated, use 'op_context.is_signer' instead"
+        "code" : "deprecated:FUNCTION:[rell:is_signer]:op_context.is_signer",
+        "text" : "Function 'rell:is_signer' is deprecated, use 'op_context.is_signer' instead"
       },
       {
         "pos" : "main.rell(1:9)",
         "type" : "ERROR",
-        "code" : "op_ctx_noop",
+        "code" : "op_ctx:noop",
         "text" : "Can access 'op_context' only in an operation, function or entity"
       },
       {
         "pos" : "main.rell(1:9)",
         "type" : "ERROR",
-        "code" : "def:const:bad_expr:0::X:fn:sys:is_signer",
+        "code" : "def:const:bad_expr:[0::X]:fn:sys:[is_signer]",
         "text" : "Bad expression for a global constant: function 'is_signer'"
       }
     ],
@@ -291,26 +303,28 @@
       "complexWhatEnabled" : true,
       "mountConflictError" : true,
       "appModuleInTestsError" : false,
+      "useTestDependencyExtensions" : false,
       "symbolInfoFile" : "main.rell",
-      "ideDefIdConflictError" : true
+      "ideDefIdConflictError" : true,
+      "allowOlderCompatibilityVersion" : true
     },
     "messages" : [
       {
         "pos" : "main.rell(1:5)",
         "type" : "ERROR",
-        "code" : "def:const:bad_type:mutable:0::X:list<byte_array>",
+        "code" : "def:const:bad_type:mutable:[0::X]:[list<byte_array>]",
         "text" : "Global constant cannot have a mutable type: list<byte_array>"
       },
       {
         "pos" : "main.rell(1:20)",
         "type" : "ERROR",
-        "code" : "op_ctx_noop",
+        "code" : "op_ctx:noop",
         "text" : "Can access 'op_context' only in an operation, function or entity"
       },
       {
         "pos" : "main.rell(1:20)",
         "type" : "ERROR",
-        "code" : "def:const:bad_expr:0::X:fn:sys:op_context.get_signers",
+        "code" : "def:const:bad_expr:[0::X]:fn:sys:[op_context.get_signers]",
         "text" : "Bad expression for a global constant: function 'op_context.get_signers'"
       }
     ],
@@ -340,26 +354,28 @@
       "complexWhatEnabled" : true,
       "mountConflictError" : true,
       "appModuleInTestsError" : false,
+      "useTestDependencyExtensions" : false,
       "symbolInfoFile" : "main.rell",
-      "ideDefIdConflictError" : true
+      "ideDefIdConflictError" : true,
+      "allowOlderCompatibilityVersion" : true
     },
     "messages" : [
       {
         "pos" : "main.rell(1:5)",
         "type" : "ERROR",
-        "code" : "def:const:bad_type:mutable:0::X:list<gtx_operation>",
+        "code" : "def:const:bad_type:mutable:[0::X]:[list<gtx_operation>]",
         "text" : "Global constant cannot have a mutable type: list<gtx_operation>"
       },
       {
         "pos" : "main.rell(1:20)",
         "type" : "ERROR",
-        "code" : "op_ctx_noop",
+        "code" : "op_ctx:noop",
         "text" : "Can access 'op_context' only in an operation, function or entity"
       },
       {
         "pos" : "main.rell(1:20)",
         "type" : "ERROR",
-        "code" : "def:const:bad_expr:0::X:fn:sys:op_context.get_all_operations",
+        "code" : "def:const:bad_expr:[0::X]:fn:sys:[op_context.get_all_operations]",
         "text" : "Bad expression for a global constant: function 'op_context.get_all_operations'"
       }
     ],
@@ -389,8 +405,10 @@
       "complexWhatEnabled" : true,
       "mountConflictError" : true,
       "appModuleInTestsError" : false,
+      "useTestDependencyExtensions" : false,
       "symbolInfoFile" : "main.rell",
-      "ideDefIdConflictError" : true
+      "ideDefIdConflictError" : true,
+      "allowOlderCompatibilityVersion" : true
     },
     "messages" : [
       {
@@ -402,13 +420,13 @@
       {
         "pos" : "main.rell(1:20)",
         "type" : "ERROR",
-        "code" : "op_ctx_noop",
+        "code" : "op_ctx:noop",
         "text" : "Can access 'op_context' only in an operation, function or entity"
       },
       {
         "pos" : "main.rell(1:20)",
         "type" : "ERROR",
-        "code" : "def:const:bad_expr:0::X:fn:sys:op_context.emit_event",
+        "code" : "def:const:bad_expr:[0::X]:fn:sys:[op_context.emit_event]",
         "text" : "Bad expression for a global constant: function 'op_context.emit_event'"
       }
     ],

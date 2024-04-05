@@ -8,6 +8,9 @@ import com.intellij.psi.PsiElement;
 public interface RellXBaseExprHead extends PsiElement {
 
   @Nullable
+  RellXAtExpr getXAtExpr();
+
+  @Nullable
   RellXAttrExpr getXAttrExpr();
 
   @Nullable

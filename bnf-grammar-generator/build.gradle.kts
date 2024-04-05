@@ -1,4 +1,4 @@
-val rellVersion = "0.14.0-SNAPSHOT"
+val rellVersion = "0.13.10"
 
 plugins {
     // Java support
@@ -43,6 +43,10 @@ repositories {
     maven {
         name = "Postchain GitLab Registry"
         url = uri("https://gitlab.com/api/v4/projects/32294340/packages/maven")
+    }
+    maven {
+        name = "Chromia parent GitLab Registry"
+        url = uri("https://gitlab.com/api/v4/projects/50818999/packages/maven")
     }
 }
 

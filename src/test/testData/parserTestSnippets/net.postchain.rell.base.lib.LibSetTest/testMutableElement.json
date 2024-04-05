@@ -21,8 +21,10 @@
       "complexWhatEnabled" : true,
       "mountConflictError" : true,
       "appModuleInTestsError" : false,
+      "useTestDependencyExtensions" : false,
       "symbolInfoFile" : "main.rell",
-      "ideDefIdConflictError" : true
+      "ideDefIdConflictError" : true,
+      "allowOlderCompatibilityVersion" : true
     },
     "messages" : [ ],
     "parsing" : {
@@ -51,15 +53,17 @@
       "complexWhatEnabled" : true,
       "mountConflictError" : true,
       "appModuleInTestsError" : false,
+      "useTestDependencyExtensions" : false,
       "symbolInfoFile" : "main.rell",
-      "ideDefIdConflictError" : true
+      "ideDefIdConflictError" : true,
+      "allowOlderCompatibilityVersion" : true
     },
     "messages" : [
       {
-        "pos" : "main.rell(1:24)",
+        "pos" : "main.rell(1:20)",
         "type" : "ERROR",
-        "code" : "expr_set_type:list<integer>",
-        "text" : "Mutable type cannot be used as a set element: list<integer>"
+        "code" : "expr_call_badargs:[set]:[list<list<integer>>]",
+        "text" : "Function 'set' undefined for arguments (list<list<integer>>)"
       }
     ],
     "parsing" : {
@@ -88,15 +92,23 @@
       "complexWhatEnabled" : true,
       "mountConflictError" : true,
       "appModuleInTestsError" : false,
+      "useTestDependencyExtensions" : false,
       "symbolInfoFile" : "main.rell",
-      "ideDefIdConflictError" : true
+      "ideDefIdConflictError" : true,
+      "allowOlderCompatibilityVersion" : true
     },
     "messages" : [
       {
+        "pos" : "main.rell(1:20)",
+        "type" : "ERROR",
+        "code" : "param_bounds:set:T:-immutable:list<integer>",
+        "text" : "Type parameter 'T' of type 'set' does not allow 'list<integer>'"
+      },
+      {
         "pos" : "main.rell(1:24)",
         "type" : "ERROR",
-        "code" : "expr_set_type:list<integer>",
-        "text" : "Mutable type cannot be used as a set element: list<integer>"
+        "code" : "param_bounds:set:T:-immutable:list<integer>",
+        "text" : "Type parameter 'T' of type 'set' does not allow 'list<integer>'"
       }
     ],
     "parsing" : {
@@ -125,15 +137,17 @@
       "complexWhatEnabled" : true,
       "mountConflictError" : true,
       "appModuleInTestsError" : false,
+      "useTestDependencyExtensions" : false,
       "symbolInfoFile" : "main.rell",
-      "ideDefIdConflictError" : true
+      "ideDefIdConflictError" : true,
+      "allowOlderCompatibilityVersion" : true
     },
     "messages" : [
       {
         "pos" : "main.rell(1:24)",
         "type" : "ERROR",
-        "code" : "expr_set_type:list<integer>",
-        "text" : "Mutable type cannot be used as a set element: list<integer>"
+        "code" : "param_bounds:set:T:-immutable:list<integer>",
+        "text" : "Type parameter 'T' of type 'set' does not allow 'list<integer>'"
       }
     ],
     "parsing" : {

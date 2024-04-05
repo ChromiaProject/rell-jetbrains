@@ -26,11 +26,10 @@ public interface RellTypes {
   IElementType X_ATTRIBUTE_DEFINITION = new RellElementType("X_ATTRIBUTE_DEFINITION");
   IElementType X_ATTR_EXPR = new RellElementType("X_ATTR_EXPR");
   IElementType X_ATTR_HEADER = new RellElementType("X_ATTR_HEADER");
+  IElementType X_AT_EXPR = new RellElementType("X_AT_EXPR");
   IElementType X_AT_EXPR_AT = new RellElementType("X_AT_EXPR_AT");
   IElementType X_AT_EXPR_FROM = new RellElementType("X_AT_EXPR_FROM");
   IElementType X_AT_EXPR_FROM_ITEM = new RellElementType("X_AT_EXPR_FROM_ITEM");
-  IElementType X_AT_EXPR_FROM_MULTI = new RellElementType("X_AT_EXPR_FROM_MULTI");
-  IElementType X_AT_EXPR_FROM_SINGLE = new RellElementType("X_AT_EXPR_FROM_SINGLE");
   IElementType X_AT_EXPR_LIMIT = new RellElementType("X_AT_EXPR_LIMIT");
   IElementType X_AT_EXPR_MODIFIERS = new RellElementType("X_AT_EXPR_MODIFIERS");
   IElementType X_AT_EXPR_OFFSET = new RellElementType("X_AT_EXPR_OFFSET");
@@ -141,9 +140,6 @@ public interface RellTypes {
   IElementType X_STRUCT_KEYWORD = new RellElementType("X_STRUCT_KEYWORD");
   IElementType X_TK_STRING = new RellElementType("X_TK_STRING");
   IElementType X_TUPLE_EXPR_FIELD = new RellElementType("X_TUPLE_EXPR_FIELD");
-  IElementType X_TUPLE_EXPR_FIELD_EXPR = new RellElementType("X_TUPLE_EXPR_FIELD_EXPR");
-  IElementType X_TUPLE_EXPR_FIELD_NAME_COLON_EXPR = new RellElementType("X_TUPLE_EXPR_FIELD_NAME_COLON_EXPR");
-  IElementType X_TUPLE_EXPR_FIELD_NAME_EQ_EXPR = new RellElementType("X_TUPLE_EXPR_FIELD_NAME_EQ_EXPR");
   IElementType X_TUPLE_EXPR_TAIL = new RellElementType("X_TUPLE_EXPR_TAIL");
   IElementType X_TUPLE_TYPE = new RellElementType("X_TUPLE_TYPE");
   IElementType X_TUPLE_TYPE_FIELD = new RellElementType("X_TUPLE_TYPE_FIELD");
@@ -154,6 +150,10 @@ public interface RellTypes {
   IElementType X_UNARY_EXPR = new RellElementType("X_UNARY_EXPR");
   IElementType X_UNARY_POSTFIX_OPERATOR = new RellElementType("X_UNARY_POSTFIX_OPERATOR");
   IElementType X_UNARY_PREFIX_OPERATOR = new RellElementType("X_UNARY_PREFIX_OPERATOR");
+  IElementType X_UPDATE_FROM = new RellElementType("X_UPDATE_FROM");
+  IElementType X_UPDATE_FROM_ITEM = new RellElementType("X_UPDATE_FROM_ITEM");
+  IElementType X_UPDATE_FROM_MULTI = new RellElementType("X_UPDATE_FROM_MULTI");
+  IElementType X_UPDATE_FROM_SINGLE = new RellElementType("X_UPDATE_FROM_SINGLE");
   IElementType X_UPDATE_STMT = new RellElementType("X_UPDATE_STMT");
   IElementType X_UPDATE_TARGET = new RellElementType("X_UPDATE_TARGET");
   IElementType X_UPDATE_TARGET_AT = new RellElementType("X_UPDATE_TARGET_AT");
@@ -294,6 +294,9 @@ public interface RellTypes {
       else if (type == X_ATTR_HEADER) {
         return new RellXAttrHeaderImpl(node);
       }
+      else if (type == X_AT_EXPR) {
+        return new RellXAtExprImpl(node);
+      }
       else if (type == X_AT_EXPR_AT) {
         return new RellXAtExprAtImpl(node);
       }
@@ -302,12 +305,6 @@ public interface RellTypes {
       }
       else if (type == X_AT_EXPR_FROM_ITEM) {
         return new RellXAtExprFromItemImpl(node);
-      }
-      else if (type == X_AT_EXPR_FROM_MULTI) {
-        return new RellXAtExprFromMultiImpl(node);
-      }
-      else if (type == X_AT_EXPR_FROM_SINGLE) {
-        return new RellXAtExprFromSingleImpl(node);
       }
       else if (type == X_AT_EXPR_LIMIT) {
         return new RellXAtExprLimitImpl(node);
@@ -639,15 +636,6 @@ public interface RellTypes {
       else if (type == X_TUPLE_EXPR_FIELD) {
         return new RellXTupleExprFieldImpl(node);
       }
-      else if (type == X_TUPLE_EXPR_FIELD_EXPR) {
-        return new RellXTupleExprFieldExprImpl(node);
-      }
-      else if (type == X_TUPLE_EXPR_FIELD_NAME_COLON_EXPR) {
-        return new RellXTupleExprFieldNameColonExprImpl(node);
-      }
-      else if (type == X_TUPLE_EXPR_FIELD_NAME_EQ_EXPR) {
-        return new RellXTupleExprFieldNameEqExprImpl(node);
-      }
       else if (type == X_TUPLE_EXPR_TAIL) {
         return new RellXTupleExprTailImpl(node);
       }
@@ -677,6 +665,18 @@ public interface RellTypes {
       }
       else if (type == X_UNARY_PREFIX_OPERATOR) {
         return new RellXUnaryPrefixOperatorImpl(node);
+      }
+      else if (type == X_UPDATE_FROM) {
+        return new RellXUpdateFromImpl(node);
+      }
+      else if (type == X_UPDATE_FROM_ITEM) {
+        return new RellXUpdateFromItemImpl(node);
+      }
+      else if (type == X_UPDATE_FROM_MULTI) {
+        return new RellXUpdateFromMultiImpl(node);
+      }
+      else if (type == X_UPDATE_FROM_SINGLE) {
+        return new RellXUpdateFromSingleImpl(node);
       }
       else if (type == X_UPDATE_STMT) {
         return new RellXUpdateStmtImpl(node);

@@ -36,8 +36,6 @@ interface RellTokenSets {
         val X_AT_EXPR_AT = TokenSet.create(RellTypes.X_AT_EXPR_AT);
         val X_AT_EXPR_FROM = TokenSet.create(RellTypes.X_AT_EXPR_FROM);
         val X_AT_EXPR_FROM_ITEM = TokenSet.create(RellTypes.X_AT_EXPR_FROM_ITEM);
-        val X_AT_EXPR_FROM_MULTI = TokenSet.create(RellTypes.X_AT_EXPR_FROM_MULTI);
-        val X_AT_EXPR_FROM_SINGLE = TokenSet.create(RellTypes.X_AT_EXPR_FROM_SINGLE);
         val X_AT_EXPR_LIMIT = TokenSet.create(RellTypes.X_AT_EXPR_LIMIT);
         val X_AT_EXPR_MODIFIERS = TokenSet.create(RellTypes.X_AT_EXPR_MODIFIERS);
         val X_AT_EXPR_OFFSET = TokenSet.create(RellTypes.X_AT_EXPR_OFFSET);
@@ -189,9 +187,6 @@ interface RellTokenSets {
         val X_TK_WHEN = TokenSet.create(RellTypes.X_TKWHEN);
         val X_TK_WHILE = TokenSet.create(RellTypes.X_TKWHILE);
         val X_TUPLE_EXPR_FIELD = TokenSet.create(RellTypes.X_TUPLE_EXPR_FIELD);
-        val X_TUPLE_EXPR_FIELD_EXPR = TokenSet.create(RellTypes.X_TUPLE_EXPR_FIELD_EXPR);
-        val X_TUPLE_EXPR_FIELD_NAME_COLON_EXPR = TokenSet.create(RellTypes.X_TUPLE_EXPR_FIELD_NAME_COLON_EXPR);
-        val X_TUPLE_EXPR_FIELD_NAME_EQ_EXPR = TokenSet.create(RellTypes.X_TUPLE_EXPR_FIELD_NAME_EQ_EXPR);
         val X_TUPLE_EXPR_TAIL = TokenSet.create(RellTypes.X_TUPLE_EXPR_TAIL);
         val X_TUPLE_TYPE = TokenSet.create(RellTypes.X_TUPLE_TYPE);
         val X_TUPLE_TYPE_FIELD = TokenSet.create(RellTypes.X_TUPLE_TYPE_FIELD);

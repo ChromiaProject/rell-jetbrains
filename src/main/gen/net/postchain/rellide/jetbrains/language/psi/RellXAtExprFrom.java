@@ -7,10 +7,7 @@ import com.intellij.psi.PsiElement;
 
 public interface RellXAtExprFrom extends PsiElement {
 
-  @Nullable
-  RellXAtExprFromMulti getXAtExprFromMulti();
-
-  @Nullable
-  RellXAtExprFromSingle getXAtExprFromSingle();
+  @NotNull
+  List<RellXAtExprFromItem> getXAtExprFromItemList();
 
 }

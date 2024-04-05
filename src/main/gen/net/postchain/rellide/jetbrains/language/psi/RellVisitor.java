@@ -67,6 +67,10 @@ public class RellVisitor extends PsiElementVisitor {
     visitPsiElement(o);
   }
 
+  public void visitXAtExpr(@NotNull RellXAtExpr o) {
+    visitPsiElement(o);
+  }
+
   public void visitXAtExprAt(@NotNull RellXAtExprAt o) {
     visitPsiElement(o);
   }
@@ -76,14 +80,6 @@ public class RellVisitor extends PsiElementVisitor {
   }
 
   public void visitXAtExprFromItem(@NotNull RellXAtExprFromItem o) {
-    visitPsiElement(o);
-  }
-
-  public void visitXAtExprFromMulti(@NotNull RellXAtExprFromMulti o) {
-    visitPsiElement(o);
-  }
-
-  public void visitXAtExprFromSingle(@NotNull RellXAtExprFromSingle o) {
     visitPsiElement(o);
   }
 
@@ -535,18 +531,6 @@ public class RellVisitor extends PsiElementVisitor {
     visitPsiElement(o);
   }
 
-  public void visitXTupleExprFieldExpr(@NotNull RellXTupleExprFieldExpr o) {
-    visitPsiElement(o);
-  }
-
-  public void visitXTupleExprFieldNameColonExpr(@NotNull RellXTupleExprFieldNameColonExpr o) {
-    visitPsiElement(o);
-  }
-
-  public void visitXTupleExprFieldNameEqExpr(@NotNull RellXTupleExprFieldNameEqExpr o) {
-    visitPsiElement(o);
-  }
-
   public void visitXTupleExprTail(@NotNull RellXTupleExprTail o) {
     visitPsiElement(o);
   }
@@ -588,6 +572,22 @@ public class RellVisitor extends PsiElementVisitor {
   }
 
   public void visitXUpImportModule(@NotNull RellXUpImportModule o) {
+    visitPsiElement(o);
+  }
+
+  public void visitXUpdateFrom(@NotNull RellXUpdateFrom o) {
+    visitPsiElement(o);
+  }
+
+  public void visitXUpdateFromItem(@NotNull RellXUpdateFromItem o) {
+    visitPsiElement(o);
+  }
+
+  public void visitXUpdateFromMulti(@NotNull RellXUpdateFromMulti o) {
+    visitPsiElement(o);
+  }
+
+  public void visitXUpdateFromSingle(@NotNull RellXUpdateFromSingle o) {
     visitPsiElement(o);
   }
 

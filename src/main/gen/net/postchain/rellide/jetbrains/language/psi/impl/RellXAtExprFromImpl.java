@@ -28,15 +28,9 @@ public class RellXAtExprFromImpl extends ASTWrapperPsiElement implements RellXAt
   }
 
   @Override
-  @Nullable
-  public RellXAtExprFromMulti getXAtExprFromMulti() {
-    return findChildByClass(RellXAtExprFromMulti.class);
-  }
-
-  @Override
-  @Nullable
-  public RellXAtExprFromSingle getXAtExprFromSingle() {
-    return findChildByClass(RellXAtExprFromSingle.class);
+  @NotNull
+  public List<RellXAtExprFromItem> getXAtExprFromItemList() {
+    return PsiTreeUtil.getChildrenOfTypeAsList(this, RellXAtExprFromItem.class);
   }
 
 }

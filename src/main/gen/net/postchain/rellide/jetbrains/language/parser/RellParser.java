@@ -378,6 +378,19 @@ public class RellParser implements PsiParser, LightPsiParser {
   }
 
   /* ********************************************************** */
+  // X_AtExprFrom X_BaseExprTailAt
+  public static boolean X_AtExpr(PsiBuilder b, int l) {
+    if (!recursion_guard_(b, l, "X_AtExpr")) return false;
+    if (!nextTokenIs(b, X_TKLPAR)) return false;
+    boolean r;
+    Marker m = enter_section_(b);
+    r = X_AtExprFrom(b, l + 1);
+    r = r && X_BaseExprTailAt(b, l + 1);
+    exit_section_(b, m, X_AT_EXPR, r);
+    return r;
+  }
+
+  /* ********************************************************** */
   // X_tkAT X_tkQUESTION
   //    | X_tkAT X_tkMUL
   //    | X_tkAT X_tkPLUS
@@ -396,79 +409,35 @@ public class RellParser implements PsiParser, LightPsiParser {
   }
 
   /* ********************************************************** */
-  // X_AtExprFromSingle
-  //    | X_AtExprFromMulti
+  // X_tkLPAR X_AtExprFromItem (X_tkCOMMA X_AtExprFromItem)* (X_tkCOMMA)? X_tkRPAR
   public static boolean X_AtExprFrom(PsiBuilder b, int l) {
     if (!recursion_guard_(b, l, "X_AtExprFrom")) return false;
-    if (!nextTokenIs(b, "<x at expr from>", ID, X_TKLPAR)) return false;
-    boolean r;
-    Marker m = enter_section_(b, l, _NONE_, X_AT_EXPR_FROM, "<x at expr from>");
-    r = X_AtExprFromSingle(b, l + 1);
-    if (!r) r = X_AtExprFromMulti(b, l + 1);
-    exit_section_(b, l, m, r, false, null);
-    return r;
-  }
-
-  /* ********************************************************** */
-  // (X_Name X_tkCOLON)? X_QualifiedName
-  public static boolean X_AtExprFromItem(PsiBuilder b, int l) {
-    if (!recursion_guard_(b, l, "X_AtExprFromItem")) return false;
-    if (!nextTokenIs(b, ID)) return false;
-    boolean r;
-    Marker m = enter_section_(b);
-    r = X_AtExprFromItem_0(b, l + 1);
-    r = r && X_QualifiedName(b, l + 1);
-    exit_section_(b, m, X_AT_EXPR_FROM_ITEM, r);
-    return r;
-  }
-
-  // (X_Name X_tkCOLON)?
-  private static boolean X_AtExprFromItem_0(PsiBuilder b, int l) {
-    if (!recursion_guard_(b, l, "X_AtExprFromItem_0")) return false;
-    X_AtExprFromItem_0_0(b, l + 1);
-    return true;
-  }
-
-  // X_Name X_tkCOLON
-  private static boolean X_AtExprFromItem_0_0(PsiBuilder b, int l) {
-    if (!recursion_guard_(b, l, "X_AtExprFromItem_0_0")) return false;
-    boolean r;
-    Marker m = enter_section_(b);
-    r = X_Name(b, l + 1);
-    r = r && consumeToken(b, X_TKCOLON);
-    exit_section_(b, m, null, r);
-    return r;
-  }
-
-  /* ********************************************************** */
-  // X_tkLPAR X_AtExprFromItem (X_tkCOMMA X_AtExprFromItem)* X_tkRPAR
-  public static boolean X_AtExprFromMulti(PsiBuilder b, int l) {
-    if (!recursion_guard_(b, l, "X_AtExprFromMulti")) return false;
     if (!nextTokenIs(b, X_TKLPAR)) return false;
     boolean r;
     Marker m = enter_section_(b);
     r = consumeToken(b, X_TKLPAR);
     r = r && X_AtExprFromItem(b, l + 1);
-    r = r && X_AtExprFromMulti_2(b, l + 1);
+    r = r && X_AtExprFrom_2(b, l + 1);
+    r = r && X_AtExprFrom_3(b, l + 1);
     r = r && consumeToken(b, X_TKRPAR);
-    exit_section_(b, m, X_AT_EXPR_FROM_MULTI, r);
+    exit_section_(b, m, X_AT_EXPR_FROM, r);
     return r;
   }
 
   // (X_tkCOMMA X_AtExprFromItem)*
-  private static boolean X_AtExprFromMulti_2(PsiBuilder b, int l) {
-    if (!recursion_guard_(b, l, "X_AtExprFromMulti_2")) return false;
+  private static boolean X_AtExprFrom_2(PsiBuilder b, int l) {
+    if (!recursion_guard_(b, l, "X_AtExprFrom_2")) return false;
     while (true) {
       int c = current_position_(b);
-      if (!X_AtExprFromMulti_2_0(b, l + 1)) break;
-      if (!empty_element_parsed_guard_(b, "X_AtExprFromMulti_2", c)) break;
+      if (!X_AtExprFrom_2_0(b, l + 1)) break;
+      if (!empty_element_parsed_guard_(b, "X_AtExprFrom_2", c)) break;
     }
     return true;
   }
 
   // X_tkCOMMA X_AtExprFromItem
-  private static boolean X_AtExprFromMulti_2_0(PsiBuilder b, int l) {
-    if (!recursion_guard_(b, l, "X_AtExprFromMulti_2_0")) return false;
+  private static boolean X_AtExprFrom_2_0(PsiBuilder b, int l) {
+    if (!recursion_guard_(b, l, "X_AtExprFrom_2_0")) return false;
     boolean r;
     Marker m = enter_section_(b);
     r = consumeToken(b, X_TKCOMMA);
@@ -477,15 +446,62 @@ public class RellParser implements PsiParser, LightPsiParser {
     return r;
   }
 
+  // (X_tkCOMMA)?
+  private static boolean X_AtExprFrom_3(PsiBuilder b, int l) {
+    if (!recursion_guard_(b, l, "X_AtExprFrom_3")) return false;
+    consumeToken(b, X_TKCOMMA);
+    return true;
+  }
+
   /* ********************************************************** */
-  // X_QualifiedName
-  public static boolean X_AtExprFromSingle(PsiBuilder b, int l) {
-    if (!recursion_guard_(b, l, "X_AtExprFromSingle")) return false;
-    if (!nextTokenIs(b, ID)) return false;
+  // (X_Annotation)* (X_Name X_tkCOLON)? X_ExpressionRef
+  public static boolean X_AtExprFromItem(PsiBuilder b, int l) {
+    if (!recursion_guard_(b, l, "X_AtExprFromItem")) return false;
+    boolean r;
+    Marker m = enter_section_(b, l, _NONE_, X_AT_EXPR_FROM_ITEM, "<x at expr from item>");
+    r = X_AtExprFromItem_0(b, l + 1);
+    r = r && X_AtExprFromItem_1(b, l + 1);
+    r = r && X_ExpressionRef(b, l + 1);
+    exit_section_(b, l, m, r, false, null);
+    return r;
+  }
+
+  // (X_Annotation)*
+  private static boolean X_AtExprFromItem_0(PsiBuilder b, int l) {
+    if (!recursion_guard_(b, l, "X_AtExprFromItem_0")) return false;
+    while (true) {
+      int c = current_position_(b);
+      if (!X_AtExprFromItem_0_0(b, l + 1)) break;
+      if (!empty_element_parsed_guard_(b, "X_AtExprFromItem_0", c)) break;
+    }
+    return true;
+  }
+
+  // (X_Annotation)
+  private static boolean X_AtExprFromItem_0_0(PsiBuilder b, int l) {
+    if (!recursion_guard_(b, l, "X_AtExprFromItem_0_0")) return false;
     boolean r;
     Marker m = enter_section_(b);
-    r = X_QualifiedName(b, l + 1);
-    exit_section_(b, m, X_AT_EXPR_FROM_SINGLE, r);
+    r = X_Annotation(b, l + 1);
+    exit_section_(b, m, null, r);
+    return r;
+  }
+
+  // (X_Name X_tkCOLON)?
+  private static boolean X_AtExprFromItem_1(PsiBuilder b, int l) {
+    if (!recursion_guard_(b, l, "X_AtExprFromItem_1")) return false;
+    X_AtExprFromItem_1_0(b, l + 1);
+    return true;
+  }
+
+  // X_Name X_tkCOLON
+  private static boolean X_AtExprFromItem_1_0(PsiBuilder b, int l) {
+    if (!recursion_guard_(b, l, "X_AtExprFromItem_1_0")) return false;
+    boolean r;
+    Marker m = enter_section_(b);
+    r = X_Name(b, l + 1);
+    r = r && consumeToken(b, X_TKCOLON);
+    exit_section_(b, m, null, r);
     return r;
   }
 
@@ -703,25 +719,33 @@ public class RellParser implements PsiParser, LightPsiParser {
   }
 
   /* ********************************************************** */
-  // (X_tkDOT X_Name)+
+  // X_tkDOT X_Name (X_tkDOT X_Name)*
   public static boolean X_AtExprWhatSimple(PsiBuilder b, int l) {
     if (!recursion_guard_(b, l, "X_AtExprWhatSimple")) return false;
     if (!nextTokenIs(b, X_TKDOT)) return false;
     boolean r;
     Marker m = enter_section_(b);
-    r = X_AtExprWhatSimple_0(b, l + 1);
-    while (r) {
-      int c = current_position_(b);
-      if (!X_AtExprWhatSimple_0(b, l + 1)) break;
-      if (!empty_element_parsed_guard_(b, "X_AtExprWhatSimple", c)) break;
-    }
+    r = consumeToken(b, X_TKDOT);
+    r = r && X_Name(b, l + 1);
+    r = r && X_AtExprWhatSimple_2(b, l + 1);
     exit_section_(b, m, X_AT_EXPR_WHAT_SIMPLE, r);
     return r;
   }
 
+  // (X_tkDOT X_Name)*
+  private static boolean X_AtExprWhatSimple_2(PsiBuilder b, int l) {
+    if (!recursion_guard_(b, l, "X_AtExprWhatSimple_2")) return false;
+    while (true) {
+      int c = current_position_(b);
+      if (!X_AtExprWhatSimple_2_0(b, l + 1)) break;
+      if (!empty_element_parsed_guard_(b, "X_AtExprWhatSimple_2", c)) break;
+    }
+    return true;
+  }
+
   // X_tkDOT X_Name
-  private static boolean X_AtExprWhatSimple_0(PsiBuilder b, int l) {
-    if (!recursion_guard_(b, l, "X_AtExprWhatSimple_0")) return false;
+  private static boolean X_AtExprWhatSimple_2_0(PsiBuilder b, int l) {
+    if (!recursion_guard_(b, l, "X_AtExprWhatSimple_2_0")) return false;
     boolean r;
     Marker m = enter_section_(b);
     r = consumeToken(b, X_TKDOT);
@@ -898,6 +922,7 @@ public class RellParser implements PsiParser, LightPsiParser {
 
   /* ********************************************************** */
   // X_GenericTypeExpr
+  //    | X_AtExpr
   //    | X_NameExpr
   //    | X_DollarExpr
   //    | X_AttrExpr
@@ -921,6 +946,7 @@ public class RellParser implements PsiParser, LightPsiParser {
     boolean r;
     Marker m = enter_section_(b, l, _NONE_, X_BASE_EXPR_HEAD, "<x base expr head>");
     r = X_GenericTypeExpr(b, l + 1);
+    if (!r) r = X_AtExpr(b, l + 1);
     if (!r) r = X_NameExpr(b, l + 1);
     if (!r) r = consumeToken(b, X_DOLLAREXPR);
     if (!r) r = X_AttrExpr(b, l + 1);
@@ -3439,56 +3465,32 @@ public class RellParser implements PsiParser, LightPsiParser {
   }
 
   /* ********************************************************** */
-  // X_TupleExprFieldNameEqExpr
-  //    | X_TupleExprFieldNameColonExpr
-  //    | X_TupleExprFieldExpr
+  // (X_Name X_tkASSIGN)? X_ExpressionRef
   public static boolean X_TupleExprField(PsiBuilder b, int l) {
     if (!recursion_guard_(b, l, "X_TupleExprField")) return false;
     boolean r;
     Marker m = enter_section_(b, l, _NONE_, X_TUPLE_EXPR_FIELD, "<x tuple expr field>");
-    r = X_TupleExprFieldNameEqExpr(b, l + 1);
-    if (!r) r = X_TupleExprFieldNameColonExpr(b, l + 1);
-    if (!r) r = X_TupleExprFieldExpr(b, l + 1);
-    exit_section_(b, l, m, r, false, null);
-    return r;
-  }
-
-  /* ********************************************************** */
-  // X_ExpressionRef
-  public static boolean X_TupleExprFieldExpr(PsiBuilder b, int l) {
-    if (!recursion_guard_(b, l, "X_TupleExprFieldExpr")) return false;
-    boolean r;
-    Marker m = enter_section_(b, l, _NONE_, X_TUPLE_EXPR_FIELD_EXPR, "<x tuple expr field expr>");
-    r = X_ExpressionRef(b, l + 1);
-    exit_section_(b, l, m, r, false, null);
-    return r;
-  }
-
-  /* ********************************************************** */
-  // X_Name X_tkCOLON X_ExpressionRef
-  public static boolean X_TupleExprFieldNameColonExpr(PsiBuilder b, int l) {
-    if (!recursion_guard_(b, l, "X_TupleExprFieldNameColonExpr")) return false;
-    if (!nextTokenIs(b, ID)) return false;
-    boolean r;
-    Marker m = enter_section_(b);
-    r = X_Name(b, l + 1);
-    r = r && consumeToken(b, X_TKCOLON);
+    r = X_TupleExprField_0(b, l + 1);
     r = r && X_ExpressionRef(b, l + 1);
-    exit_section_(b, m, X_TUPLE_EXPR_FIELD_NAME_COLON_EXPR, r);
+    exit_section_(b, l, m, r, false, null);
     return r;
   }
 
-  /* ********************************************************** */
-  // X_Name X_tkASSIGN X_ExpressionRef
-  public static boolean X_TupleExprFieldNameEqExpr(PsiBuilder b, int l) {
-    if (!recursion_guard_(b, l, "X_TupleExprFieldNameEqExpr")) return false;
-    if (!nextTokenIs(b, ID)) return false;
+  // (X_Name X_tkASSIGN)?
+  private static boolean X_TupleExprField_0(PsiBuilder b, int l) {
+    if (!recursion_guard_(b, l, "X_TupleExprField_0")) return false;
+    X_TupleExprField_0_0(b, l + 1);
+    return true;
+  }
+
+  // X_Name X_tkASSIGN
+  private static boolean X_TupleExprField_0_0(PsiBuilder b, int l) {
+    if (!recursion_guard_(b, l, "X_TupleExprField_0_0")) return false;
     boolean r;
     Marker m = enter_section_(b);
     r = X_Name(b, l + 1);
     r = r && consumeToken(b, X_TKASSIGN);
-    r = r && X_ExpressionRef(b, l + 1);
-    exit_section_(b, m, X_TUPLE_EXPR_FIELD_NAME_EQ_EXPR, r);
+    exit_section_(b, m, null, r);
     return r;
   }
 
@@ -3833,6 +3835,100 @@ public class RellParser implements PsiParser, LightPsiParser {
   }
 
   /* ********************************************************** */
+  // X_UpdateFromSingle
+  //    | X_UpdateFromMulti
+  public static boolean X_UpdateFrom(PsiBuilder b, int l) {
+    if (!recursion_guard_(b, l, "X_UpdateFrom")) return false;
+    if (!nextTokenIs(b, "<x update from>", ID, X_TKLPAR)) return false;
+    boolean r;
+    Marker m = enter_section_(b, l, _NONE_, X_UPDATE_FROM, "<x update from>");
+    r = X_UpdateFromSingle(b, l + 1);
+    if (!r) r = X_UpdateFromMulti(b, l + 1);
+    exit_section_(b, l, m, r, false, null);
+    return r;
+  }
+
+  /* ********************************************************** */
+  // (X_Name X_tkCOLON)? X_QualifiedName
+  public static boolean X_UpdateFromItem(PsiBuilder b, int l) {
+    if (!recursion_guard_(b, l, "X_UpdateFromItem")) return false;
+    if (!nextTokenIs(b, ID)) return false;
+    boolean r;
+    Marker m = enter_section_(b);
+    r = X_UpdateFromItem_0(b, l + 1);
+    r = r && X_QualifiedName(b, l + 1);
+    exit_section_(b, m, X_UPDATE_FROM_ITEM, r);
+    return r;
+  }
+
+  // (X_Name X_tkCOLON)?
+  private static boolean X_UpdateFromItem_0(PsiBuilder b, int l) {
+    if (!recursion_guard_(b, l, "X_UpdateFromItem_0")) return false;
+    X_UpdateFromItem_0_0(b, l + 1);
+    return true;
+  }
+
+  // X_Name X_tkCOLON
+  private static boolean X_UpdateFromItem_0_0(PsiBuilder b, int l) {
+    if (!recursion_guard_(b, l, "X_UpdateFromItem_0_0")) return false;
+    boolean r;
+    Marker m = enter_section_(b);
+    r = X_Name(b, l + 1);
+    r = r && consumeToken(b, X_TKCOLON);
+    exit_section_(b, m, null, r);
+    return r;
+  }
+
+  /* ********************************************************** */
+  // X_tkLPAR X_UpdateFromItem (',' X_UpdateFromItem)* X_tkRPAR
+  public static boolean X_UpdateFromMulti(PsiBuilder b, int l) {
+    if (!recursion_guard_(b, l, "X_UpdateFromMulti")) return false;
+    if (!nextTokenIs(b, X_TKLPAR)) return false;
+    boolean r;
+    Marker m = enter_section_(b);
+    r = consumeToken(b, X_TKLPAR);
+    r = r && X_UpdateFromItem(b, l + 1);
+    r = r && X_UpdateFromMulti_2(b, l + 1);
+    r = r && consumeToken(b, X_TKRPAR);
+    exit_section_(b, m, X_UPDATE_FROM_MULTI, r);
+    return r;
+  }
+
+  // (',' X_UpdateFromItem)*
+  private static boolean X_UpdateFromMulti_2(PsiBuilder b, int l) {
+    if (!recursion_guard_(b, l, "X_UpdateFromMulti_2")) return false;
+    while (true) {
+      int c = current_position_(b);
+      if (!X_UpdateFromMulti_2_0(b, l + 1)) break;
+      if (!empty_element_parsed_guard_(b, "X_UpdateFromMulti_2", c)) break;
+    }
+    return true;
+  }
+
+  // ',' X_UpdateFromItem
+  private static boolean X_UpdateFromMulti_2_0(PsiBuilder b, int l) {
+    if (!recursion_guard_(b, l, "X_UpdateFromMulti_2_0")) return false;
+    boolean r;
+    Marker m = enter_section_(b);
+    r = consumeToken(b, X_TKCOMMA);
+    r = r && X_UpdateFromItem(b, l + 1);
+    exit_section_(b, m, null, r);
+    return r;
+  }
+
+  /* ********************************************************** */
+  // X_QualifiedName
+  public static boolean X_UpdateFromSingle(PsiBuilder b, int l) {
+    if (!recursion_guard_(b, l, "X_UpdateFromSingle")) return false;
+    if (!nextTokenIs(b, ID)) return false;
+    boolean r;
+    Marker m = enter_section_(b);
+    r = X_QualifiedName(b, l + 1);
+    exit_section_(b, m, X_UPDATE_FROM_SINGLE, r);
+    return r;
+  }
+
+  /* ********************************************************** */
   // X_tkUPDATE X_UpdateTarget X_tkLPAR (X_UpdateWhatExpr (X_tkCOMMA X_UpdateWhatExpr)*)? X_tkRPAR X_tkSEMI
   public static boolean X_UpdateStmt(PsiBuilder b, int l) {
     if (!recursion_guard_(b, l, "X_UpdateStmt")) return false;
@@ -3902,13 +3998,13 @@ public class RellParser implements PsiParser, LightPsiParser {
   }
 
   /* ********************************************************** */
-  // X_AtExprFrom X_AtExprAt X_AtExprWhere
+  // X_UpdateFrom X_AtExprAt X_AtExprWhere
   public static boolean X_UpdateTargetAt(PsiBuilder b, int l) {
     if (!recursion_guard_(b, l, "X_UpdateTargetAt")) return false;
     if (!nextTokenIs(b, "<x update target at>", ID, X_TKLPAR)) return false;
     boolean r;
     Marker m = enter_section_(b, l, _NONE_, X_UPDATE_TARGET_AT, "<x update target at>");
-    r = X_AtExprFrom(b, l + 1);
+    r = X_UpdateFrom(b, l + 1);
     r = r && X_AtExprAt(b, l + 1);
     r = r && X_AtExprWhere(b, l + 1);
     exit_section_(b, l, m, r, false, null);
