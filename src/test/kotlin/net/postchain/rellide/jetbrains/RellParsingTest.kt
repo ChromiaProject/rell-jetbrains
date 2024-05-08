@@ -13,7 +13,7 @@ data class RellTestCaseSnippet(val files: Map<String, String>, val parsing: Map<
 
 class RellParsingTest : ParsingTestCase("", "rell", true, RellParserDefinition()) {
 
-    override fun getTestDataPath() = "src/test/testData/parserTestSnippets"
+    override fun getTestDataPath() = "build/rell-test-cases/test-cases"
 
     fun testRellParser() {
         val snippetFiles = getSnippetFiles()

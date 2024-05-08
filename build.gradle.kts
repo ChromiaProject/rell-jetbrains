@@ -4,6 +4,9 @@ import org.jetbrains.changelog.markdownToHTML
 fun properties(key: String) = providers.gradleProperty(key)
 fun environment(key: String) = providers.environmentVariable(key)
 
+val rellTestCasesConfiguration by configurations.creating
+val rellVersion = "0.13.12"
+
 plugins {
     // Java support
     id("java")
@@ -20,7 +23,19 @@ plugins {
 }
 
 dependencies {
+    rellTestCasesConfiguration(group = "net.postchain.rell", name = "rell-api-gtx", version = rellVersion, classifier = "rell-test-cases", ext = "zip")
     testImplementation("com.fasterxml.jackson.module:jackson-module-kotlin:2.15.2")
+}
+
+val testCasesDir = layout.buildDirectory.dir("rell-test-cases")
+
+val copyTestCases by tasks.registering(Copy::class) {
+    from({ zipTree(rellTestCasesConfiguration.singleFile) })
+    into(testCasesDir.map { it.dir("test-cases") })
+}
+
+tasks.compileTestKotlin {
+    dependsOn(copyTestCases)
 }
 
 group = properties("pluginGroup").get()

@@ -1,4 +1,4 @@
-val rellVersion = "0.13.10"
+val rellVersion = "0.13.12"
 
 plugins {
     // Java support
