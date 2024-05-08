@@ -29,8 +29,8 @@ public class RellXEntityAnnotationsImpl extends ASTWrapperPsiElement implements 
 
   @Override
   @NotNull
-  public List<RellXName> getXNameList() {
-    return PsiTreeUtil.getChildrenOfTypeAsList(this, RellXName.class);
+  public RellXCommaSeparated10 getXCommaSeparated10() {
+    return findNotNullChildByClass(RellXCommaSeparated10.class);
   }
 
 }

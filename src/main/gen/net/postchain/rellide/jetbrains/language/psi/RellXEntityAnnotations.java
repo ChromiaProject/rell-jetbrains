@@ -8,6 +8,6 @@ import com.intellij.psi.PsiElement;
 public interface RellXEntityAnnotations extends PsiElement {
 
   @NotNull
-  List<RellXName> getXNameList();
+  RellXCommaSeparated10 getXCommaSeparated10();
 
 }

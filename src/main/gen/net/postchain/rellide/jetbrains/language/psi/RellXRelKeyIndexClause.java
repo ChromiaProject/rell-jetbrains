@@ -8,7 +8,7 @@ import com.intellij.psi.PsiElement;
 public interface RellXRelKeyIndexClause extends PsiElement {
 
   @NotNull
-  List<RellXBaseAttributeDefinition> getXBaseAttributeDefinitionList();
+  RellXCommaSeparated8 getXCommaSeparated8();
 
   @NotNull
   RellXKeyIndexKind getXKeyIndexKind();

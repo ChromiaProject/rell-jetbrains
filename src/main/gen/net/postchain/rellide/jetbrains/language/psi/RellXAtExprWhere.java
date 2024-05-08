@@ -8,6 +8,6 @@ import com.intellij.psi.PsiElement;
 public interface RellXAtExprWhere extends PsiElement {
 
   @NotNull
-  List<RellXExpressionRef> getXExpressionRefList();
+  RellXCommaSeparated20 getXCommaSeparated20();
 
 }

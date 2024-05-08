@@ -29,8 +29,8 @@ public class RellXAnnotationArgsImpl extends ASTWrapperPsiElement implements Rel
 
   @Override
   @NotNull
-  public List<RellXAnnotationArg> getXAnnotationArgList() {
-    return PsiTreeUtil.getChildrenOfTypeAsList(this, RellXAnnotationArg.class);
+  public RellXCommaSeparated7 getXCommaSeparated7() {
+    return findNotNullChildByClass(RellXCommaSeparated7.class);
   }
 
 }

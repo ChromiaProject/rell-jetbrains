@@ -29,8 +29,8 @@ public class RellXTupleVarDeclaratorImpl extends ASTWrapperPsiElement implements
 
   @Override
   @NotNull
-  public List<RellXVarDeclarator> getXVarDeclaratorList() {
-    return PsiTreeUtil.getChildrenOfTypeAsList(this, RellXVarDeclarator.class);
+  public RellXCommaSeparated30 getXCommaSeparated30() {
+    return findNotNullChildByClass(RellXCommaSeparated30.class);
   }
 
 }

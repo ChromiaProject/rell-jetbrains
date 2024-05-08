@@ -8,6 +8,6 @@ import com.intellij.psi.PsiElement;
 public interface RellXTupleVarDeclarator extends PsiElement {
 
   @NotNull
-  List<RellXVarDeclarator> getXVarDeclaratorList();
+  RellXCommaSeparated30 getXCommaSeparated30();
 
 }

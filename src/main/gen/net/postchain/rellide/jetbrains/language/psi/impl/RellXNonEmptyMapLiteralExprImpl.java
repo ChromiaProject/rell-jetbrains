@@ -29,8 +29,8 @@ public class RellXNonEmptyMapLiteralExprImpl extends ASTWrapperPsiElement implem
 
   @Override
   @NotNull
-  public List<RellXMapLiteralExprEntry> getXMapLiteralExprEntryList() {
-    return PsiTreeUtil.getChildrenOfTypeAsList(this, RellXMapLiteralExprEntry.class);
+  public RellXCommaSeparated24 getXCommaSeparated24() {
+    return findNotNullChildByClass(RellXCommaSeparated24.class);
   }
 
 }

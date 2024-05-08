@@ -29,14 +29,14 @@ public class RellXGenericTypeImpl extends ASTWrapperPsiElement implements RellXG
 
   @Override
   @NotNull
-  public RellXQualifiedName getXQualifiedName() {
-    return findNotNullChildByClass(RellXQualifiedName.class);
+  public RellXCommaSeparated3 getXCommaSeparated3() {
+    return findNotNullChildByClass(RellXCommaSeparated3.class);
   }
 
   @Override
   @NotNull
-  public List<RellXTypeRef> getXTypeRefList() {
-    return PsiTreeUtil.getChildrenOfTypeAsList(this, RellXTypeRef.class);
+  public RellXQualifiedName getXQualifiedName() {
+    return findNotNullChildByClass(RellXQualifiedName.class);
   }
 
 }

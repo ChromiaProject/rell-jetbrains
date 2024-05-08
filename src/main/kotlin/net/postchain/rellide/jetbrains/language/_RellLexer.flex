@@ -175,7 +175,8 @@ HEXDIGNUM=0[ \t\n\x0B\f\r]*x[ \t\n\x0B\f\r]*[0-9A-Fa-f]+
   ")"                       { return X_TKRPAR; }
   "}"                       { return X_TKRCURL; }
   "]"                       { return X_TKRBRACK; }
-
+  "<"                       { return X_TKLT; }
+  ">"                       { return X_TKGT; }
 
   "?:"               { return X_BINARY_OPERATOR ; }
   "?."               { return X_BASE_EXPR_TAIL_SAFE_MEMBER ; }

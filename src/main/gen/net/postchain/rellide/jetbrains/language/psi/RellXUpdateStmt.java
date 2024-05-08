@@ -11,6 +11,6 @@ public interface RellXUpdateStmt extends PsiElement {
   RellXUpdateTarget getXUpdateTarget();
 
   @NotNull
-  List<RellXUpdateWhatExpr> getXUpdateWhatExprList();
+  RellXUpdateWhat getXUpdateWhat();
 
 }

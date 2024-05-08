@@ -29,8 +29,14 @@ public class RellXFunctionTypeImpl extends ASTWrapperPsiElement implements RellX
 
   @Override
   @NotNull
-  public List<RellXTypeRef> getXTypeRefList() {
-    return PsiTreeUtil.getChildrenOfTypeAsList(this, RellXTypeRef.class);
+  public RellXCommaSeparated5 getXCommaSeparated5() {
+    return findNotNullChildByClass(RellXCommaSeparated5.class);
+  }
+
+  @Override
+  @NotNull
+  public RellXTypeRef getXTypeRef() {
+    return findNotNullChildByClass(RellXTypeRef.class);
   }
 
 }

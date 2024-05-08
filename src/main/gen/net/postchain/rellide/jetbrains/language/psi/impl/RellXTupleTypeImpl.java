@@ -29,14 +29,8 @@ public class RellXTupleTypeImpl extends ASTWrapperPsiElement implements RellXTup
 
   @Override
   @NotNull
-  public RellXTupleTypeField getXTupleTypeField() {
-    return findNotNullChildByClass(RellXTupleTypeField.class);
-  }
-
-  @Override
-  @Nullable
-  public RellXTupleTypeTail getXTupleTypeTail() {
-    return findChildByClass(RellXTupleTypeTail.class);
+  public RellXCommaSeparated1 getXCommaSeparated1() {
+    return findNotNullChildByClass(RellXCommaSeparated1.class);
   }
 
 }

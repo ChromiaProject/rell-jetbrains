@@ -8,9 +8,9 @@ import com.intellij.psi.PsiElement;
 public interface RellXGenericType extends PsiElement {
 
   @NotNull
-  RellXQualifiedName getXQualifiedName();
+  RellXCommaSeparated3 getXCommaSeparated3();
 
   @NotNull
-  List<RellXTypeRef> getXTypeRefList();
+  RellXQualifiedName getXQualifiedName();
 
 }

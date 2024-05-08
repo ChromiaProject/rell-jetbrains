@@ -8,6 +8,6 @@ import com.intellij.psi.PsiElement;
 public interface RellXAtExprFrom extends PsiElement {
 
   @NotNull
-  List<RellXAtExprFromItem> getXAtExprFromItemList();
+  RellXCommaSeparated16 getXCommaSeparated16();
 
 }

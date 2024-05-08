@@ -8,6 +8,9 @@ import com.intellij.psi.PsiElement;
 public interface RellXFunctionType extends PsiElement {
 
   @NotNull
-  List<RellXTypeRef> getXTypeRefList();
+  RellXCommaSeparated5 getXCommaSeparated5();
+
+  @NotNull
+  RellXTypeRef getXTypeRef();
 
 }

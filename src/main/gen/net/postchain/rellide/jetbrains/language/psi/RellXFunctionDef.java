@@ -8,7 +8,7 @@ import com.intellij.psi.PsiElement;
 public interface RellXFunctionDef extends PsiElement {
 
   @NotNull
-  List<RellXFormalParameter> getXFormalParameterList();
+  RellXFormalParameters getXFormalParameters();
 
   @NotNull
   RellXFunctionBody getXFunctionBody();

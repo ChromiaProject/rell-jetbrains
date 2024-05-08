@@ -29,8 +29,8 @@ public class RellXCallArgsImpl extends ASTWrapperPsiElement implements RellXCall
 
   @Override
   @NotNull
-  public List<RellXCallArg> getXCallArgList() {
-    return PsiTreeUtil.getChildrenOfTypeAsList(this, RellXCallArg.class);
+  public RellXCommaSeparated28 getXCommaSeparated28() {
+    return findNotNullChildByClass(RellXCommaSeparated28.class);
   }
 
 }

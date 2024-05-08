@@ -8,7 +8,7 @@ import com.intellij.psi.PsiElement;
 public interface RellXCreateExpr extends PsiElement {
 
   @NotNull
-  List<RellXCreateExprArg> getXCreateExprArgList();
+  RellXCreateExprArgs getXCreateExprArgs();
 
   @NotNull
   RellXQualifiedName getXQualifiedName();

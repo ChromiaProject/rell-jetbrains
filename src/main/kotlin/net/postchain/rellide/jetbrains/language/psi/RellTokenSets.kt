@@ -131,7 +131,6 @@ interface RellTokenSets {
         val X_OBJECT_DEF = TokenSet.create(RellTypes.X_OBJECT_DEF);
         val X_OPERAND_EXPR = TokenSet.create(RellTypes.X_OPERAND_EXPR);
         val X_OP_DEF = TokenSet.create(RellTypes.X_OP_DEF);
-        val X_PARENTHESES_EXPR = TokenSet.create(RellTypes.X_PARENTHESES_EXPR);
         val X_PRIMARY_TYPE = TokenSet.create(RellTypes.X_PRIMARY_TYPE);
         val X_QUALIFIED_NAME = TokenSet.create(RellTypes.X_QUALIFIED_NAME);
         val X_QUERY_BODY = TokenSet.create(RellTypes.X_QUERY_BODY);
@@ -187,10 +186,8 @@ interface RellTokenSets {
         val X_TK_WHEN = TokenSet.create(RellTypes.X_TKWHEN);
         val X_TK_WHILE = TokenSet.create(RellTypes.X_TKWHILE);
         val X_TUPLE_EXPR_FIELD = TokenSet.create(RellTypes.X_TUPLE_EXPR_FIELD);
-        val X_TUPLE_EXPR_TAIL = TokenSet.create(RellTypes.X_TUPLE_EXPR_TAIL);
         val X_TUPLE_TYPE = TokenSet.create(RellTypes.X_TUPLE_TYPE);
         val X_TUPLE_TYPE_FIELD = TokenSet.create(RellTypes.X_TUPLE_TYPE_FIELD);
-        val X_TUPLE_TYPE_TAIL = TokenSet.create(RellTypes.X_TUPLE_TYPE_TAIL);
         val X_TUPLE_VAR_DECLARATOR = TokenSet.create(RellTypes.X_TUPLE_VAR_DECLARATOR);
         val X_TYPE = TokenSet.create(RellTypes.X_TYPE);
         val X_TYPE_REF = TokenSet.create(RellTypes.X_TYPE_REF);
