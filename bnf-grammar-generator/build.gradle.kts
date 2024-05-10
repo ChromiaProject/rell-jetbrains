@@ -1,4 +1,6 @@
-val rellVersion = "0.13.12"
+fun properties(key: String) = providers.gradleProperty(key)
+
+val rellVersion = properties("rellVersion").get()
 
 plugins {
     // Java support
