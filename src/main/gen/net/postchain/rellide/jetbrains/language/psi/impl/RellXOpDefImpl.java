@@ -35,8 +35,8 @@ public class RellXOpDefImpl extends ASTWrapperPsiElement implements RellXOpDef {
 
   @Override
   @NotNull
-  public List<RellXFormalParameter> getXFormalParameterList() {
-    return PsiTreeUtil.getChildrenOfTypeAsList(this, RellXFormalParameter.class);
+  public RellXFormalParameters getXFormalParameters() {
+    return findNotNullChildByClass(RellXFormalParameters.class);
   }
 
   @Override

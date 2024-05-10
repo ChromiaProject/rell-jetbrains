@@ -8,6 +8,6 @@ import com.intellij.psi.PsiElement;
 public interface RellXNonEmptyMapLiteralExpr extends PsiElement {
 
   @NotNull
-  List<RellXMapLiteralExprEntry> getXMapLiteralExprEntryList();
+  RellXCommaSeparated24 getXCommaSeparated24();
 
 }

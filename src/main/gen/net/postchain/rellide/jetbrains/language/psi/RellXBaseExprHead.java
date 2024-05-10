@@ -47,10 +47,10 @@ public interface RellXBaseExprHead extends PsiElement {
   RellXNonEmptyMapLiteralExpr getXNonEmptyMapLiteralExpr();
 
   @Nullable
-  RellXParenthesesExpr getXParenthesesExpr();
+  RellXStringExpr getXStringExpr();
 
   @Nullable
-  RellXStringExpr getXStringExpr();
+  RellXTupleExpr getXTupleExpr();
 
   @Nullable
   RellXVirtualTypeExpr getXVirtualTypeExpr();

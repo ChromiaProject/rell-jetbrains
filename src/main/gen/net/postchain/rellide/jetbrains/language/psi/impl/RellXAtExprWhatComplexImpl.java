@@ -29,8 +29,8 @@ public class RellXAtExprWhatComplexImpl extends ASTWrapperPsiElement implements 
 
   @Override
   @NotNull
-  public List<RellXAtExprWhatComplexItem> getXAtExprWhatComplexItemList() {
-    return PsiTreeUtil.getChildrenOfTypeAsList(this, RellXAtExprWhatComplexItem.class);
+  public RellXCommaSeparated18 getXCommaSeparated18() {
+    return findNotNullChildByClass(RellXCommaSeparated18.class);
   }
 
 }

@@ -29,8 +29,8 @@ public class RellXListLiteralExprImpl extends ASTWrapperPsiElement implements Re
 
   @Override
   @NotNull
-  public List<RellXExpressionRef> getXExpressionRefList() {
-    return PsiTreeUtil.getChildrenOfTypeAsList(this, RellXExpressionRef.class);
+  public RellXCommaSeparated22 getXCommaSeparated22() {
+    return findNotNullChildByClass(RellXCommaSeparated22.class);
   }
 
 }

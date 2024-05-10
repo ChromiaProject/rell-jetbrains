@@ -8,6 +8,6 @@ import com.intellij.psi.PsiElement;
 public interface RellXImportTargetExact extends PsiElement {
 
   @NotNull
-  List<RellXImportTargetExactItem> getXImportTargetExactItemList();
+  RellXCommaSeparated38 getXCommaSeparated38();
 
 }

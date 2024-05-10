@@ -8,6 +8,6 @@ import com.intellij.psi.PsiElement;
 public interface RellXUpdateFromMulti extends PsiElement {
 
   @NotNull
-  List<RellXUpdateFromItem> getXUpdateFromItemList();
+  RellXCommaSeparated32 getXCommaSeparated32();
 
 }

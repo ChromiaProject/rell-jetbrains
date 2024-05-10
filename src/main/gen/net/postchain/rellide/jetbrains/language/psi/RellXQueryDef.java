@@ -8,7 +8,7 @@ import com.intellij.psi.PsiElement;
 public interface RellXQueryDef extends PsiElement {
 
   @NotNull
-  List<RellXFormalParameter> getXFormalParameterList();
+  RellXFormalParameters getXFormalParameters();
 
   @NotNull
   RellXName getXName();

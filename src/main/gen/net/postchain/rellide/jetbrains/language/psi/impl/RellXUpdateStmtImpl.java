@@ -35,8 +35,8 @@ public class RellXUpdateStmtImpl extends ASTWrapperPsiElement implements RellXUp
 
   @Override
   @NotNull
-  public List<RellXUpdateWhatExpr> getXUpdateWhatExprList() {
-    return PsiTreeUtil.getChildrenOfTypeAsList(this, RellXUpdateWhatExpr.class);
+  public RellXUpdateWhat getXUpdateWhat() {
+    return findNotNullChildByClass(RellXUpdateWhat.class);
   }
 
 }

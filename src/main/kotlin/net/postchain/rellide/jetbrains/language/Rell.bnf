@@ -81,6 +81,8 @@
     X_tkRPAR=')'
     X_tkRCURL='}'
     X_tkRBRACK=']'
+    X_tkLT='<'
+    X_tkGT='>'
   ]
 }
 X_RootParser ::= (X_ModuleHeader)? (X_AnnotatedDef)*
@@ -100,7 +102,13 @@ X_Annotation ::= X_tkAT X_Name (X_AnnotationArgs)?
 X_Name ::= ID
 
 
-X_AnnotationArgs ::= X_tkLPAR (X_AnnotationArg (X_tkCOMMA X_AnnotationArg)*)? X_tkRPAR
+X_AnnotationArgs ::= X_CommaSeparated_7
+
+
+X_CommaSeparated_7 ::= X_tkLPAR (X_CommaSeparated_6)? X_tkRPAR
+
+
+X_CommaSeparated_6 ::= X_AnnotationArg (X_tkCOMMA X_AnnotationArg)* (X_tkCOMMA)?
 
 
 X_AnnotationArg ::= X_AnnotationArgValue
@@ -163,7 +171,13 @@ X_EntityKeyword ::= 'entity'
    | 'class'
 
 
-X_EntityAnnotations ::= X_tkLPAR X_Name (X_tkCOMMA X_Name)* X_tkRPAR
+X_EntityAnnotations ::= X_CommaSeparated_10
+
+
+X_CommaSeparated_10 ::= X_tkLPAR X_CommaSeparated_9 X_tkRPAR
+
+
+X_CommaSeparated_9 ::= X_Name (X_tkCOMMA X_Name)* (X_tkCOMMA)?
 
 
 X_EntityBody ::= X_EntityBodyFull
@@ -205,7 +219,13 @@ X_ComplexNullableType ::= X_tkLPAR X_TypeRef X_tkRPAR X_tkQUESTION
 X_TypeRef ::= X_Type
 
 
-X_FunctionType ::= X_tkLPAR (X_TypeRef (X_tkCOMMA X_TypeRef)*)? X_tkRPAR X_tkArrow X_TypeRef
+X_FunctionType ::= X_CommaSeparated_5 X_tkArrow X_TypeRef
+
+
+X_CommaSeparated_5 ::= X_tkLPAR (X_CommaSeparated_4)? X_tkRPAR
+
+
+X_CommaSeparated_4 ::= X_TypeRef (X_tkCOMMA X_TypeRef)* (X_tkCOMMA)?
 
 
 X_BasicType ::= X_PrimaryType (X_tkQUESTION)*
@@ -218,28 +238,37 @@ X_PrimaryType ::= X_GenericType
    | X_MirrorStructType
 
 
-X_GenericType ::= X_QualifiedName '<' X_TypeRef (X_tkCOMMA X_TypeRef)* '>'
+X_GenericType ::= X_QualifiedName X_CommaSeparated_3
+
+
+X_CommaSeparated_3 ::= X_tkLT X_CommaSeparated_2 X_tkGT
+
+
+X_CommaSeparated_2 ::= X_TypeRef (X_tkCOMMA X_TypeRef)* (X_tkCOMMA)?
 
 
 X_NameType ::= X_QualifiedName
 
 
-X_TupleType ::= X_tkLPAR X_TupleTypeField (X_TupleTypeTail)? X_tkRPAR
+X_TupleType ::= X_CommaSeparated_1
+
+
+X_CommaSeparated_1 ::= X_tkLPAR X_CommaSeparated_0 X_tkRPAR
+
+
+X_CommaSeparated_0 ::= X_TupleTypeField (X_tkCOMMA X_TupleTypeField)* (X_tkCOMMA)?
 
 
 X_TupleTypeField ::= (X_Name X_tkCOLON)? X_TypeRef
 
 
-X_TupleTypeTail ::= X_tkCOMMA (X_TupleTypeField (X_tkCOMMA X_TupleTypeField)*)?
-
-
-X_VirtualType ::= X_tkVIRTUAL '<' X_TypeRef '>'
+X_VirtualType ::= X_tkVIRTUAL X_tkLT X_TypeRef X_tkGT
 
 
 X_MirrorStructType ::= X_MirrorStructType0
 
 
-X_MirrorStructType0 ::= X_tkSTRUCT '<' (X_tkMUTABLE)? X_TypeRef '>'
+X_MirrorStructType0 ::= X_tkSTRUCT X_tkLT (X_tkMUTABLE)? X_TypeRef X_tkGT
 
 
 X_AnonAttrHeader ::= X_QualifiedName (X_tkQUESTION)?
@@ -284,7 +313,7 @@ X_BaseExprHead ::= X_GenericTypeExpr
    | 'false'
    | 'true'
    | X_NullLiteralExpr
-   | X_ParenthesesExpr
+   | X_TupleExpr
    | X_CreateExpr
    | X_ListLiteralExpr
    | X_EmptyMapLiteralExpr
@@ -302,7 +331,13 @@ X_BaseExprTailMember ::= X_tkDOT X_Name
 X_BaseExprTailCall ::= X_CallArgs
 
 
-X_CallArgs ::= X_tkLPAR (X_CallArg (X_tkCOMMA X_CallArg)*)? X_tkRPAR
+X_CallArgs ::= X_CommaSeparated_28
+
+
+X_CommaSeparated_28 ::= X_tkLPAR (X_CommaSeparated_27)? X_tkRPAR
+
+
+X_CommaSeparated_27 ::= X_CallArg (X_tkCOMMA X_CallArg)* (X_tkCOMMA)?
 
 
 X_CallArg ::= (X_Name X_tkASSIGN)? X_CallArgValue
@@ -314,14 +349,41 @@ X_CallArgValue ::= X_tkMUL
 X_AtExpr ::= X_AtExprFrom X_BaseExprTailAt
 
 
-X_AtExprFrom ::= X_tkLPAR X_AtExprFromItem (X_tkCOMMA X_AtExprFromItem)* (X_tkCOMMA)? X_tkRPAR
+X_AtExprFrom ::= X_CommaSeparated_16
+
+
+X_CommaSeparated_16 ::= X_tkLPAR X_CommaSeparated_15 X_tkRPAR
+
+
+X_CommaSeparated_15 ::= X_AtExprFromItem (X_tkCOMMA X_AtExprFromItem)* (X_tkCOMMA)?
 
 
 X_AtExprFromItem ::= (X_Annotation)* (X_Name X_tkCOLON)? X_ExpressionRef
 
 
+X_AtExprWhere ::= X_CommaSeparated_20
+
+
+X_CommaSeparated_20 ::= X_tkLCURL (X_CommaSeparated_19)? X_tkRCURL
+
+
+X_CommaSeparated_19 ::= X_ExpressionRef (X_tkCOMMA X_ExpressionRef)* (X_tkCOMMA)?
+
+X_AtExprWhat ::= X_AtExprWhatSimple
+   | X_AtExprWhatComplex
+
 X_AtExprWhatSimple ::= X_tkDOT X_Name (X_tkDOT X_Name)*
 
+X_AtExprWhatComplex ::= X_CommaSeparated_18
+
+
+X_CommaSeparated_18 ::= X_tkLPAR X_CommaSeparated_17 X_tkRPAR
+
+
+X_CommaSeparated_17 ::= X_AtExprWhatComplexItem (X_tkCOMMA X_AtExprWhatComplexItem)* (X_tkCOMMA)?
+
+
+X_AtExprWhatComplexItem ::= (X_Annotation)* (X_AtExprWhatName)? X_ExpressionRef
 
 X_NameExpr ::= X_Name
 
@@ -329,28 +391,52 @@ X_NameExpr ::= X_Name
 X_AttrExpr ::= X_tkDOT X_Name
 
 
-X_ParenthesesExpr ::= X_tkLPAR X_TupleExprField (X_TupleExprTail)? X_tkRPAR
+X_TupleExpr ::= X_CommaSeparated_14
+
+
+X_CommaSeparated_14 ::= X_tkLPAR X_CommaSeparated_13 X_tkRPAR
+
+
+X_CommaSeparated_13 ::= X_TupleExprField (X_tkCOMMA X_TupleExprField)* (X_tkCOMMA)?
 
 
 X_TupleExprField ::= (X_Name X_tkASSIGN)? X_ExpressionRef
 
 
-X_TupleExprTail ::= X_tkCOMMA (X_TupleExprField (X_tkCOMMA X_TupleExprField)*)?
+X_CreateExpr ::= X_tkCREATE X_QualifiedName X_CreateExprArgs
 
 
-X_CreateExpr ::= X_tkCREATE X_QualifiedName X_tkLPAR (X_CreateExprArg (X_tkCOMMA X_CreateExprArg)*)? X_tkRPAR
+X_CreateExprArgs ::= X_CommaSeparated_26
+
+
+X_CommaSeparated_26 ::= X_tkLPAR (X_CommaSeparated_25)? X_tkRPAR
+
+
+X_CommaSeparated_25 ::= X_CreateExprArg (X_tkCOMMA X_CreateExprArg)* (X_tkCOMMA)?
 
 
 X_CreateExprArg ::= ((X_tkDOT)? X_Name X_tkASSIGN)? X_CallArgValue
 
 
-X_ListLiteralExpr ::= X_tkLBRACK (X_ExpressionRef (X_tkCOMMA X_ExpressionRef)*)? X_tkRBRACK
+X_ListLiteralExpr ::= X_CommaSeparated_22
+
+
+X_CommaSeparated_22 ::= X_tkLBRACK (X_CommaSeparated_21)? X_tkRBRACK
+
+
+X_CommaSeparated_21 ::= X_ExpressionRef (X_tkCOMMA X_ExpressionRef)* (X_tkCOMMA)?
 
 
 X_EmptyMapLiteralExpr ::= X_tkLBRACK X_tkCOLON X_tkRBRACK
 
 
-X_NonEmptyMapLiteralExpr ::= X_tkLBRACK X_MapLiteralExprEntry (X_tkCOMMA X_MapLiteralExprEntry)* X_tkRBRACK
+X_NonEmptyMapLiteralExpr ::= X_CommaSeparated_24
+
+
+X_CommaSeparated_24 ::= X_tkLBRACK X_CommaSeparated_23 X_tkRBRACK
+
+
+X_CommaSeparated_23 ::= X_MapLiteralExprEntry (X_tkCOMMA X_MapLiteralExprEntry)* (X_tkCOMMA)?
 
 
 X_MapLiteralExprEntry ::= X_ExpressionRef X_tkCOLON X_ExpressionRef
@@ -436,7 +522,7 @@ X_WhenCondition ::= X_WhenConditionExpr
 
 X_WhenConditionElse ::= X_tkElse
 
-X_WhenConditionExpr ::= X_ExpressionRef (X_tkCOMMA X_ExpressionRef)*
+X_WhenConditionExpr ::= X_ExpressionRef (X_tkCOMMA X_ExpressionRef)* (X_tkCOMMA)?
 
 
 X_BinaryExprOperand ::= X_BinaryOperator X_UnaryExpr
@@ -446,8 +532,8 @@ X_BinaryOperator ::= '=='
    | '!='
    | '<='
    | '>='
-   | '<'
-   | '>'
+   | X_tkLT
+   | X_tkGT
    | '==='
    | '!=='
    | X_tkPLUS
@@ -462,7 +548,10 @@ X_BinaryOperator ::= '=='
    | '?:'
 
 
-X_RelKeyIndexClause ::= X_KeyIndexKind X_BaseAttributeDefinition (X_tkCOMMA X_BaseAttributeDefinition)* X_tkSEMI
+X_RelKeyIndexClause ::= X_KeyIndexKind X_CommaSeparated_8 X_tkSEMI
+
+
+X_CommaSeparated_8 ::= X_BaseAttributeDefinition (X_tkCOMMA X_BaseAttributeDefinition)* (X_tkCOMMA)?
 
 
 X_KeyIndexKind ::= 'key'
@@ -481,10 +570,22 @@ X_StructKeyword ::= X_tkSTRUCT
    | 'record'
 
 
-X_EnumDef ::= X_tkENUM X_Name X_tkLCURL (X_Name (X_tkCOMMA X_Name)*)? (X_tkCOMMA)? X_tkRCURL
+X_EnumDef ::= X_tkENUM X_Name X_CommaSeparated_12
 
 
-X_FunctionDef ::= X_tkFUNCTION (X_QualifiedName)? X_tkLPAR (X_FormalParameter (X_tkCOMMA X_FormalParameter)*)? X_tkRPAR (X_tkCOLON X_Type)? X_FunctionBody
+X_CommaSeparated_12 ::= X_tkLCURL (X_CommaSeparated_11)? X_tkRCURL
+
+
+X_CommaSeparated_11 ::= X_Name (X_tkCOMMA X_Name)* (X_tkCOMMA)?
+
+
+X_FunctionDef ::= X_tkFUNCTION (X_QualifiedName)? X_FormalParameters (X_tkCOLON X_Type)? X_FunctionBody
+
+X_FormalParameters ::= X_CommaSeparated_36
+
+X_CommaSeparated_36 ::= X_tkLPAR (X_CommaSeparated_35)? X_tkRPAR
+
+X_CommaSeparated_35 ::= X_FormalParameter (X_tkCOMMA X_FormalParameter)* (X_tkCOMMA)?
 
 
 X_FormalParameter ::= X_AttrHeader (X_tkASSIGN X_Expression)?
@@ -542,8 +643,11 @@ X_VarDeclarator ::= X_SimpleVarDeclarator
 X_SimpleVarDeclarator ::= X_AttrHeader
 
 
-X_TupleVarDeclarator ::= X_tkLPAR X_VarDeclarator (X_tkCOMMA X_VarDeclarator)* X_tkRPAR
+X_TupleVarDeclarator ::= X_CommaSeparated_30
 
+X_CommaSeparated_30 ::= X_tkLPAR X_CommaSeparated_29 X_tkRPAR
+
+X_CommaSeparated_29 ::= X_VarDeclarator (X_tkCOMMA X_VarDeclarator)* (X_tkCOMMA)?
 
 X_AssignStmt ::= X_BaseExpr X_AssignOp X_Expression X_tkSEMI
 
@@ -580,7 +684,7 @@ X_BreakStmt ::= X_tkBREAK X_tkSEMI
 X_ContinueStmt ::= X_tkCONTINUE X_tkSEMI
 
 
-X_UpdateStmt ::= X_tkUPDATE X_UpdateTarget X_tkLPAR (X_UpdateWhatExpr (X_tkCOMMA X_UpdateWhatExpr)*)? X_tkRPAR X_tkSEMI
+X_UpdateStmt ::= X_tkUPDATE X_UpdateTarget X_UpdateWhat ';'
 
 
 
@@ -598,7 +702,13 @@ X_UpdateFrom ::= X_UpdateFromSingle
 X_UpdateFromSingle ::= X_QualifiedName
 
 
-X_UpdateFromMulti ::= X_tkLPAR X_UpdateFromItem (',' X_UpdateFromItem)* X_tkRPAR
+X_UpdateFromMulti ::= X_CommaSeparated_32
+
+
+X_CommaSeparated_32 ::= X_tkLPAR X_CommaSeparated_31 X_tkRPAR
+
+
+X_CommaSeparated_31 ::= X_UpdateFromItem (X_tkCOMMA X_UpdateFromItem)* (X_tkCOMMA)?
 
 X_UpdateFromItem ::= (X_Name X_tkCOLON)? X_QualifiedName
 
@@ -613,6 +723,14 @@ X_BaseExprTailNoCallNoAt ::= X_BaseExprTailMember
    | X_BaseExprTailNotNull
    | X_BaseExprTailSafeMember
    | X_BaseExprTailUnaryPostfixOp
+
+X_UpdateWhat ::= X_CommaSeparated_34
+
+
+X_CommaSeparated_34 ::= X_tkLPAR X_CommaSeparated_33 X_tkRPAR
+
+
+X_CommaSeparated_33 ::= X_UpdateWhatExpr (X_tkCOMMA X_UpdateWhatExpr)* (X_tkCOMMA)?
 
 
 X_UpdateWhatExpr ::= (X_UpdateWhatNameOp)? X_Expression
@@ -660,17 +778,22 @@ X_ImportTarget ::= X_tkDOT (X_ImportTargetExact | X_ImportTargetWildcard)
 
 X_ImportTargetWildcard ::= X_tkMUL
 
-X_ImportTargetExact ::= X_tkLCURL (X_ImportTargetExactItem (X_tkCOMMA X_ImportTargetExactItem)*)? X_tkRCURL
+X_ImportTargetExact ::= X_CommaSeparated_38
+
+
+X_CommaSeparated_38 ::= X_tkLCURL X_CommaSeparated_37 X_tkRCURL
+
+
+X_CommaSeparated_37 ::= X_ImportTargetExactItem (X_tkCOMMA X_ImportTargetExactItem)* (X_tkCOMMA)?
 
 
 X_ImportTargetExactItem ::= (X_Name X_tkCOLON)? X_QualifiedName (X_tkDOT X_tkMUL)?
 
 
-X_OpDef ::= X_tkOPERATION X_Name X_tkLPAR (X_FormalParameter (X_tkCOMMA X_FormalParameter)*)? X_tkRPAR X_BlockStmt
+X_OpDef ::= X_tkOPERATION X_Name X_FormalParameters X_BlockStmt
 
 
-X_QueryDef ::= X_tkQUERY X_Name X_tkLPAR (X_FormalParameter (X_tkCOMMA X_FormalParameter)*)? X_tkRPAR (X_tkCOLON X_Type)? X_QueryBody
-
+X_QueryDef ::= X_tkQUERY X_Name X_FormalParameters (X_tkCOLON X_Type)? X_QueryBody
 
 X_QueryBody ::= X_FunctionBodyShort
    | X_FunctionBodyFull

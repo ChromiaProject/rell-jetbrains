@@ -8,6 +8,6 @@ import com.intellij.psi.PsiElement;
 public interface RellXCallArgs extends PsiElement {
 
   @NotNull
-  List<RellXCallArg> getXCallArgList();
+  RellXCommaSeparated28 getXCommaSeparated28();
 
 }

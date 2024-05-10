@@ -29,8 +29,8 @@ public class RellXCreateExprImpl extends ASTWrapperPsiElement implements RellXCr
 
   @Override
   @NotNull
-  public List<RellXCreateExprArg> getXCreateExprArgList() {
-    return PsiTreeUtil.getChildrenOfTypeAsList(this, RellXCreateExprArg.class);
+  public RellXCreateExprArgs getXCreateExprArgs() {
+    return findNotNullChildByClass(RellXCreateExprArgs.class);
   }
 
   @Override

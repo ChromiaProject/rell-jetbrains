@@ -29,8 +29,8 @@ public class RellXRelKeyIndexClauseImpl extends ASTWrapperPsiElement implements 
 
   @Override
   @NotNull
-  public List<RellXBaseAttributeDefinition> getXBaseAttributeDefinitionList() {
-    return PsiTreeUtil.getChildrenOfTypeAsList(this, RellXBaseAttributeDefinition.class);
+  public RellXCommaSeparated8 getXCommaSeparated8() {
+    return findNotNullChildByClass(RellXCommaSeparated8.class);
   }
 
   @Override

@@ -8,6 +8,9 @@ import com.intellij.psi.PsiElement;
 public interface RellXEnumDef extends PsiElement {
 
   @NotNull
-  List<RellXName> getXNameList();
+  RellXCommaSeparated12 getXCommaSeparated12();
+
+  @NotNull
+  RellXName getXName();
 
 }

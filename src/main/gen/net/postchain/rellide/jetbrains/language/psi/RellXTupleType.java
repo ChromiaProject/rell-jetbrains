@@ -8,9 +8,6 @@ import com.intellij.psi.PsiElement;
 public interface RellXTupleType extends PsiElement {
 
   @NotNull
-  RellXTupleTypeField getXTupleTypeField();
-
-  @Nullable
-  RellXTupleTypeTail getXTupleTypeTail();
+  RellXCommaSeparated1 getXCommaSeparated1();
 
 }

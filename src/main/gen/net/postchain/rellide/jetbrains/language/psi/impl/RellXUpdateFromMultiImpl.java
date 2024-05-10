@@ -29,8 +29,8 @@ public class RellXUpdateFromMultiImpl extends ASTWrapperPsiElement implements Re
 
   @Override
   @NotNull
-  public List<RellXUpdateFromItem> getXUpdateFromItemList() {
-    return PsiTreeUtil.getChildrenOfTypeAsList(this, RellXUpdateFromItem.class);
+  public RellXCommaSeparated32 getXCommaSeparated32() {
+    return findNotNullChildByClass(RellXCommaSeparated32.class);
   }
 
 }

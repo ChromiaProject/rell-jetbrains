@@ -11,7 +11,7 @@ public interface RellXOpDef extends PsiElement {
   RellXBlockStmt getXBlockStmt();
 
   @NotNull
-  List<RellXFormalParameter> getXFormalParameterList();
+  RellXFormalParameters getXFormalParameters();
 
   @NotNull
   RellXName getXName();

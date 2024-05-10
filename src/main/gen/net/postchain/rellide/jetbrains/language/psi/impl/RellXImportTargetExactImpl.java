@@ -29,8 +29,8 @@ public class RellXImportTargetExactImpl extends ASTWrapperPsiElement implements 
 
   @Override
   @NotNull
-  public List<RellXImportTargetExactItem> getXImportTargetExactItemList() {
-    return PsiTreeUtil.getChildrenOfTypeAsList(this, RellXImportTargetExactItem.class);
+  public RellXCommaSeparated38 getXCommaSeparated38() {
+    return findNotNullChildByClass(RellXCommaSeparated38.class);
   }
 
 }
