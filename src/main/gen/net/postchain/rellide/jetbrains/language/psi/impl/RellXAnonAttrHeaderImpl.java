@@ -29,8 +29,8 @@ public class RellXAnonAttrHeaderImpl extends ASTWrapperPsiElement implements Rel
 
   @Override
   @NotNull
-  public RellXQualifiedName getXQualifiedName() {
-    return findNotNullChildByClass(RellXQualifiedName.class);
+  public RellXQualifiedNameNode getXQualifiedNameNode() {
+    return findNotNullChildByClass(RellXQualifiedNameNode.class);
   }
 
 }

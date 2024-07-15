@@ -8,7 +8,7 @@ import com.intellij.psi.PsiElement;
 public interface RellXUpdateFromItem extends PsiElement {
 
   @Nullable
-  RellXName getXName();
+  RellXNameNode getXNameNode();
 
   @NotNull
   RellXQualifiedName getXQualifiedName();

@@ -29,8 +29,8 @@ public class RellXNameImpl extends ASTWrapperPsiElement implements RellXName {
 
   @Override
   @NotNull
-  public PsiElement getId() {
-    return findNotNullChildByType(ID);
+  public RellXNameNode getXNameNode() {
+    return findNotNullChildByClass(RellXNameNode.class);
   }
 
 }

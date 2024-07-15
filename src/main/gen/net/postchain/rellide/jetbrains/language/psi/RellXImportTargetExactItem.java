@@ -8,9 +8,9 @@ import com.intellij.psi.PsiElement;
 public interface RellXImportTargetExactItem extends PsiElement {
 
   @Nullable
-  RellXName getXName();
+  RellXNameNode getXNameNode();
 
   @NotNull
-  RellXQualifiedName getXQualifiedName();
+  RellXQualifiedNameNode getXQualifiedNameNode();
 
 }

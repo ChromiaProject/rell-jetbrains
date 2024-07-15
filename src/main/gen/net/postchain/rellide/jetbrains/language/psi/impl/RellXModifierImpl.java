@@ -33,4 +33,10 @@ public class RellXModifierImpl extends ASTWrapperPsiElement implements RellXModi
     return findChildByClass(RellXAnnotation.class);
   }
 
+  @Override
+  @Nullable
+  public RellXKeywordModifier getXKeywordModifier() {
+    return findChildByClass(RellXKeywordModifier.class);
+  }
+
 }

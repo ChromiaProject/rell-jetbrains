@@ -10,10 +10,10 @@ public interface RellXAtExprWhatComplexItem extends PsiElement {
   @NotNull
   List<RellXAnnotation> getXAnnotationList();
 
-  @Nullable
-  RellXAtExprWhatName getXAtExprWhatName();
-
   @NotNull
   RellXExpressionRef getXExpressionRef();
+
+  @Nullable
+  RellXNameNode getXNameNode();
 
 }

@@ -11,6 +11,6 @@ public interface RellXAnnotatedDef extends PsiElement {
   RellXAnyDef getXAnyDef();
 
   @NotNull
-  List<RellXModifier> getXModifierList();
+  RellXModifiers getXModifiers();
 
 }

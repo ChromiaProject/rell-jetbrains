@@ -11,14 +11,14 @@ import static net.postchain.rellide.jetbrains.language.psi.RellTypes.*;
 import com.intellij.extapi.psi.ASTWrapperPsiElement;
 import net.postchain.rellide.jetbrains.language.psi.*;
 
-public class RellXRelAnyClauseImpl extends ASTWrapperPsiElement implements RellXRelAnyClause {
+public class RellXNameNodeImpl extends ASTWrapperPsiElement implements RellXNameNode {
 
-  public RellXRelAnyClauseImpl(@NotNull ASTNode node) {
+  public RellXNameNodeImpl(@NotNull ASTNode node) {
     super(node);
   }
 
   public void accept(@NotNull RellVisitor visitor) {
-    visitor.visitXRelAnyClause(this);
+    visitor.visitXNameNode(this);
   }
 
   @Override
@@ -28,15 +28,9 @@ public class RellXRelAnyClauseImpl extends ASTWrapperPsiElement implements RellX
   }
 
   @Override
-  @Nullable
-  public RellXRelAttributeClause getXRelAttributeClause() {
-    return findChildByClass(RellXRelAttributeClause.class);
-  }
-
-  @Override
-  @Nullable
-  public RellXRelKeyIndexClause getXRelKeyIndexClause() {
-    return findChildByClass(RellXRelKeyIndexClause.class);
+  @NotNull
+  public PsiElement getId() {
+    return findNotNullChildByType(ID);
   }
 
 }

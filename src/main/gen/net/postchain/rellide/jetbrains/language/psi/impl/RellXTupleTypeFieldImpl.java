@@ -29,8 +29,8 @@ public class RellXTupleTypeFieldImpl extends ASTWrapperPsiElement implements Rel
 
   @Override
   @Nullable
-  public RellXName getXName() {
-    return findChildByClass(RellXName.class);
+  public RellXNameNode getXNameNode() {
+    return findChildByClass(RellXNameNode.class);
   }
 
   @Override

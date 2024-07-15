@@ -35,8 +35,8 @@ public class RellXAnnotatedDefImpl extends ASTWrapperPsiElement implements RellX
 
   @Override
   @NotNull
-  public List<RellXModifier> getXModifierList() {
-    return PsiTreeUtil.getChildrenOfTypeAsList(this, RellXModifier.class);
+  public RellXModifiers getXModifiers() {
+    return findNotNullChildByClass(RellXModifiers.class);
   }
 
 }

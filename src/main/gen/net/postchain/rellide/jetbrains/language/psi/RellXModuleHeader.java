@@ -8,6 +8,6 @@ import com.intellij.psi.PsiElement;
 public interface RellXModuleHeader extends PsiElement {
 
   @NotNull
-  List<RellXModifier> getXModifierList();
+  RellXModifiers getXModifiers();
 
 }

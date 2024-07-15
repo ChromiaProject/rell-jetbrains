@@ -8,6 +8,6 @@ import com.intellij.psi.PsiElement;
 public interface RellXEntityBodyFull extends PsiElement {
 
   @NotNull
-  List<RellXRelAnyClause> getXRelAnyClauseList();
+  List<RellXRelClause> getXRelClauseList();
 
 }

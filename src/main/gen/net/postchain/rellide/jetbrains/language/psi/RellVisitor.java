@@ -127,6 +127,10 @@ public class RellVisitor extends PsiElementVisitor {
     visitPsiElement(o);
   }
 
+  public void visitXAttributeClause(@NotNull RellXAttributeClause o) {
+    visitPsiElement(o);
+  }
+
   public void visitXAttributeDefinition(@NotNull RellXAttributeDefinition o) {
     visitPsiElement(o);
   }
@@ -451,6 +455,10 @@ public class RellVisitor extends PsiElementVisitor {
     visitPsiElement(o);
   }
 
+  public void visitXEnumValue(@NotNull RellXEnumValue o) {
+    visitPsiElement(o);
+  }
+
   public void visitXExpression(@NotNull RellXExpression o) {
     visitPsiElement(o);
   }
@@ -555,7 +563,19 @@ public class RellVisitor extends PsiElementVisitor {
     visitPsiElement(o);
   }
 
+  public void visitXKeyIndexClause(@NotNull RellXKeyIndexClause o) {
+    visitPsiElement(o);
+  }
+
   public void visitXKeyIndexKind(@NotNull RellXKeyIndexKind o) {
+    visitPsiElement(o);
+  }
+
+  public void visitXKeywordModifier(@NotNull RellXKeywordModifier o) {
+    visitPsiElement(o);
+  }
+
+  public void visitXKeywordModifier0(@NotNull RellXKeywordModifier0 o) {
     visitPsiElement(o);
   }
 
@@ -587,6 +607,10 @@ public class RellVisitor extends PsiElementVisitor {
     visitPsiElement(o);
   }
 
+  public void visitXModifiers(@NotNull RellXModifiers o) {
+    visitPsiElement(o);
+  }
+
   public void visitXModuleHeader(@NotNull RellXModuleHeader o) {
     visitPsiElement(o);
   }
@@ -596,6 +620,10 @@ public class RellVisitor extends PsiElementVisitor {
   }
 
   public void visitXNameExpr(@NotNull RellXNameExpr o) {
+    visitPsiElement(o);
+  }
+
+  public void visitXNameNode(@NotNull RellXNameNode o) {
     visitPsiElement(o);
   }
 
@@ -635,6 +663,10 @@ public class RellVisitor extends PsiElementVisitor {
     visitPsiElement(o);
   }
 
+  public void visitXQualifiedNameNode(@NotNull RellXQualifiedNameNode o) {
+    visitPsiElement(o);
+  }
+
   public void visitXQueryBody(@NotNull RellXQueryBody o) {
     visitPsiElement(o);
   }
@@ -643,11 +675,7 @@ public class RellVisitor extends PsiElementVisitor {
     visitPsiElement(o);
   }
 
-  public void visitXRelAnyClause(@NotNull RellXRelAnyClause o) {
-    visitPsiElement(o);
-  }
-
-  public void visitXRelAttributeClause(@NotNull RellXRelAttributeClause o) {
+  public void visitXRelClause(@NotNull RellXRelClause o) {
     visitPsiElement(o);
   }
 

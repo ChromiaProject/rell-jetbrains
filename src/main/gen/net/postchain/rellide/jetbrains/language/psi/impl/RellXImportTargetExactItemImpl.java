@@ -29,14 +29,14 @@ public class RellXImportTargetExactItemImpl extends ASTWrapperPsiElement impleme
 
   @Override
   @Nullable
-  public RellXName getXName() {
-    return findChildByClass(RellXName.class);
+  public RellXNameNode getXNameNode() {
+    return findChildByClass(RellXNameNode.class);
   }
 
   @Override
   @NotNull
-  public RellXQualifiedName getXQualifiedName() {
-    return findNotNullChildByClass(RellXQualifiedName.class);
+  public RellXQualifiedNameNode getXQualifiedNameNode() {
+    return findNotNullChildByClass(RellXQualifiedNameNode.class);
   }
 
 }

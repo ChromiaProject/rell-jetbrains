@@ -8,6 +8,6 @@ import com.intellij.psi.PsiElement;
 public interface RellXQualifiedName extends PsiElement {
 
   @NotNull
-  List<RellXName> getXNameList();
+  RellXQualifiedNameNode getXQualifiedNameNode();
 
 }
