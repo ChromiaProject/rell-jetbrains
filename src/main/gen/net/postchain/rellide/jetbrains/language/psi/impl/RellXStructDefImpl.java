@@ -29,8 +29,8 @@ public class RellXStructDefImpl extends ASTWrapperPsiElement implements RellXStr
 
   @Override
   @NotNull
-  public List<RellXAttributeDefinition> getXAttributeDefinitionList() {
-    return PsiTreeUtil.getChildrenOfTypeAsList(this, RellXAttributeDefinition.class);
+  public List<RellXAttributeClause> getXAttributeClauseList() {
+    return PsiTreeUtil.getChildrenOfTypeAsList(this, RellXAttributeClause.class);
   }
 
   @Override

@@ -10,4 +10,7 @@ public interface RellXModifier extends PsiElement {
   @Nullable
   RellXAnnotation getXAnnotation();
 
+  @Nullable
+  RellXKeywordModifier getXKeywordModifier();
+
 }

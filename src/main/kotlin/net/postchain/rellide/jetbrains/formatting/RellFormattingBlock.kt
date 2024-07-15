@@ -26,7 +26,7 @@ class RellFormattingBlock(
         X_BLOCK_STMT,
         X_STATEMENT_REF,
         X_EXPRESSION_REF,
-        X_REL_ANY_CLAUSE,
+        X_REL_CLAUSE,
         X_WHEN_STMT_CASE,
         X_WHEN_EXPR_CASE,
         X_AT_EXPR_WHERE

@@ -136,8 +136,8 @@ interface RellTokenSets {
         val X_QUERY_BODY = TokenSet.create(RellTypes.X_QUERY_BODY);
         val X_QUERY_DEF = TokenSet.create(RellTypes.X_QUERY_DEF);
         val X_RELATIVE_IMPORT_MODULE = TokenSet.create(RellTypes.X_RELATIVE_IMPORT_MODULE);
-        val X_REL_ANY_CLAUSE = TokenSet.create(RellTypes.X_REL_ANY_CLAUSE);
-        val X_REL_ATTRIBUTE_CLAUSE = TokenSet.create(RellTypes.X_REL_ATTRIBUTE_CLAUSE);
+        val X_REL_CLAUSE = TokenSet.create(RellTypes.X_REL_CLAUSE);
+
         val X_REL_KEY_INDEX_CLAUSE = TokenSet.create(RellTypes.X_REL_KEY_INDEX_CLAUSE);
         val X_RETURN_STMT = TokenSet.create(RellTypes.X_RETURN_STMT);
         val X_SIMPLE_VAR_DECLARATOR = TokenSet.create(RellTypes.X_SIMPLE_VAR_DECLARATOR);

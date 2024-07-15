@@ -5,9 +5,12 @@ import java.util.List;
 import org.jetbrains.annotations.*;
 import com.intellij.psi.PsiElement;
 
-public interface RellXAnonAttrHeader extends PsiElement {
+public interface RellXRelClause extends PsiElement {
 
-  @NotNull
-  RellXQualifiedNameNode getXQualifiedNameNode();
+  @Nullable
+  RellXAttributeClause getXAttributeClause();
+
+  @Nullable
+  RellXKeyIndexClause getXKeyIndexClause();
 
 }

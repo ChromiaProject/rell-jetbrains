@@ -11,14 +11,14 @@ import static net.postchain.rellide.jetbrains.language.psi.RellTypes.*;
 import com.intellij.extapi.psi.ASTWrapperPsiElement;
 import net.postchain.rellide.jetbrains.language.psi.*;
 
-public class RellXAtExprFromItemImpl extends ASTWrapperPsiElement implements RellXAtExprFromItem {
+public class RellXKeyIndexClauseImpl extends ASTWrapperPsiElement implements RellXKeyIndexClause {
 
-  public RellXAtExprFromItemImpl(@NotNull ASTNode node) {
+  public RellXKeyIndexClauseImpl(@NotNull ASTNode node) {
     super(node);
   }
 
   public void accept(@NotNull RellVisitor visitor) {
-    visitor.visitXAtExprFromItem(this);
+    visitor.visitXKeyIndexClause(this);
   }
 
   @Override
@@ -29,20 +29,14 @@ public class RellXAtExprFromItemImpl extends ASTWrapperPsiElement implements Rel
 
   @Override
   @NotNull
-  public List<RellXAnnotation> getXAnnotationList() {
-    return PsiTreeUtil.getChildrenOfTypeAsList(this, RellXAnnotation.class);
+  public RellXCommaSeparated8 getXCommaSeparated8() {
+    return findNotNullChildByClass(RellXCommaSeparated8.class);
   }
 
   @Override
   @NotNull
-  public RellXExpressionRef getXExpressionRef() {
-    return findNotNullChildByClass(RellXExpressionRef.class);
-  }
-
-  @Override
-  @Nullable
-  public RellXNameNode getXNameNode() {
-    return findChildByClass(RellXNameNode.class);
+  public RellXKeyIndexKind getXKeyIndexKind() {
+    return findNotNullChildByClass(RellXKeyIndexKind.class);
   }
 
 }

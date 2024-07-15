@@ -29,8 +29,8 @@ public class RellXCommaSeparated11Impl extends ASTWrapperPsiElement implements R
 
   @Override
   @NotNull
-  public List<RellXName> getXNameList() {
-    return PsiTreeUtil.getChildrenOfTypeAsList(this, RellXName.class);
+  public List<RellXEnumValue> getXEnumValueList() {
+    return PsiTreeUtil.getChildrenOfTypeAsList(this, RellXEnumValue.class);
   }
 
 }

@@ -11,38 +11,20 @@ import static net.postchain.rellide.jetbrains.language.psi.RellTypes.*;
 import com.intellij.extapi.psi.ASTWrapperPsiElement;
 import net.postchain.rellide.jetbrains.language.psi.*;
 
-public class RellXAtExprFromItemImpl extends ASTWrapperPsiElement implements RellXAtExprFromItem {
+public class RellXKeywordModifier0Impl extends ASTWrapperPsiElement implements RellXKeywordModifier0 {
 
-  public RellXAtExprFromItemImpl(@NotNull ASTNode node) {
+  public RellXKeywordModifier0Impl(@NotNull ASTNode node) {
     super(node);
   }
 
   public void accept(@NotNull RellVisitor visitor) {
-    visitor.visitXAtExprFromItem(this);
+    visitor.visitXKeywordModifier0(this);
   }
 
   @Override
   public void accept(@NotNull PsiElementVisitor visitor) {
     if (visitor instanceof RellVisitor) accept((RellVisitor)visitor);
     else super.accept(visitor);
-  }
-
-  @Override
-  @NotNull
-  public List<RellXAnnotation> getXAnnotationList() {
-    return PsiTreeUtil.getChildrenOfTypeAsList(this, RellXAnnotation.class);
-  }
-
-  @Override
-  @NotNull
-  public RellXExpressionRef getXExpressionRef() {
-    return findNotNullChildByClass(RellXExpressionRef.class);
-  }
-
-  @Override
-  @Nullable
-  public RellXNameNode getXNameNode() {
-    return findChildByClass(RellXNameNode.class);
   }
 
 }

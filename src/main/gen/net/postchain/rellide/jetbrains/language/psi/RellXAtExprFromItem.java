@@ -14,6 +14,6 @@ public interface RellXAtExprFromItem extends PsiElement {
   RellXExpressionRef getXExpressionRef();
 
   @Nullable
-  RellXName getXName();
+  RellXNameNode getXNameNode();
 
 }

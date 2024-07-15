@@ -29,8 +29,8 @@ public class RellXQualifiedNameImpl extends ASTWrapperPsiElement implements Rell
 
   @Override
   @NotNull
-  public List<RellXName> getXNameList() {
-    return PsiTreeUtil.getChildrenOfTypeAsList(this, RellXName.class);
+  public RellXQualifiedNameNode getXQualifiedNameNode() {
+    return findNotNullChildByClass(RellXQualifiedNameNode.class);
   }
 
 }

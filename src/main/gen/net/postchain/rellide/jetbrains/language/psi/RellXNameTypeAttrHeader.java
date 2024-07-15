@@ -8,7 +8,7 @@ import com.intellij.psi.PsiElement;
 public interface RellXNameTypeAttrHeader extends PsiElement {
 
   @NotNull
-  RellXName getXName();
+  RellXNameNode getXNameNode();
 
   @NotNull
   RellXType getXType();

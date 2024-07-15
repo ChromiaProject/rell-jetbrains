@@ -34,15 +34,15 @@ public class RellXAtExprWhatComplexItemImpl extends ASTWrapperPsiElement impleme
   }
 
   @Override
-  @Nullable
-  public RellXAtExprWhatName getXAtExprWhatName() {
-    return findChildByClass(RellXAtExprWhatName.class);
-  }
-
-  @Override
   @NotNull
   public RellXExpressionRef getXExpressionRef() {
     return findNotNullChildByClass(RellXExpressionRef.class);
+  }
+
+  @Override
+  @Nullable
+  public RellXNameNode getXNameNode() {
+    return findChildByClass(RellXNameNode.class);
   }
 
 }

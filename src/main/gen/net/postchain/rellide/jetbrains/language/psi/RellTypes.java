@@ -23,6 +23,7 @@ public interface RellTypes {
   IElementType X_ANY_DEF = new RellElementType("X_ANY_DEF");
   IElementType X_ASSIGN_OP = new RellElementType("X_ASSIGN_OP");
   IElementType X_ASSIGN_STMT = new RellElementType("X_ASSIGN_STMT");
+  IElementType X_ATTRIBUTE_CLAUSE = new RellElementType("X_ATTRIBUTE_CLAUSE");
   IElementType X_ATTRIBUTE_DEFINITION = new RellElementType("X_ATTRIBUTE_DEFINITION");
   IElementType X_ATTR_EXPR = new RellElementType("X_ATTR_EXPR");
   IElementType X_ATTR_HEADER = new RellElementType("X_ATTR_HEADER");
@@ -119,6 +120,7 @@ public interface RellTypes {
   IElementType X_ENTITY_DEF = new RellElementType("X_ENTITY_DEF");
   IElementType X_ENTITY_KEYWORD = new RellElementType("X_ENTITY_KEYWORD");
   IElementType X_ENUM_DEF = new RellElementType("X_ENUM_DEF");
+  IElementType X_ENUM_VALUE = new RellElementType("X_ENUM_VALUE");
   IElementType X_EXPRESSION = new RellElementType("X_EXPRESSION");
   IElementType X_EXPRESSION_REF = new RellElementType("X_EXPRESSION_REF");
   IElementType X_FORMAL_PARAMETER = new RellElementType("X_FORMAL_PARAMETER");
@@ -145,6 +147,9 @@ public interface RellTypes {
   IElementType X_INCREMENT_OPERATOR = new RellElementType("X_INCREMENT_OPERATOR");
   IElementType X_INCREMENT_STMT = new RellElementType("X_INCREMENT_STMT");
   IElementType X_INT_EXPR = new RellElementType("X_INT_EXPR");
+  IElementType X_KEYWORD_MODIFIER = new RellElementType("X_KEYWORD_MODIFIER");
+  IElementType X_KEYWORD_MODIFIER_0 = new RellElementType("X_KEYWORD_MODIFIER_0");
+  IElementType X_KEY_INDEX_CLAUSE = new RellElementType("X_KEY_INDEX_CLAUSE");
   IElementType X_KEY_INDEX_KIND = new RellElementType("X_KEY_INDEX_KIND");
   IElementType X_LIST_LITERAL_EXPR = new RellElementType("X_LIST_LITERAL_EXPR");
   IElementType X_LITERAL_EXPR = new RellElementType("X_LITERAL_EXPR");
@@ -153,10 +158,12 @@ public interface RellTypes {
   IElementType X_MIRROR_STRUCT_TYPE = new RellElementType("X_MIRROR_STRUCT_TYPE");
   IElementType X_MIRROR_STRUCT_TYPE_0 = new RellElementType("X_MIRROR_STRUCT_TYPE_0");
   IElementType X_MODIFIER = new RellElementType("X_MODIFIER");
+  IElementType X_MODIFIERS = new RellElementType("X_MODIFIERS");
   IElementType X_MODULE_HEADER = new RellElementType("X_MODULE_HEADER");
   IElementType X_NAME = new RellElementType("X_NAME");
   IElementType X_NAMESPACE_DEF = new RellElementType("X_NAMESPACE_DEF");
   IElementType X_NAME_EXPR = new RellElementType("X_NAME_EXPR");
+  IElementType X_NAME_NODE = new RellElementType("X_NAME_NODE");
   IElementType X_NAME_TYPE = new RellElementType("X_NAME_TYPE");
   IElementType X_NAME_TYPE_ATTR_HEADER = new RellElementType("X_NAME_TYPE_ATTR_HEADER");
   IElementType X_NON_EMPTY_MAP_LITERAL_EXPR = new RellElementType("X_NON_EMPTY_MAP_LITERAL_EXPR");
@@ -165,11 +172,11 @@ public interface RellTypes {
   IElementType X_OP_DEF = new RellElementType("X_OP_DEF");
   IElementType X_PRIMARY_TYPE = new RellElementType("X_PRIMARY_TYPE");
   IElementType X_QUALIFIED_NAME = new RellElementType("X_QUALIFIED_NAME");
+  IElementType X_QUALIFIED_NAME_NODE = new RellElementType("X_QUALIFIED_NAME_NODE");
   IElementType X_QUERY_BODY = new RellElementType("X_QUERY_BODY");
   IElementType X_QUERY_DEF = new RellElementType("X_QUERY_DEF");
   IElementType X_RELATIVE_IMPORT_MODULE = new RellElementType("X_RELATIVE_IMPORT_MODULE");
-  IElementType X_REL_ANY_CLAUSE = new RellElementType("X_REL_ANY_CLAUSE");
-  IElementType X_REL_ATTRIBUTE_CLAUSE = new RellElementType("X_REL_ATTRIBUTE_CLAUSE");
+  IElementType X_REL_CLAUSE = new RellElementType("X_REL_CLAUSE");
   IElementType X_REL_KEY_INDEX_CLAUSE = new RellElementType("X_REL_KEY_INDEX_CLAUSE");
   IElementType X_RETURN_STMT = new RellElementType("X_RETURN_STMT");
   IElementType X_SIMPLE_VAR_DECLARATOR = new RellElementType("X_SIMPLE_VAR_DECLARATOR");
@@ -326,6 +333,9 @@ public interface RellTypes {
       }
       else if (type == X_ASSIGN_STMT) {
         return new RellXAssignStmtImpl(node);
+      }
+      else if (type == X_ATTRIBUTE_CLAUSE) {
+        return new RellXAttributeClauseImpl(node);
       }
       else if (type == X_ATTRIBUTE_DEFINITION) {
         return new RellXAttributeDefinitionImpl(node);
@@ -615,6 +625,9 @@ public interface RellTypes {
       else if (type == X_ENUM_DEF) {
         return new RellXEnumDefImpl(node);
       }
+      else if (type == X_ENUM_VALUE) {
+        return new RellXEnumValueImpl(node);
+      }
       else if (type == X_EXPRESSION) {
         return new RellXExpressionImpl(node);
       }
@@ -693,6 +706,15 @@ public interface RellTypes {
       else if (type == X_INT_EXPR) {
         return new RellXIntExprImpl(node);
       }
+      else if (type == X_KEYWORD_MODIFIER) {
+        return new RellXKeywordModifierImpl(node);
+      }
+      else if (type == X_KEYWORD_MODIFIER_0) {
+        return new RellXKeywordModifier0Impl(node);
+      }
+      else if (type == X_KEY_INDEX_CLAUSE) {
+        return new RellXKeyIndexClauseImpl(node);
+      }
       else if (type == X_KEY_INDEX_KIND) {
         return new RellXKeyIndexKindImpl(node);
       }
@@ -717,6 +739,9 @@ public interface RellTypes {
       else if (type == X_MODIFIER) {
         return new RellXModifierImpl(node);
       }
+      else if (type == X_MODIFIERS) {
+        return new RellXModifiersImpl(node);
+      }
       else if (type == X_MODULE_HEADER) {
         return new RellXModuleHeaderImpl(node);
       }
@@ -728,6 +753,9 @@ public interface RellTypes {
       }
       else if (type == X_NAME_EXPR) {
         return new RellXNameExprImpl(node);
+      }
+      else if (type == X_NAME_NODE) {
+        return new RellXNameNodeImpl(node);
       }
       else if (type == X_NAME_TYPE) {
         return new RellXNameTypeImpl(node);
@@ -753,6 +781,9 @@ public interface RellTypes {
       else if (type == X_QUALIFIED_NAME) {
         return new RellXQualifiedNameImpl(node);
       }
+      else if (type == X_QUALIFIED_NAME_NODE) {
+        return new RellXQualifiedNameNodeImpl(node);
+      }
       else if (type == X_QUERY_BODY) {
         return new RellXQueryBodyImpl(node);
       }
@@ -762,11 +793,8 @@ public interface RellTypes {
       else if (type == X_RELATIVE_IMPORT_MODULE) {
         return new RellXRelativeImportModuleImpl(node);
       }
-      else if (type == X_REL_ANY_CLAUSE) {
-        return new RellXRelAnyClauseImpl(node);
-      }
-      else if (type == X_REL_ATTRIBUTE_CLAUSE) {
-        return new RellXRelAttributeClauseImpl(node);
+      else if (type == X_REL_CLAUSE) {
+        return new RellXRelClauseImpl(node);
       }
       else if (type == X_REL_KEY_INDEX_CLAUSE) {
         return new RellXRelKeyIndexClauseImpl(node);

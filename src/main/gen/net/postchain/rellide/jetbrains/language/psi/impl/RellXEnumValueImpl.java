@@ -11,14 +11,14 @@ import static net.postchain.rellide.jetbrains.language.psi.RellTypes.*;
 import com.intellij.extapi.psi.ASTWrapperPsiElement;
 import net.postchain.rellide.jetbrains.language.psi.*;
 
-public class RellXRelAttributeClauseImpl extends ASTWrapperPsiElement implements RellXRelAttributeClause {
+public class RellXEnumValueImpl extends ASTWrapperPsiElement implements RellXEnumValue {
 
-  public RellXRelAttributeClauseImpl(@NotNull ASTNode node) {
+  public RellXEnumValueImpl(@NotNull ASTNode node) {
     super(node);
   }
 
   public void accept(@NotNull RellVisitor visitor) {
-    visitor.visitXRelAttributeClause(this);
+    visitor.visitXEnumValue(this);
   }
 
   @Override
@@ -29,8 +29,8 @@ public class RellXRelAttributeClauseImpl extends ASTWrapperPsiElement implements
 
   @Override
   @NotNull
-  public RellXAttributeDefinition getXAttributeDefinition() {
-    return findNotNullChildByClass(RellXAttributeDefinition.class);
+  public RellXNameNode getXNameNode() {
+    return findNotNullChildByClass(RellXNameNode.class);
   }
 
 }

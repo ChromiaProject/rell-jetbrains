@@ -29,8 +29,8 @@ public class RellXEntityBodyFullImpl extends ASTWrapperPsiElement implements Rel
 
   @Override
   @NotNull
-  public List<RellXRelAnyClause> getXRelAnyClauseList() {
-    return PsiTreeUtil.getChildrenOfTypeAsList(this, RellXRelAnyClause.class);
+  public List<RellXRelClause> getXRelClauseList() {
+    return PsiTreeUtil.getChildrenOfTypeAsList(this, RellXRelClause.class);
   }
 
 }

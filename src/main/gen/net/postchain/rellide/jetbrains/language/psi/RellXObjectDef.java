@@ -8,7 +8,7 @@ import com.intellij.psi.PsiElement;
 public interface RellXObjectDef extends PsiElement {
 
   @NotNull
-  List<RellXAttributeDefinition> getXAttributeDefinitionList();
+  List<RellXAttributeClause> getXAttributeClauseList();
 
   @NotNull
   RellXName getXName();

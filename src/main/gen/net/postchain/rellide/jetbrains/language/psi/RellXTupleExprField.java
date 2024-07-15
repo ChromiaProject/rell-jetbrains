@@ -11,6 +11,6 @@ public interface RellXTupleExprField extends PsiElement {
   RellXExpressionRef getXExpressionRef();
 
   @Nullable
-  RellXName getXName();
+  RellXNameNode getXNameNode();
 
 }
