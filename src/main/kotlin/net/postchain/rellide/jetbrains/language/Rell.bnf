@@ -88,18 +88,28 @@
 X_RootParser ::= (X_ModuleHeader)? (X_AnnotatedDef)*
 
 
-X_ModuleHeader ::= (X_Modifier)* X_tkMODULE X_tkSEMI
+X_ModuleHeader ::= X_Modifiers X_tkMODULE X_tkSEMI
 
+X_Modifiers ::= (X_Modifier)*
 
-X_Modifier ::= 'abstract'
-   | 'override'
+X_Modifier ::= X_KeywordModifier
    | X_Annotation
+
+
+X_KeywordModifier ::= X_KeywordModifier0
+
+
+X_KeywordModifier0 ::= 'abstract'
+   | 'override'
 
 
 X_Annotation ::= X_tkAT X_Name (X_AnnotationArgs)?
 
 
-X_Name ::= ID
+X_Name ::= X_NameNode
+
+
+X_NameNode ::= ID
 
 
 X_AnnotationArgs ::= X_CommaSeparated_7
@@ -145,10 +155,13 @@ X_BytesExpr ::= BYTES
 X_AnnotationArgName ::= X_QualifiedName
 
 
-X_QualifiedName ::= X_Name (X_tkDOT X_Name)*
+X_QualifiedName ::= X_QualifiedNameNode
 
 
-X_AnnotatedDef ::= (X_Modifier)* X_AnyDef
+X_QualifiedNameNode ::= X_NameNode (X_tkDOT X_NameNode)*
+
+
+X_AnnotatedDef ::= X_Modifiers X_AnyDef
 
 
 X_AnyDef ::= X_EntityDef
@@ -185,14 +198,14 @@ X_EntityBody ::= X_EntityBodyFull
 
 X_EntityBodyShort ::= X_tkSEMI
 
-X_EntityBodyFull ::= X_tkLCURL (X_RelAnyClause)* X_tkRCURL
+X_EntityBodyFull ::= X_tkLCURL (X_RelClause)* X_tkRCURL
 
 
-X_RelAnyClause ::= X_RelAttributeClause
-   | X_RelKeyIndexClause
+X_RelClause ::= X_AttributeClause
+   | X_KeyIndexClause
 
 
-X_RelAttributeClause ::= X_AttributeDefinition
+X_AttributeClause ::= X_AttributeDefinition
 
 
 X_AttributeDefinition ::= X_BaseAttributeDefinition X_tkSEMI
@@ -205,7 +218,7 @@ X_AttrHeader ::= X_NameTypeAttrHeader
    | X_AnonAttrHeader
 
 
-X_NameTypeAttrHeader ::= X_Name X_tkCOLON X_Type
+X_NameTypeAttrHeader ::= X_NameNode X_tkCOLON X_Type
 
 
 X_Type ::= X_ComplexNullableType
@@ -259,7 +272,7 @@ X_CommaSeparated_1 ::= X_tkLPAR X_CommaSeparated_0 X_tkRPAR
 X_CommaSeparated_0 ::= X_TupleTypeField (X_tkCOMMA X_TupleTypeField)* (X_tkCOMMA)?
 
 
-X_TupleTypeField ::= (X_Name X_tkCOLON)? X_TypeRef
+X_TupleTypeField ::= (X_NameNode X_tkCOLON)? X_TypeRef
 
 
 X_VirtualType ::= X_tkVIRTUAL X_tkLT X_TypeRef X_tkGT
@@ -271,7 +284,7 @@ X_MirrorStructType ::= X_MirrorStructType0
 X_MirrorStructType0 ::= X_tkSTRUCT X_tkLT (X_tkMUTABLE)? X_TypeRef X_tkGT
 
 
-X_AnonAttrHeader ::= X_QualifiedName (X_tkQUESTION)?
+X_AnonAttrHeader ::= X_QualifiedNameNode (X_tkQUESTION)?
 
 
 X_ExpressionRef ::= X_Expression
@@ -358,7 +371,7 @@ X_CommaSeparated_16 ::= X_tkLPAR X_CommaSeparated_15 X_tkRPAR
 X_CommaSeparated_15 ::= X_AtExprFromItem (X_tkCOMMA X_AtExprFromItem)* (X_tkCOMMA)?
 
 
-X_AtExprFromItem ::= (X_Annotation)* (X_Name X_tkCOLON)? X_ExpressionRef
+X_AtExprFromItem ::= (X_Annotation)* (X_NameNode X_tkCOLON)? X_ExpressionRef
 
 
 X_AtExprWhere ::= X_CommaSeparated_20
@@ -383,7 +396,7 @@ X_CommaSeparated_18 ::= X_tkLPAR X_CommaSeparated_17 X_tkRPAR
 X_CommaSeparated_17 ::= X_AtExprWhatComplexItem (X_tkCOMMA X_AtExprWhatComplexItem)* (X_tkCOMMA)?
 
 
-X_AtExprWhatComplexItem ::= (X_Annotation)* (X_AtExprWhatName)? X_ExpressionRef
+X_AtExprWhatComplexItem ::= (X_Annotation)* (X_NameNode X_tkASSIGN)? X_ExpressionRef
 
 X_NameExpr ::= X_Name
 
@@ -400,7 +413,7 @@ X_CommaSeparated_14 ::= X_tkLPAR X_CommaSeparated_13 X_tkRPAR
 X_CommaSeparated_13 ::= X_TupleExprField (X_tkCOMMA X_TupleExprField)* (X_tkCOMMA)?
 
 
-X_TupleExprField ::= (X_Name X_tkASSIGN)? X_ExpressionRef
+X_TupleExprField ::= (X_NameNode X_tkASSIGN)? X_ExpressionRef
 
 
 X_CreateExpr ::= X_tkCREATE X_QualifiedName X_CreateExprArgs
@@ -551,6 +564,9 @@ X_BinaryOperator ::= '=='
 X_RelKeyIndexClause ::= X_KeyIndexKind X_CommaSeparated_8 X_tkSEMI
 
 
+X_KeyIndexClause ::= X_KeyIndexKind X_CommaSeparated_8 X_tkSEMI
+
+
 X_CommaSeparated_8 ::= X_BaseAttributeDefinition (X_tkCOMMA X_BaseAttributeDefinition)* (X_tkCOMMA)?
 
 
@@ -559,11 +575,10 @@ X_KeyIndexKind ::= 'key'
 
 
 
-X_ObjectDef ::= X_tkOBJECT X_Name X_tkLCURL (X_AttributeDefinition)* X_tkRCURL
+X_ObjectDef ::= X_tkOBJECT X_Name X_tkLCURL (X_AttributeClause)* X_tkRCURL
 
 
-
-X_StructDef ::= X_StructKeyword X_Name X_tkLCURL (X_AttributeDefinition)* X_tkRCURL
+X_StructDef ::= X_StructKeyword X_Name X_tkLCURL (X_AttributeClause)* X_tkRCURL
 
 
 X_StructKeyword ::= X_tkSTRUCT
@@ -576,7 +591,10 @@ X_EnumDef ::= X_tkENUM X_Name X_CommaSeparated_12
 X_CommaSeparated_12 ::= X_tkLCURL (X_CommaSeparated_11)? X_tkRCURL
 
 
-X_CommaSeparated_11 ::= X_Name (X_tkCOMMA X_Name)* (X_tkCOMMA)?
+X_CommaSeparated_11 ::= X_EnumValue (X_tkCOMMA X_EnumValue)* (X_tkCOMMA)?
+
+
+X_EnumValue ::= X_NameNode
 
 
 X_FunctionDef ::= X_tkFUNCTION (X_QualifiedName)? X_FormalParameters (X_tkCOLON X_Type)? X_FunctionBody
@@ -710,7 +728,7 @@ X_CommaSeparated_32 ::= X_tkLPAR X_CommaSeparated_31 X_tkRPAR
 
 X_CommaSeparated_31 ::= X_UpdateFromItem (X_tkCOMMA X_UpdateFromItem)* (X_tkCOMMA)?
 
-X_UpdateFromItem ::= (X_Name X_tkCOLON)? X_QualifiedName
+X_UpdateFromItem ::= (X_NameNode X_tkCOLON)? X_QualifiedName
 
 X_UpdateTargetExpr ::= X_BaseExprNoCallNoAt
 
@@ -787,7 +805,7 @@ X_CommaSeparated_38 ::= X_tkLCURL X_CommaSeparated_37 X_tkRCURL
 X_CommaSeparated_37 ::= X_ImportTargetExactItem (X_tkCOMMA X_ImportTargetExactItem)* (X_tkCOMMA)?
 
 
-X_ImportTargetExactItem ::= (X_Name X_tkCOLON)? X_QualifiedName (X_tkDOT X_tkMUL)?
+X_ImportTargetExactItem ::= (X_NameNode X_tkCOLON)? X_QualifiedNameNode (X_tkDOT X_tkMUL)?
 
 
 X_OpDef ::= X_tkOPERATION X_Name X_FormalParameters X_BlockStmt
