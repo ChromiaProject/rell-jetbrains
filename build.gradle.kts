@@ -98,7 +98,6 @@ java {
 }
 intellijPlatform {
     pluginConfiguration {
-        name = properties("pluginName")
         version = properties("pluginVersion")
 
         // Extract the <!-- Plugin description --> section from README.md and provide for the plugin's manifest
