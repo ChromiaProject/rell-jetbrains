@@ -40,7 +40,7 @@ class RellParsingTest : ParsingTestCase("", "rell", true, RellParserDefinition()
     private fun tryParsing(fileName: String, text: String): Boolean {
         return try {
             val parsedFile = parseFile(fileName, text)
-            ParsingTestUtil.ensureNoErrorElements(parsedFile)
+            ParsingTestUtil.assertNoPsiErrorElements(parsedFile)
             true
         } catch (e: Throwable) {
             false

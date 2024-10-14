@@ -4,3 +4,4 @@
 build
 .secrets
 language-server
+.intellijPlatform
