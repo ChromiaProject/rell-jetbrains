@@ -1,0 +1,75 @@
+package net.postchain.rellide.jetbrains.sentry
+
+import com.intellij.diagnostic.IdeaReportingEvent
+import com.intellij.ide.plugins.PluginManagerCore
+import com.intellij.openapi.application.ApplicationInfo
+import com.intellij.openapi.diagnostic.ErrorReportSubmitter
+import com.intellij.openapi.diagnostic.IdeaLoggingEvent
+import com.intellij.openapi.diagnostic.SubmittedReportInfo
+import com.intellij.openapi.diagnostic.SubmittedReportInfo.SubmissionStatus.NEW_ISSUE
+import com.intellij.openapi.extensions.PluginId
+import com.intellij.openapi.util.SystemInfo
+import com.intellij.util.Consumer
+import io.sentry.Sentry
+import java.awt.Component
+import io.sentry.SentryEvent
+import io.sentry.SentryLevel
+import io.sentry.protocol.Message
+
+
+class SentryReportSubmitter : ErrorReportSubmitter() {
+
+    init {
+        Sentry.init { options ->
+            options.dsn = "https://428edffffc07a615e459992d991f5640@o4508080756162560.ingest.de.sentry.io/4508210896765009"
+            // Set tracesSampleRate to 1.0 to capture 100% of transactions for tracing.
+            // We recommend adjusting this value in production.
+            options.tracesSampleRate = 1.0
+            options.isDebug = false
+            options.environment = "production"
+            options.release = "rell-jetbrains@$pluginVersion"
+        }
+    }
+
+    private val pluginVersion = PluginManagerCore.getPlugin(PluginId.getId("net.postchain.rellide.jetbrains.ultimate"))?.version ?: "unknown"
+
+    override fun getReportActionText() = "Report error to Rell plugin maintainers"
+
+    override fun submit(
+            events: Array<out IdeaLoggingEvent>,
+            additionalInfo: String?,
+            parentComponent: Component,
+            consumer: Consumer<in SubmittedReportInfo>
+    ): Boolean {
+        if (events.isEmpty()) {
+            return true
+        }
+
+        for (event in events) {
+            val exception = when (event) {
+                is IdeaReportingEvent -> event.data.throwable
+                else -> event.throwable
+            }
+            val sentryEvent = SentryEvent(exception).apply {
+                message = Message().apply {  message = event.message }
+                level = SentryLevel.ERROR
+                release = pluginVersion
+                setTag("build", ApplicationInfo.getInstance().build.asString())
+                setTag("plugin_version", pluginVersion)
+                setTag("os", SystemInfo.OS_NAME)
+                setTag("os_version", SystemInfo.OS_VERSION)
+                setTag("os_arch", SystemInfo.OS_ARCH)
+                setTag("java_version", SystemInfo.JAVA_VERSION)
+                setTag("java_runtime_version", SystemInfo.JAVA_RUNTIME_VERSION)
+                setTag("java_vendor", SystemInfo.JAVA_VENDOR)
+                additionalInfo?.let {
+                    setExtra("additional_info", additionalInfo)
+                }
+            }
+            Sentry.captureEvent(sentryEvent)
+        }
+
+        consumer.consume(SubmittedReportInfo(null, "Error has been successfully reported", NEW_ISSUE))
+        return true
+    }
+}

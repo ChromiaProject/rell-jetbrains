@@ -22,10 +22,23 @@ plugins {
     id("org.jetbrains.qodana") version "2024.1.9"
     // Gradle Kover Plugin
     id("org.jetbrains.kotlinx.kover") version "0.8.3"
+    // Sentry Plugin
+    id("io.sentry.jvm.gradle") version "4.13.0"
+}
+
+sentry {
+    // Generates a JVM (Java, Kotlin, etc.) source bundle and uploads your source code to Sentry.
+    // This enables source context, allowing you to see your source
+    // code as part of your stack traces in Sentry.
+    includeSourceContext = true
+    org = "chromaway-ab-za"
+    projectName = "rell-jetbrains"
+    authToken = System.getenv("SENTRY_AUTH_TOKEN")
 }
 
 dependencies {
     rellTestCasesConfiguration(group = "net.postchain.rell", name = "rell-api-gtx", version = properties("rellVersion").get(), classifier = "rell-test-cases", ext = "zip")
+    implementation("io.sentry:sentry:7.16.0")
     testImplementation("junit:junit:4.13.2")
     testImplementation("com.fasterxml.jackson.module:jackson-module-kotlin:2.17.2")
     testImplementation("org.opentest4j:opentest4j:1.3.0")
