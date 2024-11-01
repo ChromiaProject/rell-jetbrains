@@ -146,10 +146,12 @@ intellijPlatform {
         }
     }
 
-    signing {
-        certificateChain = file(environment("CERTIFICATE_CHAIN")).readText()
-        privateKey = file(environment("PRIVATE_KEY")).readText()
-        password = environment("PRIVATE_KEY_PASSWORD")
+    if (environment("CERTIFICATE_CHAIN").isPresent) {
+        signing {
+            certificateChain = file(environment("CERTIFICATE_CHAIN")).readText()
+            privateKey = file(environment("PRIVATE_KEY")).readText()
+            password = environment("PRIVATE_KEY_PASSWORD")
+        }
     }
 
     publishing {
