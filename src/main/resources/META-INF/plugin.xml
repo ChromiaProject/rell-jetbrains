@@ -73,6 +73,7 @@
         <!-- Plugin replacement -->
         <pluginReplacement implementation="net.postchain.rellide.jetbrains.replacement.RellPluginReplacement" />
 
+        <errorHandler implementation="net.postchain.rellide.jetbrains.sentry.SentryReportSubmitter"/>
     </extensions>
 
     <actions>
