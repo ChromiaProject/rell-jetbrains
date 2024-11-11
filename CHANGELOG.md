@@ -2,6 +2,10 @@
 
 # rell-jetbrains Changelog
 
+## 0.0.13
+### Update
+    Sentry error reporting
+
 ## 0.0.12
 ### Update
     Compatible with IntelliJ Platform 242.*
