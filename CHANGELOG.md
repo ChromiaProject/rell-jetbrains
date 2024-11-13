@@ -2,6 +2,10 @@
 
 # rell-jetbrains Changelog
 
+## 0.0.14
+### Update
+    Intellij platform 2024.3
+
 ## 0.0.13
 ### Update
     Sentry error reporting
