@@ -29,7 +29,6 @@ version = "0.0.1"
 // Configure project's dependencies
 repositories {
     mavenCentral()
-    maven { url = uri("https://jitpack.io") }
     maven {
         name = "bintray"
         url = uri("https://jcenter.bintray.com")

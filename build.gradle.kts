@@ -70,7 +70,6 @@ version = properties("pluginVersion").get()
 // Configure project's dependencies
 repositories {
     mavenCentral()
-    maven { url = uri("https://jitpack.io") }
     maven {
         name = "bintray"
         url = uri("https://jcenter.bintray.com")
@@ -90,6 +89,10 @@ repositories {
     maven {
         name = "Chromia parent GitLab Registry"
         url = uri("https://gitlab.com/api/v4/projects/50818999/packages/maven")
+    }
+    maven {
+        name = "Rell Toolbox Registry"
+        url = uri("https://gitlab.com/api/v4/projects/51303085/packages/maven")
     }
     // IntelliJ Platform Gradle Plugin Repositories Extension - read more: https://plugins.jetbrains.com/docs/intellij/tools-intellij-platform-gradle-plugin-repositories-extension.html
     intellijPlatform {
@@ -190,13 +193,17 @@ tasks {
     wrapper {
         gradleVersion = properties("gradleVersion").get()
     }
+    prepareSandbox {
+        doLast {
+            copy {
+                from("${project.projectDir}/language-server")
+                into("${destinationDir.path}/${properties("pluginName").get()}/language-server")
+            }
+        }
+    }
     publishPlugin {
         dependsOn("patchChangelog")
-        token.set(environment("PUBLISH_TOKEN"))
-        // The pluginVersion is based on the SemVer (https://semver.org) and supports pre-release labels, like 2.1.7-alpha.3
-        // Specify pre-release label to publish the plugin in a custom Release Channel automatically. Read more:
-        // https://plugins.jetbrains.com/docs/intellij/deployment.html#specifying-a-release-channel
-        channels.set(properties("pluginVersion").map { listOf(it.split('-').getOrElse(1) { "default" }.split('.').first()) })
+        dependsOn("patchChangelog")
     }
 }
 

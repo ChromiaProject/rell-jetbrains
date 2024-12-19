@@ -6,6 +6,7 @@
     <description>Rell blockchain programming language plugin</description>
 
     <depends>com.intellij.modules.platform</depends>
+    <depends>com.redhat.devtools.lsp4ij</depends>
 
     <resource-bundle>messages.RellBundle</resource-bundle>
 
@@ -43,6 +44,17 @@
         <!-- Folding -->
         <lang.foldingBuilder language="Rell" implementationClass="net.postchain.rellide.jetbrains.language.RellFoldingBuilder"/>
 
+        <!-- LSP textDocument/signatureHelp -->
+        <codeInsight.parameterInfo
+                language="Rell"
+                implementationClass="com.redhat.devtools.lsp4ij.features.signatureHelp.LSPParameterInfoHandler"/>
+
+        <!-- LSP textDocument/documentSymbol -->
+        <lang.psiStructureViewFactory
+                language="Rell"
+                implementationClass="com.redhat.devtools.lsp4ij.features.documentSymbol.LSPDocumentSymbolStructureViewFactory"/>
+
+
         <!-- Code style -->
         <codeStyleSettingsProvider implementation="net.postchain.rellide.jetbrains.formatting.RellCodeStyleSettingsProvider"/>
         <langCodeStyleSettingsProvider
@@ -54,11 +66,6 @@
 
         <!-- Spellchecking -->
         <spellchecker.support language="Rell" implementationClass="net.postchain.rellide.jetbrains.spellchecking.RellSpellcheckingStrategy"/>
-
-        <!-- Autocompletion -->
-        <completion.contributor
-                language="Rell"
-                implementationClass="net.postchain.rellide.jetbrains.completion.KeywordCompletionContributor"/>
 
         <!-- Custom icons -->
         <iconProvider implementation="net.postchain.rellide.jetbrains.icons.ChromiaYmlIconProvider" />
@@ -75,6 +82,22 @@
 
         <errorHandler implementation="net.postchain.rellide.jetbrains.sentry.SentryReportSubmitter"/>
     </extensions>
+
+    <extensions defaultExtensionNs="com.redhat.devtools.lsp4ij">
+        <server id="rellLanguageServer"
+                name="Rell Language Server"
+                factoryClass="net.postchain.rellide.jetbrains.lsp4ij.RellLanguageServerFactory">
+            <description><![CDATA[
+            Rell Language Server
+        ]]>
+            </description>
+        </server>
+
+        <languageMapping language="Rell"
+                         serverId="rellLanguageServer"
+                         languageId="Rell"/>
+    </extensions>
+
 
     <actions>
         <action id="rell.file.create"
