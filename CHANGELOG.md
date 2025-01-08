@@ -2,6 +2,10 @@
 
 # rell-jetbrains Changelog
 
+## 0.1.0
+### Added
+    Integrated LSP server for Rell language using LSP4IJ
+
 ## 0.0.14
 ### Update
     Intellij platform 2024.3
