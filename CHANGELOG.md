@@ -2,6 +2,10 @@
 
 # rell-jetbrains Changelog
 
+## 0.1.1
+### Added
+    Multi project workspace support
+
 ## 0.1.0
 ### Added
     Integrated LSP server for Rell language using LSP4IJ
