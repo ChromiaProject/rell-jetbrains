@@ -46,10 +46,7 @@ class SentryReportSubmitter : ErrorReportSubmitter() {
         }
 
         for (event in events) {
-            val exception = when (event) {
-                is IdeaReportingEvent -> event.data.throwable
-                else -> event.throwable
-            }
+            val exception = event.throwable
             val sentryEvent = SentryEvent(exception).apply {
                 message = Message().apply {  message = event.message }
                 level = SentryLevel.ERROR
