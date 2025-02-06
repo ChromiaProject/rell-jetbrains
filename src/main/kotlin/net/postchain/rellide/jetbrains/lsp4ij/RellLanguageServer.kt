@@ -17,7 +17,7 @@ class RellLanguageServer(val project: Project) : ProcessStreamConnectionProvider
         val pluginDescriptor = PluginManagerCore.getPlugin(PluginId.getId(PLUGIN_ID))
             ?: throw IllegalStateException("Cannot find plugin by ID: $PLUGIN_ID")
         val lspJarPath = pluginDescriptor.pluginPath.toAbsolutePath()
-            .resolve("language-server/rell-language-server-0.4.17.jar")
+            .resolve("language-server/rell-language-server-0.5.1.jar")
 
         val commands = JavaProcessCommandBuilder(project, "Rell")
             .setJar(lspJarPath.toString())

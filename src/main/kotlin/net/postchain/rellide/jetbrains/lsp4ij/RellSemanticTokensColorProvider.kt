@@ -18,6 +18,8 @@ enum class RellTokenModifier(
     OBJECT("rell-object"),
     QUERY("rell-query"),
     OPERATION("rell-operation"),
+    PARAMETER("rell-parameter"),
+    CALL("rell-call"),
 }
 
 
@@ -36,6 +38,7 @@ class RellSemanticTokensColorProvider : DefaultSemanticTokensColorsProvider() {
             SemanticTokenTypes.Variable -> {
                 when {
                     tokenModifiers.contains(RellTokenModifier.GLOBAL_CONSTANT.modifierStringId) -> RellColor.GLOBAL.textAttributesKey
+                    tokenModifiers.contains(RellTokenModifier.PARAMETER.modifierStringId) -> RellColor.PARAMETER.textAttributesKey
                     tokenModifiers.contains(RellTokenModifier.LOCAL_VAL.modifierStringId) -> RellColor.CONSTANT.textAttributesKey
                     tokenModifiers.contains(RellTokenModifier.LOCAL_VAR.modifierStringId) -> RellColor.LOCAL_VARIABLE.textAttributesKey
                     tokenModifiers.contains(RellTokenModifier.NAMED_ARGUMENT.modifierStringId) -> RellColor.PARAMETER.textAttributesKey
@@ -53,6 +56,7 @@ class RellSemanticTokensColorProvider : DefaultSemanticTokensColorsProvider() {
             SemanticTokenTypes.Struct -> RellColor.STRUCT_NAME.textAttributesKey
             SemanticTokenTypes.Function -> {
                 when {
+                    tokenModifiers.contains(RellTokenModifier.CALL.modifierStringId) -> RellColor.FUNCTION_CALL.textAttributesKey
                     tokenModifiers.contains(RellTokenModifier.OPERATION.modifierStringId) -> RellColor.OPERATION_NAME.textAttributesKey
                     tokenModifiers.contains(RellTokenModifier.QUERY.modifierStringId) -> RellColor.QUERY_NAME.textAttributesKey
                     else -> RellColor.FUNCTION_DECLARATION.textAttributesKey

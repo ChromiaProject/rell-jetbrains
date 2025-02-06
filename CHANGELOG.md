@@ -2,6 +2,12 @@
 
 # rell-jetbrains Changelog
 
+## 0.1.2
+### Added
+    - Module import completion.
+    - Snippet completion.
+    - Granular semantic highlighting for Rell language.
+
 ## 0.1.1
 ### Added
     Multi project workspace support
