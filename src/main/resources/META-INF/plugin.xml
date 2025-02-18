@@ -74,6 +74,12 @@
         <internalFileTemplate name="Rell Object"/>
         <internalFileTemplate name="Rell Enum"/>
 
+        <!-- Rell plugin settings -->
+        <applicationConfigurable parentId="tools" instance="net.postchain.rellide.jetbrains.settings.RellPluginSettingsConfigurable"
+                                 id="net.postchain.rellide.jetbrains.settings.RellPluginSettingsConfigurable"
+                                 displayName="Rell Settings"/>
+        <applicationService serviceImplementation="net.postchain.rellide.jetbrains.settings.RellPluginSettingsState"/>
+
         <!-- Plugin replacement -->
         <pluginReplacement implementation="net.postchain.rellide.jetbrains.replacement.RellPluginReplacement" />
 
@@ -97,8 +103,6 @@
         <semanticTokensColorsProvider
                 serverId="rellLanguageServer"
                 class="net.postchain.rellide.jetbrains.lsp4ij.RellSemanticTokensColorProvider" />
-
-
     </extensions>
 
 
