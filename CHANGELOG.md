@@ -2,6 +2,11 @@
 
 # rell-jetbrains Changelog
 
+## 0.1.3
+### Added
+    - Enable/Disable Index cache checkbox to Rell Settings
+    - Rell language server version 0.5.2
+
 ## 0.1.2
 ### Added
     - Module import completion.
