@@ -1,12 +1,19 @@
 package net.postchain.rellide.jetbrains.lsp4ij
 
+import com.intellij.execution.configurations.GeneralCommandLine
 import com.intellij.ide.plugins.PluginManagerCore
 import com.intellij.openapi.extensions.PluginId
 import com.intellij.openapi.project.Project
-import com.redhat.devtools.lsp4ij.server.JavaProcessCommandBuilder
-import com.redhat.devtools.lsp4ij.server.ProcessStreamConnectionProvider
+import com.intellij.openapi.util.SystemInfo
+import com.intellij.openapi.vfs.VirtualFile
+import com.redhat.devtools.lsp4ij.server.OSProcessStreamConnectionProvider
+import net.postchain.rellide.jetbrains.settings.RellPluginSettingsState
+import java.io.File
+import kotlin.Any
+import kotlin.IllegalStateException
+import kotlin.String
 
-class RellLanguageServer(val project: Project) : ProcessStreamConnectionProvider() {
+class RellLanguageServer(val project: Project) : OSProcessStreamConnectionProvider() {
     private val extraOptions = listOf(
         "-Duser.language=en",
         "-Duser.region=US",
@@ -19,12 +26,19 @@ class RellLanguageServer(val project: Project) : ProcessStreamConnectionProvider
         val lspJarPath = pluginDescriptor.pluginPath.toAbsolutePath()
             .resolve("language-server/rell-language-server-0.5.1.jar")
 
-        val commands = JavaProcessCommandBuilder(project, "Rell")
-            .setJar(lspJarPath.toString())
-            .create()
+        val jvmExecutablePath = computeJavaPath()
 
-        val launchCommands = listOf(commands.first()) + extraOptions + commands.drop(1)
-        super.setCommands(launchCommands)
+        val launchCommands = listOf(jvmExecutablePath, *extraOptions.toTypedArray(), "-jar", lspJarPath.toString())
+        setCommandLine(GeneralCommandLine(launchCommands))
+    }
+
+    override fun getInitializationOptions(rootUri: VirtualFile?): Any? {
+        val isIndexCachingEnabled = RellPluginSettingsState.instance.indexCaching
+        return mapOf("indexCaching" to isIndexCachingEnabled)
+    }
+
+    private fun computeJavaPath(): String {
+        return File(System.getProperty("java.home"), "bin/java" + (if (SystemInfo.isWindows) ".exe" else "")).absolutePath
     }
 
     companion object {
