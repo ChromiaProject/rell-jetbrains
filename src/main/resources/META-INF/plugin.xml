@@ -77,7 +77,7 @@
         <!-- Rell plugin settings -->
         <applicationConfigurable parentId="tools" instance="net.postchain.rellide.jetbrains.settings.RellPluginSettingsConfigurable"
                                  id="net.postchain.rellide.jetbrains.settings.RellPluginSettingsConfigurable"
-                                 displayName="Rell Settings"/>
+                                 displayName="Rell"/>
         <applicationService serviceImplementation="net.postchain.rellide.jetbrains.settings.RellPluginSettingsState"/>
 
         <!-- Plugin replacement -->

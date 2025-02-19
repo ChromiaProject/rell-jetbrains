@@ -12,7 +12,7 @@ class RellPluginSettingsConfigurable : Configurable {
 
     // A default constructor with no arguments is required because this implementation
     // is registered in an applicationConfigurable EP
-    override fun getDisplayName(): @Nls(capitalization = Nls.Capitalization.Title) String = "Rell Settings:"
+    override fun getDisplayName(): @Nls(capitalization = Nls.Capitalization.Title) String = "Rell:"
 
     override fun getPreferredFocusedComponent(): JComponent? {
         return settingsComponent?.getPreferredFocusedComponent()
