@@ -31,7 +31,7 @@ class SentryReportSubmitter : ErrorReportSubmitter() {
         }
     }
 
-    private val pluginVersion = PluginManagerCore.getPlugin(PluginId.getId("net.postchain.rellide.jetbrains.ultimate"))?.version ?: "unknown"
+    private val pluginVersion = PluginManagerCore.getPlugin(PluginId.getId("net.postchain.rellide.jetbrains"))?.version ?: "unknown"
 
     override fun getReportActionText() = "Report error to Rell plugin maintainers"
 
