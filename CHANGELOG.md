@@ -3,10 +3,13 @@
 ## [Unreleased]
 
 ## [0.1.4]
+
 ### Changed
-    - Rename display name of plugin setting from 'Rell Settings' to 'Rell'
+
+- Rename display name of plugin setting from 'Rell Settings' to 'Rell'
 
 ## [0.1.3]
+
 ### Added
 
 - Enable/Disable Index cache checkbox to Rell Settings
@@ -62,7 +65,8 @@
 
 - Trailing comma support https://gitlab.com/chromaway/rell/-/blob/version-0.13.12/doc/release-notes/0.14.0.txt?ref_type=heads#L516
 
-[Unreleased]: https://bitbucket.org/chromawallet/rell-jetbrains/compare/v0.1.3...HEAD
+[Unreleased]: https://bitbucket.org/chromawallet/rell-jetbrains/compare/v0.1.4...HEAD
+[0.1.4]: https://bitbucket.org/chromawallet/rell-jetbrains/compare/v0.1.3...v0.1.4
 [0.1.3]: https://bitbucket.org/chromawallet/rell-jetbrains/compare/v0.1.2...v0.1.3
 [0.1.2]: https://bitbucket.org/chromawallet/rell-jetbrains/compare/v0.1.1...v0.1.2
 [0.1.1]: https://bitbucket.org/chromawallet/rell-jetbrains/compare/v0.1.0...v0.1.1
