@@ -2,8 +2,11 @@
 
 ## [Unreleased]
 
-## [0.1.3]
+## [0.1.4]
+### Changed
+    - Rename display name of plugin setting from 'Rell Settings' to 'Rell'
 
+## [0.1.3]
 ### Added
 
 - Enable/Disable Index cache checkbox to Rell Settings
