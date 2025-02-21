@@ -135,7 +135,7 @@ intellijPlatform {
         changeNotes = providers.gradleProperty("pluginVersion").map { pluginVersion ->
             with(changelog) {
                 renderItem(
-                        (getOrNull(pluginVersion) ?: getUnreleased())
+                        (get(pluginVersion))
                                 .withHeader(false)
                                 .withEmptySections(false),
                         Changelog.OutputType.HTML,
@@ -202,27 +202,6 @@ tasks {
                 into("${destinationDir.path}/${properties("pluginName").get()}/language-server")
             }
         }
-    }
-    val verifyChangelog by registering {
-        group = "verification"
-        description = "Verifies that the current project version is documented in CHANGELOG.md."
-
-        val currentVersion = project.version.toString()
-        val changelogFile = project.file("CHANGELOG.md")
-        if (!changelogFile.exists()) {
-            throw GradleException("CHANGELOG.md file does not exist.")
-        }
-
-        val changelogContent = changelogFile.readText()
-        val versionPattern = Regex("^##\\s+\\[$currentVersion\\b\\]", RegexOption.MULTILINE)
-        if (versionPattern.containsMatchIn(changelogContent)) {
-            println("Version $currentVersion is documented in CHANGELOG.md.")
-        } else {
-            throw GradleException("Version $currentVersion is missing in CHANGELOG.md")
-        }
-    }
-    buildPlugin {
-        dependsOn(verifyChangelog)
     }
 }
 

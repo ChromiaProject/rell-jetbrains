@@ -1,7 +1,5 @@
 # Changelog
 
-## [Unreleased]
-
 ## [0.1.3]
 
 ### Added
@@ -58,15 +56,3 @@
 ### Added
 
 - Trailing comma support https://gitlab.com/chromaway/rell/-/blob/version-0.13.12/doc/release-notes/0.14.0.txt?ref_type=heads#L516
-
-[Unreleased]: https://bitbucket.org/chromawallet/rell-jetbrains/compare/v0.1.3...HEAD
-[0.1.4]: https://bitbucket.org/chromawallet/rell-jetbrains/compare/v0.1.3...v0.1.4
-[0.1.3]: https://bitbucket.org/chromawallet/rell-jetbrains/compare/v0.1.2...v0.1.3
-[0.1.2]: https://bitbucket.org/chromawallet/rell-jetbrains/compare/v0.1.1...v0.1.2
-[0.1.1]: https://bitbucket.org/chromawallet/rell-jetbrains/compare/v0.1.0...v0.1.1
-[0.1.0]: https://bitbucket.org/chromawallet/rell-jetbrains/compare/v0.0.14...v0.1.0
-[0.0.14]: https://bitbucket.org/chromawallet/rell-jetbrains/compare/v0.0.13...v0.0.14
-[0.0.13]: https://bitbucket.org/chromawallet/rell-jetbrains/compare/v0.0.12...v0.0.13
-[0.0.12]: https://bitbucket.org/chromawallet/rell-jetbrains/compare/v0.0.11...v0.0.12
-[0.0.11]: https://bitbucket.org/chromawallet/rell-jetbrains/compare/v0.0.10...v0.0.11
-[0.0.10]: https://bitbucket.org/chromawallet/rell-jetbrains/commits/v0.0.10
