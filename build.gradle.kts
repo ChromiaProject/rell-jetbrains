@@ -135,7 +135,7 @@ intellijPlatform {
         changeNotes = providers.gradleProperty("pluginVersion").map { pluginVersion ->
             with(changelog) {
                 renderItem(
-                        (getOrNull(pluginVersion) ?: getUnreleased())
+                        (get(pluginVersion))
                                 .withHeader(false)
                                 .withEmptySections(false),
                         Changelog.OutputType.HTML,
@@ -177,6 +177,9 @@ intellijPlatform {
 changelog {
     groups.empty()
     repositoryUrl.set(properties("pluginRepositoryUrl"))
+    header.set(provider { version.get() })
+    headerParserRegex.set("(\\d\\.\\d+(.\\d+)?)".toRegex())
+    keepUnreleasedSection.set(false)
 }
 
 kover {
@@ -200,9 +203,6 @@ tasks {
                 into("${destinationDir.path}/${properties("pluginName").get()}/language-server")
             }
         }
-    }
-    publishPlugin {
-        dependsOn("patchChangelog")
     }
 }
 
