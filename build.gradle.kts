@@ -177,6 +177,8 @@ intellijPlatform {
 changelog {
     groups.empty()
     repositoryUrl.set(properties("pluginRepositoryUrl"))
+    header.set(provider { version.get() })
+    headerParserRegex.set("(\\d\\.\\d+(.\\d+)?)".toRegex())
 }
 
 kover {
@@ -201,8 +203,26 @@ tasks {
             }
         }
     }
-    publishPlugin {
-        dependsOn("patchChangelog")
+    val verifyChangelog by registering {
+        group = "verification"
+        description = "Verifies that the current project version is documented in CHANGELOG.md."
+
+        val currentVersion = project.version.toString()
+        val changelogFile = project.file("CHANGELOG.md")
+        if (!changelogFile.exists()) {
+            throw GradleException("CHANGELOG.md file does not exist.")
+        }
+
+        val changelogContent = changelogFile.readText()
+        val versionPattern = Regex("^##\\s+\\[$currentVersion\\b\\]", RegexOption.MULTILINE)
+        if (versionPattern.containsMatchIn(changelogContent)) {
+            println("Version $currentVersion is documented in CHANGELOG.md.")
+        } else {
+            throw GradleException("Version $currentVersion is missing in CHANGELOG.md")
+        }
+    }
+    buildPlugin {
+        dependsOn(verifyChangelog)
     }
 }
 
