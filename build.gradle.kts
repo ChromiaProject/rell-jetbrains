@@ -179,6 +179,7 @@ changelog {
     repositoryUrl.set(properties("pluginRepositoryUrl"))
     header.set(provider { version.get() })
     headerParserRegex.set("(\\d\\.\\d+(.\\d+)?)".toRegex())
+    keepUnreleasedSection.set(false)
 }
 
 kover {
