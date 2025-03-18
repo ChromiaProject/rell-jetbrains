@@ -57,9 +57,8 @@
         <langCodeStyleSettingsProvider
                 implementation="net.postchain.rellide.jetbrains.formatting.RellLanguageCodeStyleSettingsProvider"/>
 
-        <!-- Formatting -->
-        <lang.formatter language="Rell"
-                        implementationClass="net.postchain.rellide.jetbrains.formatting.RellFormattingModelBuilder"/>
+        <!-- Enter handler  -->
+        <enterHandlerDelegate implementation="net.postchain.rellide.jetbrains.lsp4ij.RellEnterHandler" />
 
         <!-- Spellchecking -->
         <spellchecker.support language="Rell" implementationClass="net.postchain.rellide.jetbrains.spellchecking.RellSpellcheckingStrategy"/>
@@ -113,13 +112,4 @@
             <add-to-group group-id="NewGroup" anchor="after" relative-to-action="NewDir"/>
         </action>
     </actions>
-
-    <applicationListeners>
-<!--        <listener class="net.postchain.rellide.jetbrains.listeners.RellFrameStateListener" topic="com.intellij.ide.FrameStateListener"/>-->
-<!--        &lt;!&ndash; required for lsp file sync &ndash;&gt;-->
-<!--        <listener class="org.wso2.lsp4intellij.listeners.VFSListener"-->
-<!--                  topic="com.intellij.openapi.vfs.VirtualFileListener"/>-->
-<!--        <listener class="org.wso2.lsp4intellij.listeners.LSPProjectManagerListener"-->
-<!--                  topic="com.intellij.openapi.project.ProjectManagerListener"/>-->
-    </applicationListeners>
 </idea-plugin>
