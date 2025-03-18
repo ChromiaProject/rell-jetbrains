@@ -9,7 +9,7 @@ import com.intellij.psi.PsiFile
 import net.postchain.rellide.jetbrains.language.RellFileType
 
 class RellEnterHandler : EnterHandlerDelegateAdapter() {
-    private val indentAfterEnterChars = setOf('{', '(')
+    private val indentAfterEnterChars = setOf('{', '(', '[')
 
     override fun postProcessEnter(file: PsiFile, editor: Editor, dataContext: DataContext): EnterHandlerDelegate.Result? {
         if (file.fileType != RellFileType.INSTANCE) {
