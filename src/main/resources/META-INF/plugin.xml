@@ -115,7 +115,7 @@
         </action>
         <action id="rell.invalidate.cache"
                 class="net.postchain.rellide.jetbrains.actions.RellInvalidateCacheAction"
-                text="Invalidate Rell Cache" description="Remove the Rell language server cache locally">
+                text="Rell: Invalidate Cache" description="Remove the Rell language server cache locally">
             <keyboard-shortcut keymap="$default" first-keystroke="control alt I"/>
         </action>
     </actions>

@@ -9,12 +9,12 @@ import com.intellij.openapi.application.ApplicationManager
 import com.intellij.openapi.project.Project
 import com.redhat.devtools.lsp4ij.LanguageServerManager
 import kotlinx.coroutines.coroutineScope
-import kotlinx.coroutines.future.asDeferred
+import kotlinx.coroutines.future.await
 import kotlinx.coroutines.runBlocking
 import net.postchain.rellide.jetbrains.lsp4ij.RellServerApi
 
 class RellInvalidateCacheAction : AnAction(
-    "Invalidate Rell Cache",
+    "Rell: Invalidate Cache",
     "Invalidates and removes the Rell cache folder",
     null
 ) {
@@ -22,47 +22,41 @@ class RellInvalidateCacheAction : AnAction(
     override fun actionPerformed(e: AnActionEvent) {
         val project = e.project ?: return
 
-        runBlocking {
-            coroutineScope {
-                val languageServerItem = LanguageServerManager.getInstance(project)
-                    .getLanguageServer("rellLanguageServer")
-                    .get()
+        try {
+            runBlocking {
+                coroutineScope {
+                    val languageServerItem = LanguageServerManager.getInstance(project)
+                        .getLanguageServer("rellLanguageServer")
+                        .get()
 
-                if (languageServerItem == null) {
-                    project.notifyUser("Rell Language server is not running", "Error", NotificationType.ERROR)
-                } else {
-                    try {
+                    if (languageServerItem == null) {
+                        project.notifyUser("Rell Language server is not running", "Error", NotificationType.ERROR)
+                    } else {
                         val rellServer = languageServerItem.server as RellServerApi
-                        val result = rellServer.invalidateCache().asDeferred().await()
+                        val invalidated = rellServer.invalidateCache().await()
 
-                        when (result) {
-                            null -> project.notifyUser(
-                                "Error invalidating cache",
-                                "Rell LSP Error",
-                                NotificationType.ERROR
-                            )
-
-                            true -> project.notifyUser(
+                        if (invalidated) {
+                            project.notifyUser(
                                 "Cache invalidated",
                                 "Rell LSP Info",
                                 NotificationType.INFORMATION
                             )
-
-                            false -> project.notifyUser(
+                        } else {
+                            project.notifyUser(
                                 "Cache not be invalidated",
                                 "Rell LSP Error",
                                 NotificationType.WARNING
                             )
                         }
-                    } catch (e: Exception) {
-                        project.notifyUser(
-                            "Error invalidating cache: ${e.message}",
-                            "Rell LSP Error",
-                            NotificationType.ERROR
-                        )
                     }
                 }
             }
+        } catch (e: Exception) {
+            project.notifyUser(
+                "Error invalidating cache: ${e.message}",
+                "Rell LSP Error",
+                NotificationType.ERROR
+            )
         }
     }
 
