@@ -15,6 +15,8 @@ import kotlin.String
 
 class RellLanguageServer(val project: Project) : OSProcessStreamConnectionProvider() {
     private val extraOptions = listOf(
+        "-Xms128m",
+        "-Xmx${JVMHeapSizeManager.determineMaxHeapSizeMB() ?: DEFAULT_MAX_HEAP_SIZE_IN_MB}m",
         "-Duser.language=en",
         "-Duser.region=US",
         "-DLspIncludeDefinition=false",
@@ -43,5 +45,6 @@ class RellLanguageServer(val project: Project) : OSProcessStreamConnectionProvid
 
     companion object {
         private const val PLUGIN_ID = "net.postchain.rellide.jetbrains"
+        private const val DEFAULT_MAX_HEAP_SIZE_IN_MB = 2048
     }
 }
