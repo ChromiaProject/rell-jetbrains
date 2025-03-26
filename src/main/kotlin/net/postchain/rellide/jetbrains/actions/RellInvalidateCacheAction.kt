@@ -8,6 +8,9 @@ import com.intellij.openapi.actionSystem.AnActionEvent
 import com.intellij.openapi.application.ApplicationManager
 import com.intellij.openapi.project.Project
 import com.redhat.devtools.lsp4ij.LanguageServerManager
+import kotlinx.coroutines.coroutineScope
+import kotlinx.coroutines.future.asDeferred
+import kotlinx.coroutines.runBlocking
 import net.postchain.rellide.jetbrains.lsp4ij.RellServerApi
 
 class RellInvalidateCacheAction : AnAction(
@@ -19,31 +22,54 @@ class RellInvalidateCacheAction : AnAction(
     override fun actionPerformed(e: AnActionEvent) {
         val project = e.project ?: return
 
-        LanguageServerManager.getInstance(project)
-            .getLanguageServer("rellLanguageServer")
-            .thenAccept { languageServerItem ->
+        runBlocking {
+            coroutineScope {
+                val languageServerItem = LanguageServerManager.getInstance(project)
+                    .getLanguageServer("rellLanguageServer")
+                    .get()
+
                 if (languageServerItem == null) {
                     project.notifyUser("Rell Language server is not running", "Error", NotificationType.ERROR)
-                }
-                else {
-                    val rellServer = languageServerItem.server as RellServerApi
-                    val result = rellServer.invalidateCacheSafely()
-                    val (title, message, type) = result.toNotification()
-                    project.notifyUser(title, message, type)
+                } else {
+                    try {
+                        val rellServer = languageServerItem.server as RellServerApi
+                        val result = rellServer.invalidateCache().asDeferred().await()
+
+                        when (result) {
+                            null -> project.notifyUser(
+                                "Error invalidating cache",
+                                "Rell LSP Error",
+                                NotificationType.ERROR
+                            )
+
+                            true -> project.notifyUser(
+                                "Cache invalidated",
+                                "Rell LSP Info",
+                                NotificationType.INFORMATION
+                            )
+
+                            false -> project.notifyUser(
+                                "Cache not be invalidated",
+                                "Rell LSP Error",
+                                NotificationType.WARNING
+                            )
+                        }
+                    } catch (e: Exception) {
+                        project.notifyUser(
+                            "Error invalidating cache: ${e.message}",
+                            "Rell LSP Error",
+                            NotificationType.ERROR
+                        )
+                    }
                 }
             }
+        }
     }
 
     override fun getActionUpdateThread(): ActionUpdateThread = ActionUpdateThread.BGT
 
     override fun update(e: AnActionEvent) {
         e.presentation.isEnabled = e.project != null
-    }
-
-    sealed interface InvalidateCacheResult {
-        data object Success : InvalidateCacheResult
-        data object Failure : InvalidateCacheResult
-        data class Error(val message: String) : InvalidateCacheResult
     }
 
     private fun Project.notifyUser(title: String, message: String, type: NotificationType) {
@@ -53,25 +79,6 @@ class RellInvalidateCacheAction : AnAction(
                 .createNotification(title, message, type)
                 .notify(this)
         }
-    }
-
-    private fun RellServerApi.invalidateCacheSafely(): InvalidateCacheResult = runCatching {
-        if (invalidateCache().get())
-            InvalidateCacheResult.Success
-        else
-            InvalidateCacheResult.Failure
-    }.fold (
-        onSuccess = { it },
-        onFailure = { InvalidateCacheResult.Error(it.message ?: "Unknown LSP Error") }
-    )
-
-    private fun InvalidateCacheResult.toNotification(): Triple<String, String, NotificationType> = when (this) {
-        is InvalidateCacheResult.Success ->
-            Triple("Cache invalidated", "Rell LSP Info", NotificationType.INFORMATION)
-        is InvalidateCacheResult.Failure ->
-            Triple("Cache not be invalidated", "Rell LSP Error", NotificationType.WARNING)
-        is InvalidateCacheResult.Error ->
-            Triple("Error invalidating cache: $message", "Rell LSP Error", NotificationType.ERROR)
     }
 
 }

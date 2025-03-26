@@ -116,7 +116,6 @@
         <action id="rell.invalidate.cache"
                 class="net.postchain.rellide.jetbrains.actions.RellInvalidateCacheAction"
                 text="Invalidate Rell Cache" description="Remove the Rell language server cache locally">
-            <add-to-group group-id="ToolsMenu" anchor="last"/>
             <keyboard-shortcut keymap="$default" first-keystroke="control alt I"/>
         </action>
     </actions>
