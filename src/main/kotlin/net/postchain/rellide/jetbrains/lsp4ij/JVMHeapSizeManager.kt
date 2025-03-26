@@ -7,7 +7,7 @@ object JVMHeapSizeManager {
     fun getTotalSystemMemoryGB(): Long? {
         return try {
             val os = ManagementFactory.getOperatingSystemMXBean() as OperatingSystemMXBean
-            return os.totalMemorySize / (1024 * 1024 * 1024)
+            os.totalMemorySize / (1024 * 1024 * 1024)
         } catch (_: Throwable) {
             null
         }
