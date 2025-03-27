@@ -31,27 +31,12 @@ class RellSocketLanguageServer(private val project: Project) : StreamConnectionP
     override fun getOutputStream(): OutputStream? = outputStream
 
     override fun stop() {
-        val exceptions = mutableListOf<Throwable>()
-        
         runCatching {
             inputStream?.close()
-        }.onFailure { 
-            exceptions.add(it)
         }.runCatching {
             outputStream?.close()
-        }.onFailure { 
-            exceptions.add(it)
         }.runCatching {
             socket?.close()
-        }.onFailure { 
-            exceptions.add(it)
-        }
-        
-        if (exceptions.isNotEmpty()) {
-            throw RuntimeException(
-                "Failed to close one or more streams", 
-                exceptions.firstOrNull()
-            )
         }
     }
 
