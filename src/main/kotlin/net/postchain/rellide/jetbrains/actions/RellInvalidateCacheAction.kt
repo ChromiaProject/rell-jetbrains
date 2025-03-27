@@ -34,26 +34,14 @@ class RellInvalidateCacheAction : AnAction(
                     val invalidated = rellServer.invalidateCache().await()
 
                     if (invalidated) {
-                        project.notifyUser(
-                            "Cache invalidated",
-                            "Rell LSP Info",
-                            NotificationType.INFORMATION
-                        )
+                        project.notifyUser("Cache invalidated", "Rell LSP Info", NotificationType.INFORMATION)
                     } else {
-                        project.notifyUser(
-                            "Cache not be invalidated",
-                            "Rell LSP Error",
-                            NotificationType.WARNING
-                        )
+                        project.notifyUser("Cache not be invalidated", "Rell LSP Error", NotificationType.WARNING)
                     }
                 }
             }
         } catch (e: Exception) {
-            project.notifyUser(
-                "Error invalidating cache: ${e.message}",
-                "Rell LSP Error",
-                NotificationType.ERROR
-            )
+            project.notifyUser("Error invalidating cache: ${e.message}", "Rell LSP Error", NotificationType.ERROR)
         }
     }
 
