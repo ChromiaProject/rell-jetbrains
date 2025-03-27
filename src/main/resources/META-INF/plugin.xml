@@ -18,6 +18,8 @@
                 language="Rell"
                 extensions="rell"/>
 
+        <notificationGroup id="Rell" displayType="BALLOON" key="notification.group.rell"/>
+
         <lang.parserDefinition
                 language="Rell"
                 implementationClass="net.postchain.rellide.jetbrains.language.RellParserDefinition"/>
@@ -110,6 +112,11 @@
                 class="net.postchain.rellide.jetbrains.actions.RellCreateFileAction"
                 text="Rell file" description="Create new Rell file">
             <add-to-group group-id="NewGroup" anchor="after" relative-to-action="NewDir"/>
+        </action>
+        <action id="rell.invalidate.cache"
+                class="net.postchain.rellide.jetbrains.actions.RellInvalidateCacheAction"
+                text="Rell: Invalidate Cache" description="Remove the Rell language server cache locally">
+            <keyboard-shortcut keymap="$default" first-keystroke="control alt I"/>
         </action>
     </actions>
 </idea-plugin>
