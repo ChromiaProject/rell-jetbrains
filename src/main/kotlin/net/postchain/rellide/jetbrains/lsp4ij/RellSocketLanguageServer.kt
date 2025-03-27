@@ -31,9 +31,28 @@ class RellSocketLanguageServer(private val project: Project) : StreamConnectionP
     override fun getOutputStream(): OutputStream? = outputStream
 
     override fun stop() {
-        inputStream?.close()
-        outputStream?.close()
-        socket?.close()
+        val exceptions = mutableListOf<Throwable>()
+        
+        runCatching {
+            inputStream?.close()
+        }.onFailure { 
+            exceptions.add(it)
+        }.runCatching {
+            outputStream?.close()
+        }.onFailure { 
+            exceptions.add(it)
+        }.runCatching {
+            socket?.close()
+        }.onFailure { 
+            exceptions.add(it)
+        }
+        
+        if (exceptions.isNotEmpty()) {
+            throw RuntimeException(
+                "Failed to close one or more streams", 
+                exceptions.firstOrNull()
+            )
+        }
     }
 
     override fun toString(): String = "Rell Language Server (Socket: $host:$port)"
