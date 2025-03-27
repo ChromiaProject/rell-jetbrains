@@ -204,6 +204,12 @@ tasks {
             }
         }
     }
+    runIde {
+        // Pass specific JVM args only when a specific property is set
+        if (project.hasProperty("useSocket")) {
+            jvmArgs("-Drell.lsp.useSocket=true")
+        }
+    }
 }
 
 intellijPlatformTesting {
