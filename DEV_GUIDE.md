@@ -29,6 +29,18 @@ This document provides essential resources and guidelines for developing Rell pl
 ```sh
   ./gradlew runIde
 ```
+Or use the intellij UI with the run configuration `Run Plugin`
+
+### Development with External Language Server
+When developing features that require changes in both the server and client side, it can be beneficial to run the 
+language server separately and connect to it via socket. This setup allows for faster development iterations on the server side.
+
+To run the plugin with socket connection to an external language server:
+```sh
+  ./gradlew runIde -PuseSocket
+```
+Or use the intellij UI with the run configuration `Run Plugin with Socket LSP`
+This will launch the IDE with the plugin configured to connect to a language server running on localhost:5008.
 
 ---
 
