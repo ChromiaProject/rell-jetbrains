@@ -1,5 +1,15 @@
 # Changelog
 
+## [0.1.5]
+
+### Added
+- Rell language server version 0.6.0
+- LSP code formatting support
+- Keep alive language server when last rell file is closed
+- Invalidate index cache action
+- Set language server JVM min/max heap size
+- LSP4IJ version 0.12.0
+
 ## [0.1.4]
 
 ### Added
