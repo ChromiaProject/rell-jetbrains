@@ -1,5 +1,13 @@
 # Changelog
 
+## [0.1.6]
+
+### Added
+- Rell language server version 0.7.0
+  - Fixed NullPointerException when dirtyFiles are missing from disk.
+  - Enhanced didChangeWatchFileEvents to use efficient batching for grouped events.
+  - Improved diagnostic publisher with caching to avoid overloading the client.
+
 ## [0.1.5]
 
 ### Added
