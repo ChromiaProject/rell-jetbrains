@@ -521,10 +521,7 @@ X_AtExprLimit ::= X_tkLimit X_ExpressionRef
 X_IfExpr ::= X_tkIF X_tkLPAR X_ExpressionRef X_tkRPAR X_ExpressionRef X_tkElse X_ExpressionRef
 
 
-X_WhenExpr ::= X_tkWHEN (X_tkLPAR X_ExpressionRef X_tkRPAR)? X_tkLCURL X_WhenExprCases X_tkRCURL
-
-
-X_WhenExprCases ::= X_WhenExprCase ((X_tkSEMI)+ X_WhenExprCase)* (X_tkSEMI)*
+X_WhenExpr ::= X_tkWHEN (X_tkLPAR X_ExpressionRef X_tkRPAR)? X_tkLCURL X_WhenExprCase (X_tkSEMI X_WhenExprCase)* (X_tkSEMI)? X_tkRCURL
 
 
 X_WhenExprCase ::= X_WhenCondition X_tkArrow X_ExpressionRef
