@@ -843,10 +843,6 @@ public class RellVisitor extends PsiElementVisitor {
     visitPsiElement(o);
   }
 
-  public void visitXWhenExprCases(@NotNull RellXWhenExprCases o) {
-    visitPsiElement(o);
-  }
-
   public void visitXWhenStmt(@NotNull RellXWhenStmt o) {
     visitPsiElement(o);
   }

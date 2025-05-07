@@ -1,5 +1,11 @@
 # Changelog
 
+## [0.1.7]
+
+### Added
+- Rell language server version 0.7.1
+- Intellij platform 252 support
+
 ## [0.1.6]
 
 ### Added

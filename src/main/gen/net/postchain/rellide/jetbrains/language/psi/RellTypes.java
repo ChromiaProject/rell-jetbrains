@@ -218,7 +218,6 @@ public interface RellTypes {
   IElementType X_WHEN_CONDITION_EXPR = new RellElementType("X_WHEN_CONDITION_EXPR");
   IElementType X_WHEN_EXPR = new RellElementType("X_WHEN_EXPR");
   IElementType X_WHEN_EXPR_CASE = new RellElementType("X_WHEN_EXPR_CASE");
-  IElementType X_WHEN_EXPR_CASES = new RellElementType("X_WHEN_EXPR_CASES");
   IElementType X_WHEN_STMT = new RellElementType("X_WHEN_STMT");
   IElementType X_WHEN_STMT_CASE = new RellElementType("X_WHEN_STMT_CASE");
   IElementType X_WHILE_STMT = new RellElementType("X_WHILE_STMT");
@@ -918,9 +917,6 @@ public interface RellTypes {
       }
       else if (type == X_WHEN_EXPR_CASE) {
         return new RellXWhenExprCaseImpl(node);
-      }
-      else if (type == X_WHEN_EXPR_CASES) {
-        return new RellXWhenExprCasesImpl(node);
       }
       else if (type == X_WHEN_STMT) {
         return new RellXWhenStmtImpl(node);

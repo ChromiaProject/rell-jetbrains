@@ -35,8 +35,8 @@ public class RellXWhenExprImpl extends ASTWrapperPsiElement implements RellXWhen
 
   @Override
   @NotNull
-  public RellXWhenExprCases getXWhenExprCases() {
-    return findNotNullChildByClass(RellXWhenExprCases.class);
+  public List<RellXWhenExprCase> getXWhenExprCaseList() {
+    return PsiTreeUtil.getChildrenOfTypeAsList(this, RellXWhenExprCase.class);
   }
 
 }

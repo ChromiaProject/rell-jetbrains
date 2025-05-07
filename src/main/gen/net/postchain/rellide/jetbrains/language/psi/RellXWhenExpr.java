@@ -11,6 +11,6 @@ public interface RellXWhenExpr extends PsiElement {
   RellXExpressionRef getXExpressionRef();
 
   @NotNull
-  RellXWhenExprCases getXWhenExprCases();
+  List<RellXWhenExprCase> getXWhenExprCaseList();
 
 }
