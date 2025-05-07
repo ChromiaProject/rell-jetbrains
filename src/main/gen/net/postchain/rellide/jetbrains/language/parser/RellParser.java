@@ -4836,7 +4836,7 @@ public class RellParser implements PsiParser, LightPsiParser {
   }
 
   /* ********************************************************** */
-  // X_WhenCondition X_tkArrow X_StatementRef (X_tkSEMI)*
+  // X_WhenCondition X_tkArrow X_StatementRef (X_tkSEMI)?
   public static boolean X_WhenStmtCase(PsiBuilder b, int l) {
     if (!recursion_guard_(b, l, "X_WhenStmtCase")) return false;
     boolean r;
@@ -4849,14 +4849,10 @@ public class RellParser implements PsiParser, LightPsiParser {
     return r;
   }
 
-  // (X_tkSEMI)*
+  // (X_tkSEMI)?
   private static boolean X_WhenStmtCase_3(PsiBuilder b, int l) {
     if (!recursion_guard_(b, l, "X_WhenStmtCase_3")) return false;
-    while (true) {
-      int c = current_position_(b);
-      if (!consumeToken(b, X_TKSEMI)) break;
-      if (!empty_element_parsed_guard_(b, "X_WhenStmtCase_3", c)) break;
-    }
+    consumeToken(b, X_TKSEMI);
     return true;
   }
 
