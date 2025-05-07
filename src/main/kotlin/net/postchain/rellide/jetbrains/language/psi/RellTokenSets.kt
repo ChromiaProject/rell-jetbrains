@@ -211,7 +211,6 @@ interface RellTokenSets {
         val X_WHEN_CONDITION_EXPR = TokenSet.create(RellTypes.X_WHEN_CONDITION_EXPR);
         val X_WHEN_EXPR = TokenSet.create(RellTypes.X_WHEN_EXPR);
         val X_WHEN_EXPR_CASE = TokenSet.create(RellTypes.X_WHEN_EXPR_CASE);
-        val X_WHEN_EXPR_CASES = TokenSet.create(RellTypes.X_WHEN_EXPR_CASES);
         val X_WHEN_STMT = TokenSet.create(RellTypes.X_WHEN_STMT);
         val X_WHEN_STMT_CASE = TokenSet.create(RellTypes.X_WHEN_STMT_CASE);
         val X_WHILE_STMT = TokenSet.create(RellTypes.X_WHILE_STMT);
