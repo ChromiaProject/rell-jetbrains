@@ -4701,7 +4701,7 @@ public class RellParser implements PsiParser, LightPsiParser {
   }
 
   /* ********************************************************** */
-  // X_tkWHEN (X_tkLPAR X_ExpressionRef X_tkRPAR)? X_tkLCURL X_WhenExprCases X_tkRCURL
+  // X_tkWHEN (X_tkLPAR X_ExpressionRef X_tkRPAR)? X_tkLCURL X_WhenExprCase (X_tkSEMI X_WhenExprCase)* (X_tkSEMI)? X_tkRCURL
   public static boolean X_WhenExpr(PsiBuilder b, int l) {
     if (!recursion_guard_(b, l, "X_WhenExpr")) return false;
     if (!nextTokenIs(b, X_TKWHEN)) return false;
@@ -4710,7 +4710,9 @@ public class RellParser implements PsiParser, LightPsiParser {
     r = consumeToken(b, X_TKWHEN);
     r = r && X_WhenExpr_1(b, l + 1);
     r = r && consumeToken(b, X_TKLCURL);
-    r = r && X_WhenExprCases(b, l + 1);
+    r = r && X_WhenExprCase(b, l + 1);
+    r = r && X_WhenExpr_4(b, l + 1);
+    r = r && X_WhenExpr_5(b, l + 1);
     r = r && consumeToken(b, X_TKRCURL);
     exit_section_(b, m, X_WHEN_EXPR, r);
     return r;
@@ -4735,6 +4737,35 @@ public class RellParser implements PsiParser, LightPsiParser {
     return r;
   }
 
+  // (X_tkSEMI X_WhenExprCase)*
+  private static boolean X_WhenExpr_4(PsiBuilder b, int l) {
+    if (!recursion_guard_(b, l, "X_WhenExpr_4")) return false;
+    while (true) {
+      int c = current_position_(b);
+      if (!X_WhenExpr_4_0(b, l + 1)) break;
+      if (!empty_element_parsed_guard_(b, "X_WhenExpr_4", c)) break;
+    }
+    return true;
+  }
+
+  // X_tkSEMI X_WhenExprCase
+  private static boolean X_WhenExpr_4_0(PsiBuilder b, int l) {
+    if (!recursion_guard_(b, l, "X_WhenExpr_4_0")) return false;
+    boolean r;
+    Marker m = enter_section_(b);
+    r = consumeToken(b, X_TKSEMI);
+    r = r && X_WhenExprCase(b, l + 1);
+    exit_section_(b, m, null, r);
+    return r;
+  }
+
+  // (X_tkSEMI)?
+  private static boolean X_WhenExpr_5(PsiBuilder b, int l) {
+    if (!recursion_guard_(b, l, "X_WhenExpr_5")) return false;
+    consumeToken(b, X_TKSEMI);
+    return true;
+  }
+
   /* ********************************************************** */
   // X_WhenCondition X_tkArrow X_ExpressionRef
   public static boolean X_WhenExprCase(PsiBuilder b, int l) {
@@ -4746,67 +4777,6 @@ public class RellParser implements PsiParser, LightPsiParser {
     r = r && X_ExpressionRef(b, l + 1);
     exit_section_(b, l, m, r, false, null);
     return r;
-  }
-
-  /* ********************************************************** */
-  // X_WhenExprCase ((X_tkSEMI)+ X_WhenExprCase)* (X_tkSEMI)*
-  public static boolean X_WhenExprCases(PsiBuilder b, int l) {
-    if (!recursion_guard_(b, l, "X_WhenExprCases")) return false;
-    boolean r;
-    Marker m = enter_section_(b, l, _NONE_, X_WHEN_EXPR_CASES, "<x when expr cases>");
-    r = X_WhenExprCase(b, l + 1);
-    r = r && X_WhenExprCases_1(b, l + 1);
-    r = r && X_WhenExprCases_2(b, l + 1);
-    exit_section_(b, l, m, r, false, null);
-    return r;
-  }
-
-  // ((X_tkSEMI)+ X_WhenExprCase)*
-  private static boolean X_WhenExprCases_1(PsiBuilder b, int l) {
-    if (!recursion_guard_(b, l, "X_WhenExprCases_1")) return false;
-    while (true) {
-      int c = current_position_(b);
-      if (!X_WhenExprCases_1_0(b, l + 1)) break;
-      if (!empty_element_parsed_guard_(b, "X_WhenExprCases_1", c)) break;
-    }
-    return true;
-  }
-
-  // (X_tkSEMI)+ X_WhenExprCase
-  private static boolean X_WhenExprCases_1_0(PsiBuilder b, int l) {
-    if (!recursion_guard_(b, l, "X_WhenExprCases_1_0")) return false;
-    boolean r;
-    Marker m = enter_section_(b);
-    r = X_WhenExprCases_1_0_0(b, l + 1);
-    r = r && X_WhenExprCase(b, l + 1);
-    exit_section_(b, m, null, r);
-    return r;
-  }
-
-  // (X_tkSEMI)+
-  private static boolean X_WhenExprCases_1_0_0(PsiBuilder b, int l) {
-    if (!recursion_guard_(b, l, "X_WhenExprCases_1_0_0")) return false;
-    boolean r;
-    Marker m = enter_section_(b);
-    r = consumeToken(b, X_TKSEMI);
-    while (r) {
-      int c = current_position_(b);
-      if (!consumeToken(b, X_TKSEMI)) break;
-      if (!empty_element_parsed_guard_(b, "X_WhenExprCases_1_0_0", c)) break;
-    }
-    exit_section_(b, m, null, r);
-    return r;
-  }
-
-  // (X_tkSEMI)*
-  private static boolean X_WhenExprCases_2(PsiBuilder b, int l) {
-    if (!recursion_guard_(b, l, "X_WhenExprCases_2")) return false;
-    while (true) {
-      int c = current_position_(b);
-      if (!consumeToken(b, X_TKSEMI)) break;
-      if (!empty_element_parsed_guard_(b, "X_WhenExprCases_2", c)) break;
-    }
-    return true;
   }
 
   /* ********************************************************** */
