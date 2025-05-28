@@ -1,5 +1,11 @@
 # Changelog
 
+## [0.1.10]
+
+### Added
+- Rell language server version 0.8.3
+- LSP4IJ version 0.13.0
+
 ## [0.1.9]
 
 ### Added
