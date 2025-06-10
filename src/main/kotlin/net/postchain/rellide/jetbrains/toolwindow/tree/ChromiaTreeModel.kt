@@ -33,11 +33,9 @@ class ChromiaTreeModel(private val project: Project) : DefaultTreeModel(createRo
         val root = root as ChromiaTreeNode
         root.removeAllChildren()
 
-        // Discover all Chromia projects in the workspace
         val discoveredProjects = ChromiaProjectDiscovery.discoverProjects(project)
 
         if (discoveredProjects.isEmpty()) {
-            // No projects found, show message
             val noProjectsNode = ChromiaTreeNode(
                     displayName = "No Chromia projects found",
                     nodeType = ChromiaNodeType.CATEGORY,
@@ -51,11 +49,7 @@ class ChromiaTreeModel(private val project: Project) : DefaultTreeModel(createRo
                 root.add(projectNode)
             }
         }
-
-        // Load saved parameters from settings
         loadParametersFromSettings()
-
-        // Notify model changed
         reload()
     }
 
@@ -117,22 +111,6 @@ class ChromiaTreeModel(private val project: Project) : DefaultTreeModel(createRo
                 chromiaProject.path
         )
         projectNode.add(testCommand)
-
-//
-//        buildCommand.add(createCommandNode(
-//                "Deploy", "chr deploy",
-//                "Deploy the Rell project",
-//                AllIcons.Actions.Upload,
-//                chromiaProject.path
-//        ))
-//
-//        buildCommand.add(createCommandNode(
-//                "Clean", "chr clean",
-//                "Clean build artifacts",
-//                AllIcons.Actions.GC,
-//                chromiaProject.path
-//        ))
-
 
         val nodeCategory = ChromiaTreeNode(
                 displayName = "Node",

@@ -19,11 +19,9 @@ class ChromiaTreeCellRenderer : ColoredTreeCellRenderer() {
         row: Int,
         hasFocus: Boolean
     ) {
-val x = 1;
         if (value is ChromiaTreeNode) {
-            // Set icon if available
             icon = value.icon
-            
+
             // Set text and attributes based on node type
             when (value.nodeType) {
                 ChromiaNodeType.ROOT -> {
