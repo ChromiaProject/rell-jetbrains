@@ -14,6 +14,7 @@ import javax.swing.tree.DefaultTreeModel
 class ChromiaTreeModel(private val project: Project) : DefaultTreeModel(createRoot()) {
 
     private val settings = ChromiaToolWindowSettings.getInstance(project)
+    var hasProjects: Boolean = false
 
     companion object {
         private fun createRoot(): ChromiaTreeNode {
@@ -34,6 +35,7 @@ class ChromiaTreeModel(private val project: Project) : DefaultTreeModel(createRo
         root.removeAllChildren()
 
         val discoveredProjects = ChromiaProjectDiscovery.discoverProjects(project)
+        hasProjects = discoveredProjects.isNotEmpty()
 
         if (discoveredProjects.isEmpty()) {
             val noProjectsNode = ChromiaTreeNode(
@@ -43,7 +45,6 @@ class ChromiaTreeModel(private val project: Project) : DefaultTreeModel(createRo
             )
             root.add(noProjectsNode)
         } else {
-            // Add each discovered project as a separate tree
             for (rellProject in discoveredProjects) {
                 val projectNode = createProjectNode(rellProject)
                 root.add(projectNode)

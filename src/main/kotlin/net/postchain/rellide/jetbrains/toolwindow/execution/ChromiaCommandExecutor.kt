@@ -1,10 +1,8 @@
 package net.postchain.rellide.jetbrains.toolwindow.execution
 
 import com.intellij.openapi.application.ApplicationManager
-import com.intellij.openapi.project.Project
-import com.intellij.openapi.wm.ToolWindowManager
 import com.intellij.openapi.diagnostic.Logger
-import org.jetbrains.plugins.terminal.TerminalToolWindowFactory
+import com.intellij.openapi.project.Project
 import org.jetbrains.plugins.terminal.TerminalToolWindowManager
 import java.io.IOException
 
@@ -31,19 +29,19 @@ class ChromiaCommandExecutor(private val project: Project) {
 
     private fun executeInTerminal(command: String, workingDirectory: String? = null) {
         try {
-            val terminalView = TerminalToolWindowManager.getInstance(project)
-            val window = ToolWindowManager.getInstance(project).getToolWindow(TerminalToolWindowFactory.TOOL_WINDOW_ID)
-            val contentManager = window?.contentManager
+            val manager = TerminalToolWindowManager.getInstance(project)
 
-            val widget = when (val content = contentManager?.findContent(TAB_NAME)) {
-                null -> terminalView.createShellWidget(workingDirectory
-                        ?: project.basePath, TAB_NAME, true, true)
-                else -> TerminalToolWindowManager.findWidgetByContent(content)
+            val existing = manager.terminalWidgets.firstOrNull { it.terminalTitle.defaultTitle == TAB_NAME }
+            val widget = existing ?: manager.createShellWidget(workingDirectory ?: project.basePath, TAB_NAME, true, false)
+
+            widget.apply {
+                requestFocus()
+                sendCommandToExecute("cd ${workingDirectory ?: project.basePath}")
+                sendCommandToExecute(command)
             }
-            widget?.sendCommandToExecute(command)
 
         } catch (e: IOException) {
-            logger.error("Cannot run command in local terminal. Error:$e")
+            logger.error("Cannot run command in terminal. Error:$e")
         }
     }
 }

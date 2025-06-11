@@ -4,6 +4,7 @@ import com.intellij.openapi.project.DumbAware
 import com.intellij.openapi.project.Project
 import com.intellij.openapi.wm.ToolWindow
 import com.intellij.openapi.wm.ToolWindowFactory
+import com.intellij.openapi.wm.ToolWindowManager
 import com.intellij.ui.content.ContentFactory
 
 /**
@@ -20,5 +21,9 @@ class ChromiaToolWindowFactory : ToolWindowFactory, DumbAware {
                 false
         )
         toolWindow.contentManager.addContent(content)
+    }
+
+    override suspend fun isApplicableAsync(project: Project): Boolean {
+        return ChromiaToolWindow(project).treeModel.hasProjects
     }
 }

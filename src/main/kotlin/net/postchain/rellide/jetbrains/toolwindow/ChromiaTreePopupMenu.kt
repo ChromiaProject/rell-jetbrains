@@ -146,8 +146,7 @@ class ChromiaTreePopupMenu(
         }
         
         addSeparator()
-        
-        // Clear all parameters in category
+
         val clearAllItem = JMenuItem("Clear All Parameters in Category", AllIcons.Actions.GC)
         clearAllItem.addActionListener {
             clearCategoryParameters(node)

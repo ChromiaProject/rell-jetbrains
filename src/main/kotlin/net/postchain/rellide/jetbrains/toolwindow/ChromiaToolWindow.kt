@@ -12,9 +12,9 @@ import javax.swing.JComponent
  * Contains a tree structure with Chromia CLI commands that can be executed.
  */
 class ChromiaToolWindow(private val project: Project) {
-    
+
     private val tree: Tree
-    private val treeModel: ChromiaTreeModel
+    val treeModel: ChromiaTreeModel
     
     init {
         treeModel = ChromiaTreeModel(project)
@@ -26,14 +26,11 @@ class ChromiaToolWindow(private val project: Project) {
         tree.isRootVisible = false
         tree.showsRootHandles = true
         tree.isEditable = false
-        
-        // Set custom cell renderer for icons and formatting
+
         tree.cellRenderer = ChromiaTreeCellRenderer()
-        
-        // Add mouse listener for double-click to execute commands
+
         tree.addMouseListener(ChromiaTreeMouseListener(project, treeModel))
-        
-        // Add popup menu for configuration
+
         tree.componentPopupMenu = ChromiaTreePopupMenu(project, treeModel, tree)
         
         // Expand root by default

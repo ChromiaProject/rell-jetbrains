@@ -17,9 +17,6 @@ object ChromiaProjectDiscovery {
         val isMainProject: Boolean = false
     )
 
-    /**
-     * Discover all Chromia projects in the workspace
-     */
     fun discoverProjects(project: Project): List<ChromiaProject> {
         val projects = mutableListOf<ChromiaProject>()
         val basePath = project.basePath ?: return projects
@@ -37,65 +34,45 @@ object ChromiaProjectDiscovery {
 
         return projects
     }
-    
-    /**
-     * Recursively search for Rell projects
-     */
+
     private fun searchForProjects(dir: File, projects: MutableList<ChromiaProject>, currentDepth: Int, maxDepth: Int) {
         if (currentDepth >= maxDepth || !dir.isDirectory) return
-        
+
+        findConfigFile(dir)?.let { configFile ->
+            projects.add(ChromiaProject(
+                    name = dir.name,
+                    path = dir.absolutePath,
+                    configFile = configFile,
+                    isMainProject = false
+            ))
+        }
+
         val subdirs = dir.listFiles { file -> 
             file.isDirectory && !file.name.startsWith(".") && !isIgnoredDirectory(file.name)
         } ?: return
         
         for (subdir in subdirs) {
-            val foundIndicator = indicators.find { indicator ->
-                File(subdir, indicator).exists()
-            }
-            
-            if (foundIndicator != null || hasRellFiles(subdir)) {
-                val projectName = if (subdir.name == "src" && subdir.parentFile != null) {
-                    // If the project is in a src directory, use parent directory name
-                    subdir.parentFile.name
-                } else {
-                    subdir.name
-                }
-                
+            findConfigFile(subdir)?.let { configFile ->
                 projects.add(ChromiaProject(
-                    name = projectName,
-                    path = subdir.absolutePath,
-                    configFile = foundIndicator,
-                    isMainProject = false
+                        name = subdir.name,
+                        path = subdir.absolutePath,
+                        configFile = configFile,
+                        isMainProject = false
                 ))
-            } else {
-                // Continue searching in subdirectories
+            } ?: run {
                 searchForProjects(subdir, projects, currentDepth + 1, maxDepth)
             }
         }
     }
-    
-    /**
-     * Check if directory contains .rell files
-     */
-    private fun hasRellFiles(dir: File): Boolean {
-        val rellFiles = dir.listFiles { file -> 
-            file.isFile && file.name.endsWith(".rell")
-        }
-        
-        if (rellFiles?.isNotEmpty() == true) {
-            return true
-        }
-        
-        // Check in src subdirectory
-        val srcDir = File(dir, "src")
-        if (srcDir.exists() && srcDir.isDirectory) {
-            val srcRellFiles = srcDir.listFiles { file ->
-                file.isFile && file.name.endsWith(".rell")
+
+    private fun findConfigFile(dir: File): String? {
+        for (indicator in indicators) {
+            val potentialConfigFile = File(dir, indicator)
+            if (potentialConfigFile.exists() && potentialConfigFile.isFile) {
+                return potentialConfigFile.absolutePath
             }
-            return srcRellFiles?.isNotEmpty() == true
         }
-        
-        return false
+        return null
     }
 
     private fun isIgnoredDirectory(name: String): Boolean {
