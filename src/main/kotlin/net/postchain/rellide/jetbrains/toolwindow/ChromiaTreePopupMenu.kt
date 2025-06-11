@@ -78,7 +78,7 @@ class ChromiaTreePopupMenu(
         icon: Icon? = null,
     ): JMenuItem {
         return JBMenuItem(text, icon).apply {
-            border = JBUI.Borders.empty(3, 0)
+            border = JBUI.Borders.empty(3, 5)
         }
     }
     
