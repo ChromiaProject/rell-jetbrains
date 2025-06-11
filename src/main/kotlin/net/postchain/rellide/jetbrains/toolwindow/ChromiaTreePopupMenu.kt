@@ -131,13 +131,13 @@ class ChromiaTreePopupMenu(
         val path = getTreePath(node)
         if (path != null) {
             if (tree.isExpanded(path)) {
-                val collapseItem = JMenuItem("Collapse", AllIcons.Actions.Collapseall)
+                val collapseItem = createMenuItem("Collapse", AllIcons.Actions.Collapseall)
                 collapseItem.addActionListener {
                     tree.collapsePath(path)
                 }
                 add(collapseItem)
             } else {
-                val expandItem = JMenuItem("Expand", AllIcons.Actions.Expandall)
+                val expandItem = createMenuItem("Expand", AllIcons.Actions.Expandall)
                 expandItem.addActionListener {
                     tree.expandPath(path)
                 }
@@ -147,7 +147,7 @@ class ChromiaTreePopupMenu(
         
         addSeparator()
 
-        val clearAllItem = JMenuItem("Clear All Parameters in Category", AllIcons.Actions.GC)
+        val clearAllItem = createMenuItem("Clear All Parameters in Category", AllIcons.Actions.GC)
         clearAllItem.addActionListener {
             clearCategoryParameters(node)
         }
@@ -158,13 +158,13 @@ class ChromiaTreePopupMenu(
         val path = getTreePath(node)
         if (path != null) {
             if (tree.isExpanded(path)) {
-                val collapseItem = JMenuItem("Collapse Project", AllIcons.Actions.Collapseall)
+                val collapseItem = createMenuItem("Collapse Project", AllIcons.Actions.Collapseall)
                 collapseItem.addActionListener {
                     tree.collapsePath(path)
                 }
                 add(collapseItem)
             } else {
-                val expandItem = JMenuItem("Expand Project", AllIcons.Actions.Expandall)
+                val expandItem = createMenuItem("Expand Project", AllIcons.Actions.Expandall)
                 expandItem.addActionListener {
                     tree.expandPath(path)
                 }
@@ -174,7 +174,7 @@ class ChromiaTreePopupMenu(
         
         addSeparator()
 
-        val openDirItem = JMenuItem("Open in File Manager", AllIcons.Actions.MenuOpen)
+        val openDirItem = createMenuItem("Open in File Manager", AllIcons.Actions.MenuOpen)
         openDirItem.addActionListener {
             node.projectPath?.let { path ->
                 try {
@@ -187,7 +187,7 @@ class ChromiaTreePopupMenu(
         }
         add(openDirItem)
 
-        val clearProjectParams = JMenuItem("Clear All Parameters in Project", AllIcons.Actions.GC)
+        val clearProjectParams = createMenuItem("Clear All Parameters in Project", AllIcons.Actions.GC)
         clearProjectParams.addActionListener {
             clearProjectParameters(node)
         }
@@ -195,7 +195,7 @@ class ChromiaTreePopupMenu(
     }
     
     private fun buildRootMenu() {
-        val refreshItem = JMenuItem("Refresh", AllIcons.Actions.Refresh)
+        val refreshItem = createMenuItem("Refresh", AllIcons.Actions.Refresh)
         refreshItem.addActionListener {
             treeModel.reload()
             tree.expandRow(0) // Expand root
@@ -204,7 +204,7 @@ class ChromiaTreePopupMenu(
         
         addSeparator()
 
-        val clearAllItem = JMenuItem("Clear All Parameters", AllIcons.Actions.GC)
+        val clearAllItem = createMenuItem("Clear All Parameters", AllIcons.Actions.GC)
         clearAllItem.addActionListener {
             clearAllParameters()
         }
