@@ -1,15 +1,19 @@
 package net.postchain.rellide.jetbrains.toolwindow
 
 import com.intellij.icons.AllIcons
+import com.intellij.openapi.diagnostic.Logger
 import com.intellij.openapi.project.Project
+import com.intellij.openapi.ui.JBMenuItem
+import com.intellij.openapi.ui.JBPopupMenu
 import com.intellij.openapi.ui.Messages
+import com.intellij.util.ui.JBUI
 import net.postchain.rellide.jetbrains.toolwindow.execution.ChromiaCommandExecutor
 import net.postchain.rellide.jetbrains.toolwindow.settings.ChromiaToolWindowSettings
 import net.postchain.rellide.jetbrains.toolwindow.tree.ChromiaNodeType
 import net.postchain.rellide.jetbrains.toolwindow.tree.ChromiaTreeModel
 import net.postchain.rellide.jetbrains.toolwindow.tree.ChromiaTreeNode
+import javax.swing.Icon
 import javax.swing.JMenuItem
-import javax.swing.JPopupMenu
 import javax.swing.JTree
 import javax.swing.tree.TreePath
 
@@ -21,7 +25,11 @@ class ChromiaTreePopupMenu(
         private val project: Project,
         private val treeModel: ChromiaTreeModel,
         private val tree: JTree
-) : JPopupMenu() {
+) : JBPopupMenu() {
+
+    companion object {
+        val logger = Logger.getInstance(ChromiaTreePopupMenu::class.java)
+    }
     
     private val settings = ChromiaToolWindowSettings.getInstance(project)
     private val commandExecutor = ChromiaCommandExecutor(project)
@@ -64,10 +72,18 @@ class ChromiaTreePopupMenu(
             }
         }
     }
+
+    private fun createMenuItem(
+        text: String,
+        icon: Icon? = null,
+    ): JMenuItem {
+        return JBMenuItem(text, icon).apply {
+            border = JBUI.Borders.empty(3, 0)
+        }
+    }
     
     private fun buildCommandMenu(node: ChromiaTreeNode) {
-        // Execute command
-        val executeItem = JMenuItem("Execute", AllIcons.Actions.Execute)
+        val executeItem = createMenuItem("Execute", AllIcons.Actions.Execute)
         executeItem.addActionListener {
             val fullCommand = node.getFullCommand()
             if (fullCommand != null) {
@@ -79,24 +95,37 @@ class ChromiaTreePopupMenu(
         add(executeItem)
         
         addSeparator()
-        
-        // Configure parameters
-        val configureItem = JMenuItem("Configure Parameters...", AllIcons.Actions.Properties)
+
+        val configureItem = createMenuItem("Configure Parameters...", AllIcons.Actions.Properties)
         configureItem.addActionListener {
             showParametersDialog(node)
         }
         add(configureItem)
-        
-        // Clear parameters (only show if parameters exist)
+
         if (node.parameters.isNotBlank()) {
-            val clearItem = JMenuItem("Clear Parameters", AllIcons.Actions.GC)
+            val clearItem = createMenuItem("Clear Parameters", AllIcons.Actions.GC)
             clearItem.addActionListener {
                 clearNodeParameters(node)
             }
             add(clearItem)
         }
+
+        addSeparator()
+        val helpItem = createMenuItem("Help", AllIcons.Actions.Help)
+        helpItem.addActionListener {
+            runHelpCommand(node)
+        }
+        add(helpItem)
     }
-    
+
+    private fun runHelpCommand(node: ChromiaTreeNode) {
+        node.command?.let {
+            val helpCommand = "${node.command} --help"
+            val workingDirectory = node.projectPath ?: project.basePath
+            commandExecutor.executeCommand(helpCommand, workingDirectory)
+        }
+    }
+
     private fun buildCategoryMenu(node: ChromiaTreeNode) {
         // Expand/Collapse
         val path = getTreePath(node)
@@ -127,7 +156,6 @@ class ChromiaTreePopupMenu(
     }
     
     private fun buildProjectMenu(node: ChromiaTreeNode) {
-        // Expand/Collapse project
         val path = getTreePath(node)
         if (path != null) {
             if (tree.isExpanded(path)) {
@@ -147,22 +175,19 @@ class ChromiaTreePopupMenu(
         
         addSeparator()
 
-        // Open project directory
         val openDirItem = JMenuItem("Open in File Manager", AllIcons.Actions.MenuOpen)
         openDirItem.addActionListener {
             node.projectPath?.let { path ->
                 try {
                     val desktop = java.awt.Desktop.getDesktop()
                     desktop.open(java.io.File(path))
-                } catch (e: Exception) {
-                    // Fallback or error handling
-                    println("Failed to open directory: $path")
+                } catch (_: Exception) {
+                    logger.error("Failed to open directory: $path")
                 }
             }
         }
         add(openDirItem)
-        
-        // Clear all parameters in project
+
         val clearProjectParams = JMenuItem("Clear All Parameters in Project", AllIcons.Actions.GC)
         clearProjectParams.addActionListener {
             clearProjectParameters(node)
