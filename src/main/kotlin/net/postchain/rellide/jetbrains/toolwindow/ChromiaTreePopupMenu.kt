@@ -111,7 +111,7 @@ class ChromiaTreePopupMenu(
         }
 
         addSeparator()
-        val helpItem = createMenuItem("Help", AllIcons.Actions.Help)
+        val helpItem = createMenuItem("Help", AllIcons.General.Information)
         helpItem.addActionListener {
             runHelpCommand(node)
         }
