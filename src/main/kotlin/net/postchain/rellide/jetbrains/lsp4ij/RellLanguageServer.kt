@@ -20,6 +20,7 @@ class RellLanguageServer(val project: Project) : OSProcessStreamConnectionProvid
         "-Duser.language=en",
         "-Duser.region=US",
         "-DLspIncludeDefinition=false",
+        "-DLspResolveCompletion=true",
     )
 
     init {
