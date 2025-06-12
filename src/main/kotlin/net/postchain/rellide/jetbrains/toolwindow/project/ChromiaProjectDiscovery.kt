@@ -50,18 +50,9 @@ object ChromiaProjectDiscovery {
         val subdirs = dir.listFiles { file -> 
             file.isDirectory && !file.name.startsWith(".") && !isIgnoredDirectory(file.name)
         } ?: return
-        
+
         for (subdir in subdirs) {
-            findConfigFile(subdir)?.let { configFile ->
-                projects.add(ChromiaProject(
-                        name = subdir.name,
-                        path = subdir.absolutePath,
-                        configFile = configFile,
-                        isMainProject = false
-                ))
-            } ?: run {
-                searchForProjects(subdir, projects, currentDepth + 1, maxDepth)
-            }
+            searchForProjects(subdir, projects, currentDepth + 1, maxDepth)
         }
     }
 
