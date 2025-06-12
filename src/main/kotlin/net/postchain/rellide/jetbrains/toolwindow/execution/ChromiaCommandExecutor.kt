@@ -56,8 +56,7 @@ class ChromiaCommandExecutor(private val project: Project) {
                 val existingContent = manager.toolWindow.contentManager.findContent(TAB_NAME)
                 manager.toolWindow.contentManager.setSelectedContent(existingContent, true)
             }
-            val widget = existing ?: manager.createShellWidget(projectPath, TAB_NAME, true, false)
-            widget
+            existing ?: manager.createShellWidget(projectPath, TAB_NAME, true, false)
         }
     }
 
