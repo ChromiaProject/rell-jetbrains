@@ -91,6 +91,22 @@
                     factoryClass="net.postchain.rellide.jetbrains.toolwindow.ChromiaToolWindowFactory"
                     icon="/icons/chromia-big.png"/>
 
+<!--        &lt;!&ndash; Rell Test Runner Tool Window &ndash;&gt;-->
+<!--        <toolWindow id="RellTestRunner"-->
+<!--                    anchor="left"-->
+<!--                    factoryClass="net.postchain.rellide.jetbrains.testing.ui.RellTestRunnerToolWindowFactory"-->
+<!--                    icon="/icons/rell.png"/>-->
+
+        <!-- Run Configuration Types -->
+        <configurationType implementation="net.postchain.rellide.jetbrains.testing.RellTestConfigurationType"/>
+
+        <!-- Gutter icon provider -->
+        <codeInsight.lineMarkerProvider
+                language="Rell"
+                implementationClass="net.postchain.rellide.jetbrains.testing.RellTestLineMarkerProvider"/>
+
+        <testFinder implementation="net.postchain.rellide.jetbrains.testing.RellTestFinder"/>
+
         <errorHandler implementation="net.postchain.rellide.jetbrains.sentry.SentryReportSubmitter"/>
     </extensions>
 
@@ -124,6 +140,16 @@
                 class="net.postchain.rellide.jetbrains.actions.RellInvalidateCacheAction"
                 text="Rell: Invalidate Cache" description="Remove the Rell language server cache locally">
             <keyboard-shortcut keymap="$default" first-keystroke="control alt I"/>
+        </action>
+        
+        <!-- Test Runner Actions -->
+        <action id="rell.test.run"
+                class="net.postchain.rellide.jetbrains.testing.actions.RunRellTestAction"
+                text="Run Rell Test" description="Run the selected Rell test file"
+                icon="/icons/rell.png">
+            <add-to-group group-id="ProjectViewPopupMenu" anchor="after" relative-to-action="RunContextGroup"/>
+            <add-to-group group-id="EditorPopupMenu" anchor="after" relative-to-action="RunContextGroup"/>
+            <keyboard-shortcut keymap="$default" first-keystroke="control shift F10"/>
         </action>
     </actions>
 </idea-plugin>

@@ -1,0 +1,50 @@
+// Sample Rell test file demonstrating test runner functionality
+
+function test_basic_arithmetic() {
+    val result = 2 + 2;
+    assert(result == 4);
+}
+
+function test_string_operations() {
+    val greeting = "Hello";
+    val target = "World";
+    val message = greeting + " " + target;
+    assert(message == "Hello World");
+}
+
+function test_list_operations() {
+    val numbers = [1, 2, 3, 4, 5];
+    assert(numbers.size() == 5);
+    assert(numbers[0] == 1);
+    assert(numbers[4] == 5);
+}
+
+function test_map_operations() {
+    val user = map<text, text>();
+    user["name"] = "Alice";
+    user["email"] = "alice@example.com";
+    
+    assert(user["name"] == "Alice");
+    assert(user["email"] == "alice@example.com");
+}
+
+function test_conditional_logic() {
+    val age = 25;
+    val category = if (age >= 18) "adult" else "minor";
+    assert(category == "adult");
+}
+
+function test_loops() {
+    var sum = 0;
+    for (i in range(1, 6)) {
+        sum += i;
+    }
+    assert(sum == 15); // 1+2+3+4+5 = 15
+}
+
+function test_entity_operations() {
+    // This would be a more complex test involving Rell entities
+    // For now, just a placeholder to show test structure
+    val result = true;
+    assert(result);
+} 
