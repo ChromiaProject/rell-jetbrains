@@ -4,72 +4,48 @@ import com.intellij.ide.fileTemplates.FileTemplateDescriptor
 import com.intellij.lang.Language
 import com.intellij.openapi.module.Module
 import com.intellij.openapi.util.NlsSafe
+import com.intellij.openapi.vfs.VirtualFile
 import com.intellij.psi.PsiElement
+import com.intellij.psi.PsiFile
 import com.intellij.testIntegration.TestFramework
+import net.postchain.rellide.jetbrains.language.RellFileType
+import net.postchain.rellide.jetbrains.language.RellIcons
 import javax.swing.Icon
 
 class RellTestFramework : TestFramework {
-    override fun getName(): @NlsSafe String {
-        TODO("Not yet implemented")
+    companion object {
+        val INSTANCE: RellTestFramework = RellTestFramework()
     }
 
-    override fun getIcon(): Icon {
-        TODO("Not yet implemented")
-    }
+    override fun getName(): String = "Rell Test"
 
-    override fun isLibraryAttached(module: Module): Boolean {
-        TODO("Not yet implemented")
-    }
+    override fun getIcon(): Icon = RellIcons.FILE
 
-    override fun getLibraryPath(): String? {
-        TODO("Not yet implemented")
-    }
+    override fun isLibraryAttached(module: Module): Boolean = true
 
-    override fun getDefaultSuperClass(): String? {
-        TODO("Not yet implemented")
-    }
+    override fun getLibraryPath(): String? = null
 
-    override fun isTestClass(clazz: PsiElement): Boolean {
-        TODO("Not yet implemented")
-    }
+    override fun isTestClass(clazz: PsiElement): Boolean = false
 
-    override fun isPotentialTestClass(clazz: PsiElement): Boolean {
-        TODO("Not yet implemented")
-    }
+    override fun isTestMethod(element: PsiElement): Boolean = false
 
-    override fun findSetUpMethod(clazz: PsiElement): PsiElement? {
-        TODO("Not yet implemented")
-    }
+    override fun getDefaultSuperClass(): String? = null
 
-    override fun findTearDownMethod(clazz: PsiElement): PsiElement? {
-        TODO("Not yet implemented")
-    }
+    override fun isPotentialTestClass(element: PsiElement): Boolean = false
 
-    override fun findOrCreateSetUpMethod(clazz: PsiElement): PsiElement? {
-        TODO("Not yet implemented")
-    }
+    override fun findSetUpMethod(element: PsiElement): PsiElement? = null
 
-    override fun getSetUpMethodFileTemplateDescriptor(): FileTemplateDescriptor? {
-        TODO("Not yet implemented")
-    }
+    override fun findTearDownMethod(element: PsiElement): PsiElement? = null
 
-    override fun getTearDownMethodFileTemplateDescriptor(): FileTemplateDescriptor? {
-        TODO("Not yet implemented")
-    }
+    override fun findOrCreateSetUpMethod(element: PsiElement): PsiElement? = null
 
-    override fun getTestMethodFileTemplateDescriptor(): FileTemplateDescriptor {
-        TODO("Not yet implemented")
-    }
+    override fun getSetUpMethodFileTemplateDescriptor(): FileTemplateDescriptor? = null
 
-    override fun isIgnoredMethod(element: PsiElement?): Boolean {
-        TODO("Not yet implemented")
-    }
+    override fun getTearDownMethodFileTemplateDescriptor(): FileTemplateDescriptor? = null
 
-    override fun isTestMethod(element: PsiElement?): Boolean {
-        TODO("Not yet implemented")
-    }
+    override fun getTestMethodFileTemplateDescriptor(): FileTemplateDescriptor = FileTemplateDescriptor("Rell Test Method")
 
-    override fun getLanguage(): Language {
-        TODO("Not yet implemented")
-    }
+    override fun isIgnoredMethod(element: PsiElement): Boolean = false
+
+    override fun getLanguage() = RellFileType.INSTANCE.language
 }
