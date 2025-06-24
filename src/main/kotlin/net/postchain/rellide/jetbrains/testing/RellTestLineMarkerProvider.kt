@@ -25,7 +25,7 @@ class RellTestLineMarkerProvider : LineMarkerProvider {
                 anchor,
                 anchor.textRange,
                 AllIcons.RunConfigurations.TestState.Run,
-                { "Run ${getTestName(element)}" },
+                { getTestName(element) },
                 { e, elt -> runTest(elt, testCase) },
                 GutterIconRenderer.Alignment.CENTER,
                 { "Run test" }
@@ -66,7 +66,7 @@ class RellTestLineMarkerProvider : LineMarkerProvider {
 
     private fun getTestName(element: PsiElement): String {
         return (element as? RellXFunctionDef)?.let {
-            "Run ${it.xQualifiedName?.text}"
+            "${it.xQualifiedName?.text}"
         } ?: return "Unknown Test"
     }
 }
