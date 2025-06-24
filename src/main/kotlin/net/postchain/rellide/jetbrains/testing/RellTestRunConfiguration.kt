@@ -52,10 +52,6 @@ class RellTestRunConfiguration(
                 // No specific validation needed for this scope
             }
         }
-        
-//        if (options.getChrExecutable().isNullOrBlank()) {
-//            throw RuntimeConfigurationError("Chromia CLI executable path is required")
-//        }
     }
 
     override fun getState(executor: Executor, environment: ExecutionEnvironment): RunProfileState {
