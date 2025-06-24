@@ -89,6 +89,13 @@ class RellTestRunnerToolWindow(private val project: Project) : SimpleToolWindowP
             }
         })
         
+        // Demo action to simulate test results (for development/testing)
+        actionGroup.add(object : AnAction("Demo Test Results", "Simulate test execution results for UI testing", AllIcons.RunConfigurations.TestState.Green2) {
+            override fun actionPerformed(e: AnActionEvent) {
+                demonstrateTestResults()
+            }
+        })
+        
         val toolbar = ActionManager.getInstance().createActionToolbar(
             "RellTestRunner", 
             actionGroup, 
@@ -187,6 +194,10 @@ class RellTestRunnerToolWindow(private val project: Project) : SimpleToolWindowP
     }
     
     private fun runTest(testNode: RellTestNode) {
+        // Mark test as running before execution
+        testNode.updateState(TestState.RUNNING)
+        refreshTreeDisplay()
+        
         val runManager = RunManager.getInstance(project)
         val configurationSettings = createTestConfiguration(testNode, runManager)
         
@@ -194,7 +205,61 @@ class RellTestRunnerToolWindow(private val project: Project) : SimpleToolWindowP
         ExecutionUtil.runConfiguration(configurationSettings, DefaultRunExecutor.getRunExecutorInstance())
     }
     
+    /**
+     * Update the state of a test node and refresh the UI
+     */
+    fun updateTestState(testIdentifier: String, state: TestState, executionTime: Long? = null, errorMessage: String? = null) {
+        val testNode = findTestNode(testIdentifier)
+        testNode?.let { node ->
+            node.updateState(state, executionTime, errorMessage)
+            refreshTreeDisplay()
+        }
+    }
+    
+    /**
+     * Find a test node by identifier (file path or file:function format)
+     */
+    private fun findTestNode(identifier: String): RellTestNode? {
+        return findTestNodeRecursively(rootNode, identifier)
+    }
+    
+    private fun findTestNodeRecursively(node: DefaultMutableTreeNode, identifier: String): RellTestNode? {
+        val userObject = node.userObject
+        if (userObject is RellTestNode) {
+            val nodeIdentifier = when (userObject) {
+                is RellTestFileNode -> userObject.file.path
+                is RellTestFunctionNode -> "${userObject.file.path}:${userObject.functionName}"
+            }
+            if (nodeIdentifier == identifier) {
+                return userObject
+            }
+        }
+        
+        // Search children
+        for (i in 0 until node.childCount) {
+            val child = node.getChildAt(i) as DefaultMutableTreeNode
+            val result = findTestNodeRecursively(child, identifier)
+            if (result != null) {
+                return result
+            }
+        }
+        
+        return null
+    }
+    
+    /**
+     * Refresh the tree display without rebuilding the entire tree
+     */
+    private fun refreshTreeDisplay() {
+        javax.swing.SwingUtilities.invokeLater {
+            treeModel.reload()
+        }
+    }
+    
     private fun runAllTests() {
+        // Mark all tests as running
+        markAllTestsAsRunning()
+        
         val runManager = RunManager.getInstance(project)
         val factory = RellTestConfigurationFactory.getInstance()
         val configurationSettings = runManager.createConfiguration("Run All Rell Tests", factory)
@@ -206,6 +271,26 @@ class RellTestRunnerToolWindow(private val project: Project) : SimpleToolWindowP
         
         runManager.selectedConfiguration = configurationSettings
         ExecutionUtil.runConfiguration(configurationSettings, DefaultRunExecutor.getRunExecutorInstance())
+    }
+    
+    /**
+     * Mark all test nodes as running
+     */
+    private fun markAllTestsAsRunning() {
+        markTestNodesAsRunningRecursively(rootNode)
+        refreshTreeDisplay()
+    }
+    
+    private fun markTestNodesAsRunningRecursively(node: DefaultMutableTreeNode) {
+        val userObject = node.userObject
+        if (userObject is RellTestNode) {
+            userObject.updateState(TestState.RUNNING)
+        }
+        
+        for (i in 0 until node.childCount) {
+            val child = node.getChildAt(i) as DefaultMutableTreeNode
+            markTestNodesAsRunningRecursively(child)
+        }
     }
     
     private fun createTestConfiguration(testNode: RellTestNode, runManager: RunManager): RunnerAndConfigurationSettings {
@@ -235,12 +320,64 @@ class RellTestRunnerToolWindow(private val project: Project) : SimpleToolWindowP
         
         return configurationSettings
     }
+    
+    /**
+     * Demonstrate test results for UI testing
+     */
+    private fun demonstrateTestResults() {
+        demonstrateTestResultsRecursively(rootNode, 0)
+        refreshTreeDisplay()
+    }
+    
+    private fun demonstrateTestResultsRecursively(node: DefaultMutableTreeNode, depth: Int) {
+        val userObject = node.userObject
+        if (userObject is RellTestNode) {
+            // Simulate different test states for demonstration
+            val states = listOf(TestState.PASSED, TestState.FAILED, TestState.IGNORED)
+            val randomState = states.random()
+            val executionTime = (10..500).random().toLong()
+            val errorMessage = if (randomState == TestState.FAILED) "Assertion failed: expected 4 but was 5" else null
+            
+            userObject.updateState(randomState, executionTime, errorMessage)
+        }
+        
+        for (i in 0 until node.childCount) {
+            val child = node.getChildAt(i) as DefaultMutableTreeNode
+            demonstrateTestResultsRecursively(child, depth + 1)
+        }
+    }
+}
+
+/**
+ * Test execution state
+ */
+enum class TestState {
+    NOT_RUN,    // Initial state, test hasn't been executed
+    RUNNING,    // Test is currently executing
+    PASSED,     // Test completed successfully
+    FAILED,     // Test failed
+    IGNORED     // Test was ignored/skipped
 }
 
 /**
  * Base class for test tree nodes
  */
-sealed class RellTestNode
+sealed class RellTestNode {
+    var state: TestState = TestState.NOT_RUN
+        private set
+    
+    var executionTime: Long? = null
+        private set
+    
+    var errorMessage: String? = null
+        private set
+    
+    fun updateState(newState: TestState, executionTime: Long? = null, errorMessage: String? = null) {
+        this.state = newState
+        this.executionTime = executionTime
+        this.errorMessage = errorMessage
+    }
+}
 
 /**
  * Tree node representing a test file
@@ -274,17 +411,48 @@ private class RellTestTreeCellRenderer : ColoredTreeCellRenderer() {
         
         when (userObject) {
             is RellTestFileNode -> {
-                icon = AllIcons.FileTypes.Any_type
-                append(userObject.toString(), SimpleTextAttributes.REGULAR_ATTRIBUTES)
+                icon = getTestStateIcon(userObject.state)
+                append(userObject.toString(), getTestStateAttributes(userObject.state))
+                
+                // Add execution time if available
+                userObject.executionTime?.let { time ->
+                    append(" (${time}ms)", SimpleTextAttributes.GRAY_ATTRIBUTES)
+                }
             }
             is RellTestFunctionNode -> {
-                icon = AllIcons.Nodes.Method
-                append(userObject.toString(), SimpleTextAttributes.REGULAR_ATTRIBUTES)
+                icon = getTestStateIcon(userObject.state)
+                append(userObject.toString(), getTestStateAttributes(userObject.state))
+                
+                // Add execution time if available
+                userObject.executionTime?.let { time ->
+                    append(" (${time}ms)", SimpleTextAttributes.GRAY_ATTRIBUTES)
+                }
+                
+                // Show error message as tooltip for failed tests
+                userObject.errorMessage?.let { error ->
+                    toolTipText = error
+                }
             }
             else -> {
                 icon = AllIcons.Nodes.Folder
                 append(userObject?.toString() ?: "", SimpleTextAttributes.REGULAR_BOLD_ATTRIBUTES)
             }
         }
+    }
+    
+    private fun getTestStateIcon(state: TestState) = when (state) {
+        TestState.NOT_RUN -> AllIcons.RunConfigurations.TestState.Run
+        TestState.RUNNING -> AllIcons.RunConfigurations.TestState.Run_run
+        TestState.PASSED -> AllIcons.RunConfigurations.TestState.Green2
+        TestState.FAILED -> AllIcons.RunConfigurations.TestState.Red2
+        TestState.IGNORED -> AllIcons.RunConfigurations.TestState.Yellow2
+    }
+    
+    private fun getTestStateAttributes(state: TestState) = when (state) {
+        TestState.NOT_RUN -> SimpleTextAttributes.REGULAR_ATTRIBUTES
+        TestState.RUNNING -> SimpleTextAttributes.REGULAR_BOLD_ATTRIBUTES
+        TestState.PASSED -> SimpleTextAttributes(SimpleTextAttributes.STYLE_PLAIN, java.awt.Color.GREEN.darker())
+        TestState.FAILED -> SimpleTextAttributes(SimpleTextAttributes.STYLE_PLAIN, java.awt.Color.RED.darker())
+        TestState.IGNORED -> SimpleTextAttributes(SimpleTextAttributes.STYLE_PLAIN, java.awt.Color.ORANGE.darker())
     }
 } 

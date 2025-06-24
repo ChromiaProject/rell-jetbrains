@@ -6,6 +6,7 @@
     <description>Rell blockchain programming language plugin</description>
 
     <depends>com.intellij.modules.platform</depends>
+    <depends>com.intellij.modules.lang</depends>
     <depends>com.redhat.devtools.lsp4ij</depends>
     <depends>org.jetbrains.plugins.terminal</depends>
 
@@ -91,11 +92,11 @@
                     factoryClass="net.postchain.rellide.jetbrains.toolwindow.ChromiaToolWindowFactory"
                     icon="/icons/chromia-big.png"/>
 
-<!--        &lt;!&ndash; Rell Test Runner Tool Window &ndash;&gt;-->
-<!--        <toolWindow id="RellTestRunner"-->
-<!--                    anchor="left"-->
-<!--                    factoryClass="net.postchain.rellide.jetbrains.testing.ui.RellTestRunnerToolWindowFactory"-->
-<!--                    icon="/icons/rell.png"/>-->
+        <!-- Rell Test Runner Tool Window -->
+        <toolWindow id="RellTestRunner"
+                    anchor="left"
+                    factoryClass="net.postchain.rellide.jetbrains.testing.ui.RellTestRunnerToolWindowFactory"
+                    icon="/icons/rell.png"/>
 
         <!-- Run Configuration Types -->
         <configurationType implementation="net.postchain.rellide.jetbrains.testing.RellTestConfigurationType"/>
@@ -106,6 +107,12 @@
                 implementationClass="net.postchain.rellide.jetbrains.testing.RellTestLineMarkerProvider"/>
 
         <testFinder implementation="net.postchain.rellide.jetbrains.testing.RellTestFinder"/>
+
+        <lang.testFramework implementation="net.postchain.rellide.jetbrains.testing.RellTestFramework"/>
+        
+        <testStatusListener implementation="net.postchain.rellide.jetbrains.testing.RellTestStatusListener"/>
+
+
 
         <errorHandler implementation="net.postchain.rellide.jetbrains.sentry.SentryReportSubmitter"/>
     </extensions>
