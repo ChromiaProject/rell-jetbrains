@@ -110,7 +110,7 @@
 
         <lang.testFramework implementation="net.postchain.rellide.jetbrains.testing.RellTestFramework"/>
         
-        <testStatusListener implementation="net.postchain.rellide.jetbrains.testing.RellTestStatusListener"/>
+<!--        <testStatusListener implementation="net.postchain.rellide.jetbrains.testing.RellTestStatusListener"/>-->
 
 
 

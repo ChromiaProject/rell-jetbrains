@@ -12,20 +12,24 @@ import com.intellij.execution.process.ProcessEvent
 import com.intellij.execution.process.ProcessHandler
 import com.intellij.execution.process.ProcessHandlerFactory
 import com.intellij.execution.process.ProcessListener
+import com.intellij.execution.process.ProcessOutputTypes
 import com.intellij.execution.process.ProcessTerminatedListener
 import com.intellij.execution.runners.ExecutionEnvironment
 import com.intellij.execution.runners.ProgramRunner
 import com.intellij.execution.testframework.TestConsoleProperties
 import com.intellij.execution.testframework.sm.SMTestRunnerConnectionUtil
+import com.intellij.execution.testframework.sm.ServiceMessageBuilder
 import com.intellij.execution.testframework.sm.runner.SMTRunnerConsoleProperties
 import com.intellij.execution.testframework.sm.runner.SMTestLocator
 import com.intellij.execution.testframework.sm.runner.TestProxyFilterProvider
 import com.intellij.execution.testframework.sm.runner.ui.SMTestRunnerResultsForm
 import com.intellij.execution.testframework.sm.runner.GeneralTestEventsProcessor
+import com.intellij.execution.testframework.sm.runner.SMTestProxy
 import com.intellij.execution.testframework.sm.runner.events.*
 import com.intellij.execution.testframework.sm.runner.ui.SMTRunnerConsoleView
 import com.intellij.execution.testframework.ui.BaseTestsOutputConsoleView
 import com.intellij.execution.ui.ConsoleView
+import com.intellij.execution.ui.ConsoleViewContentType
 import com.intellij.openapi.application.ApplicationManager
 import com.intellij.openapi.util.Disposer
 import com.intellij.openapi.wm.ToolWindowManager
@@ -35,6 +39,7 @@ import java.io.File
 import com.intellij.util.messages.MessageBus
 import kotlin.text.Regex
 import com.intellij.openapi.util.Key
+import jetbrains.buildServer.messages.serviceMessages.ServiceMessageTypes
 
 /**
  * Profile state for executing Rell tests.
@@ -47,26 +52,28 @@ class RellTestRunProfileState(
 
     override fun startProcess(): ProcessHandler {
         val commandLine = createCommandLine()
-        //val processHandler = KillableColoredProcessHandler(commandLine)
+//        val processHandler = KillableColoredProcessHandler(commandLine)
         val processHandler = ProcessHandlerFactory.getInstance()
                 .createColoredProcessHandler(commandLine);
         ProcessTerminatedListener.attach(processHandler)
-       // processHandler.addProcessListener(RellTestProcessListener(environment.project))
+       //processHandler.addProcessListener(RellTestProcessListener(configuration, environment))
 
         return processHandler
     }
 
     override fun execute(executor: Executor, runner: ProgramRunner<*>): ExecutionResult {
         val processHandler = startProcess()
+       // sendMessage(ServiceMessageBuilder.testSuiteStarted("Rell Test Suite").toString(), processHandler)
 
         // Create test console with test framework integration
         val consoleProperties = RellTestConsoleProperties(configuration, executor)
         val console = SMTestRunnerConnectionUtil.createAndAttachConsole("Rell Test", processHandler, consoleProperties)
 
         if (console is SMTRunnerConsoleView) {
-            processHandler.addProcessListener(RellTestResultsListener(console, consoleProperties))
+            processHandler.addProcessListener(RellTestResultsListener(console, consoleProperties, processHandler))
         }
 
+        sendMessage(ServiceMessageBuilder.testStarted(configuration.name).toString(), processHandler)
 
         return RellTestExecutionResult(console, processHandler, createActions(console, processHandler, executor))
     }
@@ -145,18 +152,12 @@ private class RellTestConsoleProperties(
         setIfUndefined(HIDE_PASSED_TESTS, false)
         setIfUndefined(HIDE_IGNORED_TEST, false)
         setIfUndefined(SCROLL_TO_SOURCE, true)
-        setIfUndefined(SELECT_FIRST_DEFECT, false)
+        setIfUndefined(SELECT_FIRST_DEFECT, true)
         setIfUndefined(TRACK_RUNNING_TEST, false)
     }
 
     override fun getTestLocator(): SMTestLocator = RellTestLocator()
     override fun isIdBasedTestTree() = false
-    override fun isPreservePresentableName(): Boolean {
-        return true
-    }
-
-
-
 }
 
 class RellFilterProvider : TestProxyFilterProvider {
@@ -169,16 +170,23 @@ class RellFilterProvider : TestProxyFilterProvider {
 
 class RellTestResultsListener(
     private val console: SMTRunnerConsoleView,
-    private val consoleProperties: SMTRunnerConsoleProperties
+    private val consoleProperties: SMTRunnerConsoleProperties,
+private val processHandler: ProcessHandler
 ) : ProcessListener {
-    
-    override fun processTerminated(event: ProcessEvent) {
-        if (event.exitCode == 0) {
+    private val TEST_SUITE_FINISHED_KEY = Key.create<String>("test.suite.finished")
+    override fun processWillTerminate(event: ProcessEvent, willBeDestroyed: Boolean) {
+        sendMessage(ServiceMessageBuilder.testIgnored(consoleProperties.configuration.name)
+                .toString(), processHandler)
+        //sendMessage(ServiceMessageBuilder.testFinished(consoleProperties.configuration.name).toString(), processHandler)
+     //   sendMessage(ServiceMessageBuilder.testSuiteFinished("Rell Test Suite").toString(), processHandler)
+
+        //console.resultsViewer.onTestFinished(SMTestProxy("Rell Test Suite", false, null))
+       // if (event.exitCode == 0) {
             // Look for JUnit XML report files in the working directory
             ApplicationManager.getApplication().executeOnPooledThread {
                 findAndParseTestReports()
             }
-        }
+    //    }
     }
     
     private fun findAndParseTestReports() {
@@ -269,4 +277,9 @@ class RellTestResultsListener(
             println("Error reporting test results: ${e.message}")
         }
     }
+}
+
+
+fun sendMessage(message: String, processHandler: ProcessHandler) {
+    processHandler.notifyTextAvailable("$message\n", ProcessOutputTypes.STDOUT)
 }
