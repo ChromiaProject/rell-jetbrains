@@ -56,7 +56,7 @@ class RunRellTestAction : AnAction("Run Rell Test", "Run the selected Rell test 
         runManager: RunManager
     ): RunnerAndConfigurationSettings {
         val factory = RellTestConfigurationFactory.getInstance()
-        val configurationName = "Run ${testFile.nameWithoutExtension}"
+        val configurationName = testFile.nameWithoutExtension
         
         val configurationSettings = runManager.createConfiguration(configurationName, factory)
         val configuration = configurationSettings.configuration as RellTestRunConfiguration
@@ -77,13 +77,7 @@ class RunRellTestAction : AnAction("Run Rell Test", "Run the selected Rell test 
 
     private fun findChrExecutable(project: Project): String? {
         // Try to find Chromia CLI executable in common locations
-        val commonPaths = listOf(
-            "chr",
-            "/usr/local/bin/rell",
-            "/usr/bin/rell",
-            "${project.basePath}/rell",
-            "${project.basePath}/bin/rell"
-        )
+        val commonPaths = listOf("chr")
         
         for (path in commonPaths) {
             val process = try {
