@@ -16,26 +16,32 @@ import net.postchain.rellide.jetbrains.lsp4ij.RellTestFile
 class RellProjectService(val project: Project) {
     companion object {
         const val RELL_LANGUAGE_SERVER_ID = "rellLanguageServer"
+        private const val CACHE_DURATION_MS = 1000L
     }
 
-    var count = 0;
+    private val testCasesCache = TimedCache<String, List<RellTestCase>>(CACHE_DURATION_MS)
+    private val testFilesCache = TimedCache<String, List<RellTestFile>>(CACHE_DURATION_MS)
+
     fun listTestCases(fileUri: String): List<RellTestCase> {
-        println("${++count} Listing test cases for file: $fileUri")
-        return runBlocking {
-            LanguageServerManager.getInstance(project).getLanguageServer(RELL_LANGUAGE_SERVER_ID).get()?.let { lsItem ->
-                val rellServer = lsItem.server as RellServerApi
-                rellServer.listTestCases(fileUri).await()
-            }
-        } ?: emptyList()
+        return testCasesCache.getOrPut(fileUri) {
+            runBlocking {
+                LanguageServerManager.getInstance(project).getLanguageServer(RELL_LANGUAGE_SERVER_ID).get()?.let { lsItem ->
+                    val rellServer = lsItem.server as RellServerApi
+                    rellServer.listTestCases(fileUri).await()
+                }
+            } ?: emptyList()
+        }
     }
 
     fun getTestFiles(workspaceUri: String): List<RellTestFile> {
-        return runBlocking {
-            LanguageServerManager.getInstance(project).getLanguageServer(RELL_LANGUAGE_SERVER_ID).get()?.let { lsItem ->
-                val rellServer = lsItem.server as RellServerApi
-                rellServer.getTestFiles(workspaceUri).await()
-            }
-        } ?: emptyList()
+        return testFilesCache.getOrPut(workspaceUri) {
+            runBlocking {
+                LanguageServerManager.getInstance(project).getLanguageServer(RELL_LANGUAGE_SERVER_ID).get()?.let { lsItem ->
+                    val rellServer = lsItem.server as RellServerApi
+                    rellServer.getTestFiles(workspaceUri).await()
+                }
+            } ?: emptyList()
+        }
     }
 
     fun getTestCase(element: PsiElement): RellTestCase? {
