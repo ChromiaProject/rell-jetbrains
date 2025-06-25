@@ -6,7 +6,6 @@
     <description>Rell blockchain programming language plugin</description>
 
     <depends>com.intellij.modules.platform</depends>
-    <depends>com.intellij.modules.lang</depends>
     <depends>com.redhat.devtools.lsp4ij</depends>
     <depends>org.jetbrains.plugins.terminal</depends>
 
@@ -128,7 +127,7 @@
     <actions>
         <action id="rell.file.create"
                 class="net.postchain.rellide.jetbrains.actions.RellCreateFileAction"
-                text="Rell file" description="Create new Rell file">
+                text="Rell File" description="Create new Rell file">
             <add-to-group group-id="NewGroup" anchor="after" relative-to-action="NewDir"/>
         </action>
         <action id="rell.invalidate.cache"
