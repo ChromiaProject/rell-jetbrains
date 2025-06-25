@@ -40,6 +40,8 @@ class RellTestLineMarkerProvider : LineMarkerProvider {
         val project = element.project
         val runManager = RunManager.getInstance(project)
         val configuration = createOrFindRunConfiguration(element, runManager, testCase)
+        runManager.addConfiguration(configuration)
+        runManager.selectedConfiguration = configuration
         ExecutionUtil.runConfiguration(configuration, DefaultRunExecutor.getRunExecutorInstance())
     }
 
