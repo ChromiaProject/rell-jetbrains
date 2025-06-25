@@ -48,7 +48,7 @@ class RellTestLocator : SMTestLocator {
                 }
             }
         }
-        
+
         return locations
     }
 } 

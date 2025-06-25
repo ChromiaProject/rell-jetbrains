@@ -8,94 +8,80 @@ import com.intellij.openapi.ui.TextFieldWithBrowseButton
 import com.intellij.ui.components.JBLabel
 import com.intellij.ui.components.JBTextField
 import com.intellij.util.ui.FormBuilder
-import javax.swing.*
+import javax.swing.JComponent
+import javax.swing.JPanel
 
 /**
  * Settings editor for Rell test run configuration.
  * Provides UI for configuring test execution parameters.
  */
 class RellTestRunConfigurationEditor(private val project: Project) : SettingsEditor<RellTestRunConfiguration>() {
-    
+
     private val testScopeComboBox = ComboBox(TestScope.values())
-    private val testModuleField = TextFieldWithBrowseButton()
-    private val testBlockchainField = TextFieldWithBrowseButton()
+    private val testModuleField = JBTextField()
+    private val testBlockchainField = JBTextField()
     private val testPatternField = JBTextField()
     private val workingDirectoryField = TextFieldWithBrowseButton()
     private val chrExecutableField = TextFieldWithBrowseButton()
     private val additionalArgumentsField = JBTextField()
-    
+
     private val testModuleLabel = JBLabel("Test module:")
     private val testBlockchainLabel = JBLabel("Test blockchain:")
     private val testPatternLabel = JBLabel("Test pattern:")
-    
+
     init {
         setupUI()
     }
-    
+
     private fun setupUI() {
-        testModuleField.addBrowseFolderListener(
-            "Select Test Module",
-            "Choose the Rell test module to run",
-            project,
-            FileChooserDescriptorFactory.createSingleFileDescriptor("rell")
-        )
-        
-        testBlockchainField.addBrowseFolderListener(
-            "Select Test Directory",
-            "Choose the directory containing Rell test files",
-            project,
-            FileChooserDescriptorFactory.createSingleFolderDescriptor()
-        )
-        
         workingDirectoryField.addBrowseFolderListener(
-            "Select Working Directory",
-            "Choose the working directory for test execution",
-            project,
-            FileChooserDescriptorFactory.createSingleFolderDescriptor()
+                "Select Working Directory",
+                "Choose the working directory for test execution",
+                project,
+                FileChooserDescriptorFactory.createSingleFolderDescriptor()
         )
-        
+
         chrExecutableField.addBrowseFolderListener(
-            "Select Chromia CLI Executable",
-            "Choose the Chromia CLI executable",
-            project,
-            FileChooserDescriptorFactory.createSingleFileDescriptor()
+                "Select Chromia CLI Executable",
+                "Choose the Chromia CLI executable",
+                project,
+                FileChooserDescriptorFactory.createSingleFileDescriptor()
         )
-        
-        // Setup scope combo box listener
+
         testScopeComboBox.addActionListener {
             updateFieldVisibility()
         }
-        
+
         updateFieldVisibility()
     }
-    
+
     private fun updateFieldVisibility() {
         val selectedScope = testScopeComboBox.selectedItem as TestScope
-        
+
         testModuleLabel.isVisible = selectedScope == TestScope.MODULE
-        testModuleLabel.isVisible = selectedScope == TestScope.MODULE
-        
+        testModuleField.isVisible = selectedScope == TestScope.MODULE
+
         testBlockchainLabel.isVisible = selectedScope == TestScope.BLOCKCHAIN
         testBlockchainField.isVisible = selectedScope == TestScope.BLOCKCHAIN
-        
+
         testPatternLabel.isVisible = selectedScope == TestScope.TEST_PATTERN
         testPatternField.isVisible = selectedScope == TestScope.TEST_PATTERN
     }
-    
+
     override fun createEditor(): JComponent {
         return FormBuilder.createFormBuilder()
-            .addLabeledComponent("Test scope:", testScopeComboBox)
-            .addLabeledComponent(testModuleLabel, testModuleField)
-            .addLabeledComponent(testBlockchainLabel, testBlockchainField)
-            .addLabeledComponent(testPatternLabel, testPatternField)
-            .addSeparator()
-            .addLabeledComponent("Working directory:", workingDirectoryField)
-            .addLabeledComponent("Chromia CLI executable:", chrExecutableField)
-            .addLabeledComponent("Additional arguments:", additionalArgumentsField)
-            .addComponentFillVertically(JPanel(), 0)
-            .panel
+                .addLabeledComponent("Test scope:", testScopeComboBox)
+                .addLabeledComponent(testModuleLabel, testModuleField)
+                .addLabeledComponent(testBlockchainLabel, testBlockchainField)
+                .addLabeledComponent(testPatternLabel, testPatternField)
+                .addSeparator()
+                .addLabeledComponent("Working directory:", workingDirectoryField)
+                .addLabeledComponent("Chromia CLI executable:", chrExecutableField)
+                .addLabeledComponent("Additional arguments:", additionalArgumentsField)
+                .addComponentFillVertically(JPanel(), 0)
+                .panel
     }
-    
+
     override fun resetEditorFrom(configuration: RellTestRunConfiguration) {
         val options = configuration.options
 
@@ -106,13 +92,13 @@ class RellTestRunConfigurationEditor(private val project: Project) : SettingsEdi
         workingDirectoryField.text = options.getWorkingDirectory() ?: ""
         chrExecutableField.text = options.getChrExecutable() ?: ""
         additionalArgumentsField.text = options.getAdditionalArguments() ?: ""
-        
+
         updateFieldVisibility()
     }
-    
+
     override fun applyEditorTo(configuration: RellTestRunConfiguration) {
         val options = configuration.options
-        
+
         options.setTestScope(testScopeComboBox.selectedItem as TestScope)
         options.setTestModule(testModuleField.text.takeIf { it.isNotBlank() })
         options.setTestBlockchain(testBlockchainField.text.takeIf { it.isNotBlank() })

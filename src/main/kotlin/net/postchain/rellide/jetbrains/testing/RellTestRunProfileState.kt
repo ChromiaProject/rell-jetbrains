@@ -1,45 +1,19 @@
 package net.postchain.rellide.jetbrains.testing
 
-import com.intellij.execution.DefaultExecutionResult
 import com.intellij.execution.ExecutionResult
 import com.intellij.execution.Executor
 import com.intellij.execution.configurations.CommandLineState
 import com.intellij.execution.configurations.GeneralCommandLine
-import com.intellij.execution.filters.Filter
-import com.intellij.execution.process.KillableColoredProcessHandler
-import com.intellij.execution.process.OSProcessHandler
-import com.intellij.execution.process.ProcessEvent
-import com.intellij.execution.process.ProcessHandler
-import com.intellij.execution.process.ProcessHandlerFactory
-import com.intellij.execution.process.ProcessListener
-import com.intellij.execution.process.ProcessOutputTypes
-import com.intellij.execution.process.ProcessTerminatedListener
+import com.intellij.execution.process.*
 import com.intellij.execution.runners.ExecutionEnvironment
 import com.intellij.execution.runners.ProgramRunner
-import com.intellij.execution.testframework.TestConsoleProperties
 import com.intellij.execution.testframework.sm.SMTestRunnerConnectionUtil
 import com.intellij.execution.testframework.sm.ServiceMessageBuilder
 import com.intellij.execution.testframework.sm.runner.SMTRunnerConsoleProperties
 import com.intellij.execution.testframework.sm.runner.SMTestLocator
-import com.intellij.execution.testframework.sm.runner.TestProxyFilterProvider
-import com.intellij.execution.testframework.sm.runner.ui.SMTestRunnerResultsForm
-import com.intellij.execution.testframework.sm.runner.GeneralTestEventsProcessor
-import com.intellij.execution.testframework.sm.runner.SMTestProxy
-import com.intellij.execution.testframework.sm.runner.events.*
-import com.intellij.execution.testframework.sm.runner.ui.SMTRunnerConsoleView
-import com.intellij.execution.testframework.ui.BaseTestsOutputConsoleView
-import com.intellij.execution.ui.ConsoleView
-import com.intellij.execution.ui.ConsoleViewContentType
-import com.intellij.openapi.application.ApplicationManager
-import com.intellij.openapi.util.Disposer
-import com.intellij.openapi.wm.ToolWindowManager
-import net.postchain.rellide.jetbrains.testing.ui.RellTestRunnerToolWindow
-import net.postchain.rellide.jetbrains.testing.ui.TestState
-import java.io.File
-import com.intellij.util.messages.MessageBus
-import kotlin.text.Regex
 import com.intellij.openapi.util.Key
 import jetbrains.buildServer.messages.serviceMessages.ServiceMessageTypes
+import java.io.File
 
 /**
  * Profile state for executing Rell tests.
@@ -52,36 +26,21 @@ class RellTestRunProfileState(
 
     override fun startProcess(): ProcessHandler {
         val commandLine = createCommandLine()
-//        val processHandler = KillableColoredProcessHandler(commandLine)
-        val processHandler = ProcessHandlerFactory.getInstance()
-                .createColoredProcessHandler(commandLine);
+        val processHandler = KillableColoredProcessHandler(commandLine)
         ProcessTerminatedListener.attach(processHandler)
-       //processHandler.addProcessListener(RellTestProcessListener(configuration, environment))
-
         return processHandler
     }
 
     override fun execute(executor: Executor, runner: ProgramRunner<*>): ExecutionResult {
         val processHandler = startProcess()
-       // sendMessage(ServiceMessageBuilder.testSuiteStarted("Rell Test Suite").toString(), processHandler)
 
-        // Create test console with test framework integration
         val consoleProperties = RellTestConsoleProperties(configuration, executor)
         val console = SMTestRunnerConnectionUtil.createAndAttachConsole("Rell Test", processHandler, consoleProperties)
 
-        if (console is SMTRunnerConsoleView) {
-            processHandler.addProcessListener(RellTestResultsListener(console, consoleProperties, processHandler))
-        }
-
-        sendMessage(ServiceMessageBuilder.testStarted(configuration.name).toString(), processHandler)
+        processHandler.addProcessListener(RellTestResultsListener(consoleProperties, processHandler))
 
         return RellTestExecutionResult(console, processHandler, createActions(console, processHandler, executor))
     }
-
-//    override fun createConsole(executor: Executor): ConsoleView {
-//        val properties = RellTestConsoleProperties(configuration, executor)
-//        return SMTestRunnerConnectionUtil.createConsole("Rell Test", properties)
-//    }
 
     private fun createCommandLine(): GeneralCommandLine {
         val options = configuration.options
@@ -125,10 +84,6 @@ class RellTestRunProfileState(
             }
         }
 
-        // Generate XML test report
-        commandLine.addParameter("--test-report")
-
-        // Add additional arguments
         options.getAdditionalArguments()?.let { args ->
             if (args.isNotBlank()) {
                 commandLine.addParameters(args.split("\\s+".toRegex()))
@@ -143,7 +98,7 @@ class RellTestRunProfileState(
  * Console properties for Rell test execution.
  */
 private class RellTestConsoleProperties(
-    private val configuration: RellTestRunConfiguration,
+    configuration: RellTestRunConfiguration,
     executor: Executor
 ) : SMTRunnerConsoleProperties(configuration, "Rell Test", executor) {
 
@@ -160,126 +115,39 @@ private class RellTestConsoleProperties(
     override fun isIdBasedTestTree() = false
 }
 
-class RellFilterProvider : TestProxyFilterProvider {
-    override fun getFilter(nodeType: String, nodeName: String, nodeArguments: String?): Filter? {
-        TODO("Not yet implemented")
-    }
-
-}
-
-
+/**
+ * Listener for Rell test results.
+ * Handles the output from the test process and sends messages to the console.
+ */
 class RellTestResultsListener(
-    private val console: SMTRunnerConsoleView,
     private val consoleProperties: SMTRunnerConsoleProperties,
-private val processHandler: ProcessHandler
+    private val processHandler: ProcessHandler
 ) : ProcessListener {
-    private val TEST_SUITE_FINISHED_KEY = Key.create<String>("test.suite.finished")
+    private var failed = false
+
+    override fun onTextAvailable(event: ProcessEvent, outputType: Key<*>) {
+        if (outputType == ProcessOutputTypes.STDERR) {
+            failed = true
+        }
+    }
+
+    override fun startNotified(event: ProcessEvent) {
+        val started = ServiceMessageBuilder.testStarted(consoleProperties.configuration.name).toString()
+        sendMessage(started, event.processHandler)
+    }
+
     override fun processWillTerminate(event: ProcessEvent, willBeDestroyed: Boolean) {
-        sendMessage(ServiceMessageBuilder.testIgnored(consoleProperties.configuration.name)
-                .toString(), processHandler)
-        //sendMessage(ServiceMessageBuilder.testFinished(consoleProperties.configuration.name).toString(), processHandler)
-     //   sendMessage(ServiceMessageBuilder.testSuiteFinished("Rell Test Suite").toString(), processHandler)
-
-        //console.resultsViewer.onTestFinished(SMTestProxy("Rell Test Suite", false, null))
-       // if (event.exitCode == 0) {
-            // Look for JUnit XML report files in the working directory
-            ApplicationManager.getApplication().executeOnPooledThread {
-                findAndParseTestReports()
-            }
-    //    }
-    }
-    
-    private fun findAndParseTestReports() {
-        val config = consoleProperties.configuration as? RellTestRunConfiguration
-        val workingDir = config?.options?.getWorkingDirectory()
-        val reportDir = File(workingDir ?: ".", "build/reports/")
-        
-        if (!reportDir.exists()) return
-        
-        // Look for XML files in test results directory
-        val xmlFiles = reportDir.walkTopDown()
-            .filter { it.isFile && it.extension == "xml" }
-            .toList()
-        
-        for (xmlFile in xmlFiles) {
-            try {
-                parseAndReportResults(xmlFile)
-            } catch (e: Exception) {
-                // Log error but continue with other files
-                println("Error parsing test report ${xmlFile.name}: ${e.message}")
-            }
+        if (failed) {
+            sendMessage(ServiceMessageBuilder.testFailed(consoleProperties.configuration.name)
+                    .addAttribute(ServiceMessageTypes.MESSAGE, "")
+                    .toString(), processHandler)
+        } else {
+            sendMessage(ServiceMessageBuilder.testFinished(consoleProperties.configuration.name)
+                    .toString(), processHandler)
         }
     }
-    
-    private fun parseAndReportResults(xmlFile: File) {
-        val parser = JunitXmlParser()
-        val testReports = parser.parseTestReport(xmlFile)
-        
-        ApplicationManager.getApplication().invokeLater {
-            reportTestResults(console.resultsViewer, testReports)
-        }
+
+    private fun sendMessage(message: String, processHandler: ProcessHandler) {
+        processHandler.notifyTextAvailable("$message\n", ProcessOutputTypes.STDOUT)
     }
-    
-    private fun reportTestResults(resultsForm: SMTestRunnerResultsForm, testReports: JunitTestReports) {
-        try {
-//            val processorField = resultsForm.javaClass.getDeclaredField("myEventsProcessor")
-//            processorField.isAccessible = true
-//            val processor = processorField.get(resultsForm) as? GeneralTestEventsProcessor
-
-//                proc.onTestingStarted(TreeNodeEvent(null, null))
-//
-//                for (testSuite in testReports.testSuites) {
-//                    proc.onSuiteStarted(TestSuiteStartedEvent(testSuite.name, null))
-//
-//                    for (testCase in testSuite.testCases) {
-//                        val testId = "${testCase.classname}.${testCase.name}"
-//                        proc.onTestStarted(TestStartedEvent(testId, testCase.name))
-//
-//                        when (val result = testCase.result) {
-//                            is JunitTestResult.Success -> {
-//                                proc.onTestFinished(TestFinishedEvent(testId, testCase.time.toMillis()))
-//                            }
-//                            is JunitTestResult.Failure -> {
-//                                proc.onTestFailure(TestFailedEvent(
-//                                    testCase.name,
-//                                    result.message ?: "Test failed",
-//                                    result.content ?: "",
-//                                    false,
-//                                    null,
-//                                    null
-//                                ))
-//                                proc.onTestFinished(TestFinishedEvent(testId, testCase.time.toMillis()))
-//                            }
-//                            is JunitTestResult.Error -> {
-//                                proc.onTestFailure(TestFailedEvent(
-//                                    testCase.name,
-//                                    result.message ?: "Test error",
-//                                    result.content ?: "",
-//                                    true,
-//                                    null,
-//                                    null
-//                                ))
-//                                proc.onTestFinished(TestFinishedEvent(testId, testCase.time.toMillis()))
-//                            }
-//                            is JunitTestResult.Skipped -> {
-//                                proc.onTestIgnored(TestIgnoredEvent(testId, result.message ?: "Test skipped", ""))
-//                                proc.onTestFinished(TestFinishedEvent(testId, testCase.time.toMillis()))
-//                            }
-//                        }
-//                    }
-//
-//                    proc.onSuiteFinished(TestSuiteFinishedEvent(testSuite.name))
-//                }
-//
-//                proc.onTestingFinished(TreeNodeEvent(null, null))
-
-        } catch (e: Exception) {
-            println("Error reporting test results: ${e.message}")
-        }
-    }
-}
-
-
-fun sendMessage(message: String, processHandler: ProcessHandler) {
-    processHandler.notifyTextAvailable("$message\n", ProcessOutputTypes.STDOUT)
 }
