@@ -91,6 +91,16 @@
                     factoryClass="net.postchain.rellide.jetbrains.toolwindow.ChromiaToolWindowFactory"
                     icon="/icons/chromia-big.png"/>
 
+        <!-- Run Configuration Types -->
+        <configurationType implementation="net.postchain.rellide.jetbrains.testing.RellTestConfigurationType"/>
+
+        <!-- Gutter icon provider -->
+        <codeInsight.lineMarkerProvider
+                language="Rell"
+                implementationClass="net.postchain.rellide.jetbrains.testing.RellTestLineMarkerProvider"/>
+
+        <testFinder implementation="net.postchain.rellide.jetbrains.testing.RellTestFinder"/>
+
         <errorHandler implementation="net.postchain.rellide.jetbrains.sentry.SentryReportSubmitter"/>
     </extensions>
 
@@ -117,13 +127,23 @@
     <actions>
         <action id="rell.file.create"
                 class="net.postchain.rellide.jetbrains.actions.RellCreateFileAction"
-                text="Rell file" description="Create new Rell file">
+                text="Rell File" description="Create new Rell file">
             <add-to-group group-id="NewGroup" anchor="after" relative-to-action="NewDir"/>
         </action>
         <action id="rell.invalidate.cache"
                 class="net.postchain.rellide.jetbrains.actions.RellInvalidateCacheAction"
                 text="Rell: Invalidate Cache" description="Remove the Rell language server cache locally">
             <keyboard-shortcut keymap="$default" first-keystroke="control alt I"/>
+        </action>
+        
+        <!-- Test Runner Actions -->
+        <action id="rell.test.run"
+                class="net.postchain.rellide.jetbrains.testing.actions.RunRellTestAction"
+                text="Run Rell Test" description="Run the selected Rell test file"
+                icon="/icons/rell.png">
+            <add-to-group group-id="ProjectViewPopupMenu" anchor="after" relative-to-action="RunContextGroup"/>
+            <add-to-group group-id="EditorPopupMenu" anchor="after" relative-to-action="RunContextGroup"/>
+            <keyboard-shortcut keymap="$default" first-keystroke="control shift F10"/>
         </action>
     </actions>
 </idea-plugin>
