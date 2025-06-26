@@ -4,6 +4,7 @@ import com.intellij.openapi.components.Service
 import com.intellij.openapi.project.Project
 import com.intellij.openapi.vfs.VirtualFile
 import com.intellij.psi.PsiElement
+import com.redhat.devtools.lsp4ij.LanguageServerItem
 import com.redhat.devtools.lsp4ij.LanguageServerManager
 import kotlinx.coroutines.future.await
 import kotlinx.coroutines.runBlocking
@@ -11,6 +12,7 @@ import net.postchain.rellide.jetbrains.language.psi.RellXFunctionDef
 import net.postchain.rellide.jetbrains.lsp4ij.RellServerApi
 import net.postchain.rellide.jetbrains.lsp4ij.RellTestCase
 import net.postchain.rellide.jetbrains.lsp4ij.RellTestFile
+import net.postchain.rellide.jetbrains.util.normalizedUri
 
 @Service(Service.Level.PROJECT)
 class RellProjectService(val project: Project) {
@@ -50,7 +52,7 @@ class RellProjectService(val project: Project) {
         }
 
         val virtualFile = element.containingFile?.virtualFile ?: return null
-        val fileUri = virtualFile.url.replace("file:///", "file:/")
+        val fileUri = virtualFile.normalizedUri()
         val testCases = listTestCases(fileUri)
 
         return testCases.firstOrNull { it.name == element.xQualifiedName?.text }
@@ -61,7 +63,7 @@ class RellProjectService(val project: Project) {
     }
 
     fun getTestFile(virtualFile: VirtualFile): RellTestFile? {
-        val fileUri = virtualFile.url.replace("file:///", "file:/")
+        val fileUri = virtualFile.normalizedUri()
         val testFiles = getTestFiles(fileUri)
         return testFiles.firstOrNull { it.uri.toString() == fileUri }
     }
