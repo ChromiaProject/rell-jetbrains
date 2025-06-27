@@ -1,5 +1,12 @@
 # Changelog
 
+## [0.2.0]
+
+### Added
+- Rell language server version 0.8.4
+- Test runner for Rell language
+- Chromia sidebar tool window
+
 ## [0.1.10]
 
 ### Added
