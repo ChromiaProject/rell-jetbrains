@@ -48,7 +48,13 @@ class RellTestRunProfileState(
 
         // Set the executable
         val executable = options.getChrExecutable()
-        commandLine.exePath = if (executable.isNullOrBlank()) "chr" else executable
+        if (executable.isNullOrBlank()) {
+            commandLine.exePath = "chr"
+        } else {
+            val (command, parameters) = parseCommand(executable)
+            commandLine.exePath = command
+            commandLine.addParameters(parameters)
+        }
 
         val workingDir = options.getWorkingDirectory()
         if (!workingDir.isNullOrBlank()) {
@@ -91,6 +97,21 @@ class RellTestRunProfileState(
         }
 
         return commandLine
+    }
+
+    private data class CommandParseResult(
+            val command: String,
+            val parameters: List<String>
+    )
+
+    private fun parseCommand(command: String): CommandParseResult {
+        val trimmed = command.trim()
+        if (trimmed.isBlank()) {
+            return CommandParseResult("", emptyList())
+        }
+
+        val parts = trimmed.split(Regex("\\s+"))
+        return CommandParseResult(parts.first(), parts.drop(1))
     }
 }
 
