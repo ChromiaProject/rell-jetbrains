@@ -22,7 +22,7 @@ class RellTestRunConfigurationEditor(private val project: Project) : SettingsEdi
     private val testBlockchainField = JBTextField()
     private val testPatternField = JBTextField()
     private val workingDirectoryField = TextFieldWithBrowseButton()
-    private val chrExecutableField = TextFieldWithBrowseButton()
+    private val chrExecutableField = JBTextField()
     private val additionalArgumentsField = JBTextField()
 
     private val testModuleLabel = JBLabel("Test module:")
@@ -39,13 +39,6 @@ class RellTestRunConfigurationEditor(private val project: Project) : SettingsEdi
                 "Choose the working directory for test execution",
                 project,
                 FileChooserDescriptorFactory.createSingleFolderDescriptor()
-        )
-
-        chrExecutableField.addBrowseFolderListener(
-                "Select Chromia CLI Executable",
-                "Choose the Chromia CLI executable",
-                project,
-                FileChooserDescriptorFactory.createSingleFileDescriptor()
         )
 
         testScopeComboBox.addActionListener {
