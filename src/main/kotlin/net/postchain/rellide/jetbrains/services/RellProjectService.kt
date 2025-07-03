@@ -12,6 +12,7 @@ import net.postchain.rellide.jetbrains.language.psi.RellXFunctionDef
 import net.postchain.rellide.jetbrains.lsp4ij.RellServerApi
 import net.postchain.rellide.jetbrains.lsp4ij.RellTestCase
 import net.postchain.rellide.jetbrains.lsp4ij.RellTestFile
+import net.postchain.rellide.jetbrains.lsp4ij.getRellLanguageServerItem
 import net.postchain.rellide.jetbrains.util.normalizedUri
 
 @Service(Service.Level.PROJECT)
@@ -27,7 +28,7 @@ class RellProjectService(val project: Project) {
     fun listTestCases(fileUri: String): List<RellTestCase> {
         return testCasesCache.getOrPut(fileUri) {
             runBlocking {
-                LanguageServerManager.getInstance(project).getLanguageServer(RELL_LANGUAGE_SERVER_ID).get()?.let { lsItem ->
+                getRellLanguageServerItem(project)?.let { lsItem ->
                     val rellServer = lsItem.server as RellServerApi
                     rellServer.listTestCases(fileUri).await()
                 }
@@ -38,7 +39,7 @@ class RellProjectService(val project: Project) {
     fun getTestFiles(workspaceUri: String): List<RellTestFile> {
         return testFilesCache.getOrPut(workspaceUri) {
             runBlocking {
-                LanguageServerManager.getInstance(project).getLanguageServer(RELL_LANGUAGE_SERVER_ID).get()?.let { lsItem ->
+                getRellLanguageServerItem(project)?.let { lsItem ->
                     val rellServer = lsItem.server as RellServerApi
                     rellServer.getTestFiles(workspaceUri).await()
                 }
