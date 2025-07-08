@@ -7,6 +7,7 @@ import com.intellij.openapi.project.Project
 import com.intellij.openapi.util.SystemInfo
 import com.intellij.openapi.vfs.VirtualFile
 import com.redhat.devtools.lsp4ij.server.OSProcessStreamConnectionProvider
+import net.postchain.rellide.jetbrains.lsp4ij.RellInlayHintsConfigurationListener.Companion.getInlayHintsSettings
 import net.postchain.rellide.jetbrains.settings.RellPluginSettingsState
 import java.io.File
 import kotlin.Any
@@ -27,7 +28,7 @@ class RellLanguageServer(val project: Project) : OSProcessStreamConnectionProvid
         val pluginDescriptor = PluginManagerCore.getPlugin(PluginId.getId(PLUGIN_ID))
             ?: throw IllegalStateException("Cannot find plugin by ID: $PLUGIN_ID")
         val lspJarPath = pluginDescriptor.pluginPath.toAbsolutePath()
-            .resolve("language-server/rell-language-server-0.8.4.jar")
+            .resolve("language-server/rell-language-server-0.8.5.jar")
 
         val jvmExecutablePath = computeJavaPath()
 
@@ -36,10 +37,15 @@ class RellLanguageServer(val project: Project) : OSProcessStreamConnectionProvid
     }
 
     override fun getInitializationOptions(rootUri: VirtualFile?): Any? {
-        val isIndexCachingEnabled = RellPluginSettingsState.instance.indexCaching
-        return mapOf("indexCaching" to isIndexCachingEnabled)
+        val pluginSettings = RellPluginSettingsState.instance
+        val inlayHintsSettings = getInlayHintsSettings()
+        
+        return mapOf(
+            "indexCaching" to pluginSettings.indexCaching,
+            "inlayHints" to inlayHintsSettings
+        )
     }
-
+    
     private fun computeJavaPath(): String {
         return File(System.getProperty("java.home"), "bin/java" + (if (SystemInfo.isWindows) ".exe" else "")).absolutePath
     }

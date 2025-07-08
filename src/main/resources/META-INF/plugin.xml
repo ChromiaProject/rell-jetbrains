@@ -102,6 +102,8 @@
         <testFinder implementation="net.postchain.rellide.jetbrains.testing.RellTestFinder"/>
 
         <errorHandler implementation="net.postchain.rellide.jetbrains.sentry.SentryReportSubmitter"/>
+
+        <postStartupActivity implementation="net.postchain.rellide.jetbrains.lsp4ij.RellInlayHintsStartupActivity"/>
     </extensions>
 
     <extensions defaultExtensionNs="com.redhat.devtools.lsp4ij">
