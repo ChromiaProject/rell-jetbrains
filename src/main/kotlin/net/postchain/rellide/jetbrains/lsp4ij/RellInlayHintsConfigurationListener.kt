@@ -1,6 +1,5 @@
 package net.postchain.rellide.jetbrains.lsp4ij
 
-import com.intellij.codeInsight.hints.InlayHintsFactory
 import com.intellij.codeInsight.hints.InlayHintsSettings
 import com.intellij.codeInsight.hints.InlayHintsSettings.*
 import com.intellij.openapi.application.ApplicationManager
@@ -11,11 +10,9 @@ import com.intellij.openapi.Disposable
 import com.intellij.openapi.project.Project
 import com.intellij.openapi.project.ProjectManager
 import com.intellij.openapi.startup.ProjectActivity
-import com.intellij.util.application
 import com.intellij.util.messages.MessageBusConnection
 import com.redhat.devtools.lsp4ij.LanguageServerManager
 import net.postchain.rellide.jetbrains.services.RellProjectService.Companion.RELL_LANGUAGE_SERVER_ID
-import net.postchain.rellide.jetbrains.settings.RellPluginSettingsState
 import org.eclipse.lsp4j.DidChangeConfigurationParams
 
 @Service(Service.Level.PROJECT)
