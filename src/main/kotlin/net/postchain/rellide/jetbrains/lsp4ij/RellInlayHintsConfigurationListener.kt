@@ -1,5 +1,6 @@
 package net.postchain.rellide.jetbrains.lsp4ij
 
+import com.intellij.codeInsight.hints.InlayHintsFactory
 import com.intellij.codeInsight.hints.InlayHintsSettings
 import com.intellij.codeInsight.hints.InlayHintsSettings.*
 import com.intellij.openapi.application.ApplicationManager
@@ -10,6 +11,7 @@ import com.intellij.openapi.Disposable
 import com.intellij.openapi.project.Project
 import com.intellij.openapi.project.ProjectManager
 import com.intellij.openapi.startup.ProjectActivity
+import com.intellij.util.application
 import com.intellij.util.messages.MessageBusConnection
 import com.redhat.devtools.lsp4ij.LanguageServerManager
 import net.postchain.rellide.jetbrains.services.RellProjectService.Companion.RELL_LANGUAGE_SERVER_ID
@@ -37,8 +39,8 @@ class RellInlayHintsConfigurationListener : Disposable {
     }
 
     override fun dispose() {
-        connection?.disconnect()
         connection?.dispose()
+        connection?.disconnect()
     }
 
     private fun onInlayHintsSettingsChanged() {
@@ -49,10 +51,8 @@ class RellInlayHintsConfigurationListener : Disposable {
     
     private fun sendConfigurationToLsp(project: Project) {
         val inlayHintsEnabled = isRellInlayHintsEnabled()
-        val pluginSettings = RellPluginSettingsState.instance
-        
+
         val configurationSettings = mapOf(
-            "indexCaching" to pluginSettings.indexCaching,
             "inlayHints" to mapOf(
                 "parameterHints" to inlayHintsEnabled,
                 "variableTypeHints" to inlayHintsEnabled,
@@ -69,16 +69,9 @@ class RellInlayHintsConfigurationListener : Disposable {
                     server.workspaceService.didChangeConfiguration(params)
                 }
         } catch (e: Exception) {
-            println("Failed to send hints configuration to lsp server: ${e.message}")
+            logger.warn("Failed to send hints configuration to lsp server: ${e.message}")
         }
     }
-
-    private fun isRellInlayHintsEnabled() = runCatching {
-        val hintsSettings = InlayHintsSettings.instance()
-        hintsSettings.state.disabledHintProviderIds.none { it == "Rell.LSP.hints" }
-    }.onFailure {
-        logger.warn("Error checking Rell->hints settings: ${it.message}")
-    }.getOrDefault(false)
 
     fun getInlayHintsSettings(): Map<String, Boolean> {
         return try {
@@ -93,6 +86,13 @@ class RellInlayHintsConfigurationListener : Disposable {
             mapOf()
         }
     }
+
+    private fun isRellInlayHintsEnabled() = runCatching {
+        val hintsSettings = InlayHintsSettings.instance()
+        hintsSettings.state.disabledHintProviderIds.none { it == "Rell.LSP.hints" }
+    }.onFailure {
+        logger.warn("Error checking Rell->hints settings: ${it.message}")
+    }.getOrDefault(false)
 
     companion object {
         val logger = Logger.getInstance(RellInlayHintsConfigurationListener::class.java)
