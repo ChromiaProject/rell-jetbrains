@@ -2,12 +2,12 @@ package net.postchain.rellide.jetbrains.lsp4ij
 
 import com.intellij.execution.configurations.GeneralCommandLine
 import com.intellij.ide.plugins.PluginManagerCore
+import com.intellij.openapi.components.service
 import com.intellij.openapi.extensions.PluginId
 import com.intellij.openapi.project.Project
 import com.intellij.openapi.util.SystemInfo
 import com.intellij.openapi.vfs.VirtualFile
 import com.redhat.devtools.lsp4ij.server.OSProcessStreamConnectionProvider
-import net.postchain.rellide.jetbrains.lsp4ij.RellInlayHintsConfigurationListener.Companion.getInlayHintsSettings
 import net.postchain.rellide.jetbrains.settings.RellPluginSettingsState
 import java.io.File
 import kotlin.Any
@@ -38,7 +38,7 @@ class RellLanguageServer(val project: Project) : OSProcessStreamConnectionProvid
 
     override fun getInitializationOptions(rootUri: VirtualFile?): Any? {
         val pluginSettings = RellPluginSettingsState.instance
-        val inlayHintsSettings = getInlayHintsSettings()
+        val inlayHintsSettings = project.service<RellInlayHintsConfigurationListener>().getInlayHintsSettings()
         
         return mapOf(
             "indexCaching" to pluginSettings.indexCaching,

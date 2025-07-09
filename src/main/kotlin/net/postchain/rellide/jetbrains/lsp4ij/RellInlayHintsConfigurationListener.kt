@@ -4,6 +4,9 @@ import com.intellij.codeInsight.hints.InlayHintsSettings
 import com.intellij.codeInsight.hints.InlayHintsSettings.*
 import com.intellij.openapi.application.ApplicationManager
 import com.intellij.openapi.components.Service
+import com.intellij.openapi.components.service
+import com.intellij.openapi.diagnostic.Logger
+import com.intellij.openapi.Disposable
 import com.intellij.openapi.project.Project
 import com.intellij.openapi.project.ProjectManager
 import com.intellij.openapi.startup.ProjectActivity
@@ -13,9 +16,9 @@ import net.postchain.rellide.jetbrains.services.RellProjectService.Companion.REL
 import net.postchain.rellide.jetbrains.settings.RellPluginSettingsState
 import org.eclipse.lsp4j.DidChangeConfigurationParams
 
-@Service(Service.Level.APP)
+@Service(Service.Level.PROJECT)
 @Suppress("UnstableApiUsage")
-class RellInlayHintsConfigurationListener {
+class RellInlayHintsConfigurationListener : Disposable {
     
     private var connection: MessageBusConnection? = null
 
@@ -31,6 +34,11 @@ class RellInlayHintsConfigurationListener {
                     }
                 }
         )
+    }
+
+    override fun dispose() {
+        connection?.disconnect()
+        connection?.dispose()
     }
 
     private fun onInlayHintsSettingsChanged() {
@@ -65,37 +73,34 @@ class RellInlayHintsConfigurationListener {
         }
     }
 
+    private fun isRellInlayHintsEnabled() = runCatching {
+        val hintsSettings = InlayHintsSettings.instance()
+        hintsSettings.state.disabledHintProviderIds.none { it == "Rell.LSP.hints" }
+    }.onFailure {
+        logger.warn("Error checking Rell->hints settings: ${it.message}")
+    }.getOrDefault(false)
+
+    fun getInlayHintsSettings(): Map<String, Boolean> {
+        return try {
+            val isEnabled = isRellInlayHintsEnabled()
+            mapOf(
+                    "parameterHints" to isEnabled,
+                    "variableTypeHints" to isEnabled,
+                    "returnTypeHints" to isEnabled
+            )
+        } catch (e: Exception) {
+            logger.warn("Error getting inlay hints settings: ${e.message}")
+            mapOf()
+        }
+    }
+
     companion object {
-        fun getInstance(): RellInlayHintsConfigurationListener {
-            return ApplicationManager.getApplication().getService(RellInlayHintsConfigurationListener::class.java)
-        }
-
-        private fun isRellInlayHintsEnabled() = runCatching {
-            val hintsSettings = InlayHintsSettings.instance()
-            hintsSettings.state.disabledHintProviderIds.none { it == "Rell.LSP.hints" }
-        }.onFailure {
-            println("Error checking Rell->hints settings: ${it.message}")
-        }.getOrDefault(false)
-
-        fun getInlayHintsSettings(): Map<String, Boolean> {
-            return try {
-                val isEnabled = isRellInlayHintsEnabled()
-                mapOf(
-                        "parameterHints" to isEnabled,
-                        "variableTypeHints" to isEnabled,
-                        "returnTypeHints" to isEnabled
-                )
-            } catch (e: Exception) {
-                println("Error getting inlay hints settings: ${e.message}")
-                mapOf()
-            }
-        }
-
+        val logger = Logger.getInstance(RellInlayHintsConfigurationListener::class.java)
     }
 }
 
 class RellInlayHintsStartupActivity : ProjectActivity {
     override suspend fun execute(project: Project) {
-        RellInlayHintsConfigurationListener.getInstance().startListening()
+        project.service<RellInlayHintsConfigurationListener>().startListening()
     }
 } 
