@@ -1,5 +1,6 @@
 package net.postchain.rellide.jetbrains.lsp4ij
 
+import com.intellij.openapi.components.service
 import com.intellij.openapi.project.Project
 import com.intellij.openapi.vfs.VirtualFile
 import com.redhat.devtools.lsp4ij.server.StreamConnectionProvider
@@ -33,10 +34,15 @@ class RellSocketLanguageServer(private val project: Project) : StreamConnectionP
     override fun getOutputStream(): OutputStream? = outputStream
 
     override fun getInitializationOptions(rootUri: VirtualFile?): Any? {
-        val isIndexCachingEnabled = RellPluginSettingsState.instance.indexCaching
-        return mapOf("indexCaching" to isIndexCachingEnabled)
+        val pluginSettings = RellPluginSettingsState.instance
+        val inlayHintsSettings = project.service<RellInlayHintsConfigurationListener>().getInlayHintsSettings()
+        
+        return mapOf(
+            "indexCaching" to pluginSettings.indexCaching,
+            "inlayHints" to inlayHintsSettings
+        )
     }
-
+    
     override fun stop() {
         runCatching {
             inputStream?.close()
