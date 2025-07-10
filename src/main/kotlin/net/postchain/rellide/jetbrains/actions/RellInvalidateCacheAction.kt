@@ -1,16 +1,14 @@
 package net.postchain.rellide.jetbrains.actions
 
-import com.intellij.notification.NotificationGroupManager
 import com.intellij.notification.NotificationType
 import com.intellij.openapi.actionSystem.ActionUpdateThread
 import com.intellij.openapi.actionSystem.AnAction
 import com.intellij.openapi.actionSystem.AnActionEvent
-import com.intellij.openapi.application.ApplicationManager
-import com.intellij.openapi.project.Project
 import com.redhat.devtools.lsp4ij.LanguageServerManager
 import kotlinx.coroutines.future.await
 import kotlinx.coroutines.runBlocking
 import net.postchain.rellide.jetbrains.lsp4ij.RellServerApi
+import net.postchain.rellide.jetbrains.lsp4ij.getRellLanguageServerItem
 
 class RellInvalidateCacheAction : AnAction(
     "Rell: Invalidate Cache",
@@ -23,9 +21,7 @@ class RellInvalidateCacheAction : AnAction(
 
         try {
             runBlocking {
-                val languageServerItem = LanguageServerManager.getInstance(project)
-                    .getLanguageServer("rellLanguageServer")
-                    .get()
+                val languageServerItem = getRellLanguageServerItem(project)
 
                 if (languageServerItem == null) {
                     project.notifyUser("Rell Language server is not running", "Error", NotificationType.ERROR)
@@ -50,14 +46,4 @@ class RellInvalidateCacheAction : AnAction(
     override fun update(e: AnActionEvent) {
         e.presentation.isEnabled = e.project != null
     }
-
-    private fun Project.notifyUser(title: String, message: String, type: NotificationType) {
-        ApplicationManager.getApplication().invokeLater {
-            NotificationGroupManager.getInstance()
-                .getNotificationGroup("Rell")
-                .createNotification(title, message, type)
-                .notify(this)
-        }
-    }
-
 }

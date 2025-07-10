@@ -137,7 +137,12 @@
                 text="Rell: Invalidate Cache" description="Remove the Rell language server cache locally">
             <keyboard-shortcut keymap="$default" first-keystroke="control alt I"/>
         </action>
-        
+        <action id="rell.feature.add"
+                class="net.postchain.rellide.jetbrains.actions.RellAddToProjectAction"
+                text="Rell: Add To Project" description="Adds feature support to the current project">
+            <keyboard-shortcut keymap="$default" first-keystroke="control shift F11"/>
+        </action>
+
         <!-- Test Runner Actions -->
         <action id="rell.test.run"
                 class="net.postchain.rellide.jetbrains.testing.actions.RunRellTestAction"
