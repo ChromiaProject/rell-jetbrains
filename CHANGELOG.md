@@ -1,5 +1,12 @@
 # Changelog
 
+## [0.2.2]
+
+### Added
+- Inlay hints implementation
+- DevContainer template support
+- Rell language server version 0.8.5
+
 ## [0.2.1]
 
 ### Fixed

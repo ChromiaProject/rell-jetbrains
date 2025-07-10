@@ -58,9 +58,7 @@ class RellInlayHintsConfigurationListener : Disposable {
         )
         
         try {
-            LanguageServerManager.getInstance(project)
-                .getLanguageServer(RELL_LANGUAGE_SERVER_ID)
-                .get()
+            getRellLanguageServerItem(project)
                 ?.let { server ->
                     val params = DidChangeConfigurationParams(configurationSettings)
                     server.workspaceService.didChangeConfiguration(params)
