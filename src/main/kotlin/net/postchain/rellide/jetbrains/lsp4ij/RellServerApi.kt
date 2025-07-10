@@ -8,7 +8,8 @@ import java.util.concurrent.CompletableFuture
 
 interface RellServerApi : LanguageServer {
 
-    @JsonRequest("rell/invalidateCaches")
+    @JsonRequest("rell/" +
+            "invalidateCaches")
     fun invalidateCache(): CompletableFuture<Boolean>
 
     @JsonRequest("rell/listTestFiles")
@@ -16,6 +17,9 @@ interface RellServerApi : LanguageServer {
 
     @JsonRequest("rell/listTestCases")
     fun listTestCases(testFileUri: String): CompletableFuture<List<RellTestCase>>
+
+    @JsonRequest("rell/addToProject")
+    fun addToProject(params: AddToProjectParams): CompletableFuture<Void>
 }
 
 
@@ -26,4 +30,13 @@ data class RellTestFile(
         val moduleName: String? = null,
         val canResolveChildren: Boolean = true,
         val testCases: List<RellTestCase> = listOf()
+)
+
+data class TemplateOptions(
+        val includeDevContainer: Boolean = false
+)
+
+data class AddToProjectParams(
+        val targetDirUri: String,
+        val options: TemplateOptions,
 )
