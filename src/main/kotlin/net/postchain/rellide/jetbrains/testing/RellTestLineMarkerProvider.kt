@@ -1,5 +1,6 @@
 package net.postchain.rellide.jetbrains.testing
 
+import com.intellij.codeInsight.daemon.DaemonCodeAnalyzer
 import com.intellij.codeInsight.daemon.LineMarkerInfo
 import com.intellij.codeInsight.daemon.LineMarkerProvider
 import com.intellij.execution.RunManager
@@ -10,12 +11,20 @@ import com.intellij.icons.AllIcons
 import com.intellij.openapi.components.service
 import com.intellij.openapi.editor.markup.GutterIconRenderer
 import com.intellij.psi.PsiElement
+import com.redhat.devtools.lsp4ij.ServerStatus
 import net.postchain.rellide.jetbrains.language.psi.RellXFunctionDef
 import net.postchain.rellide.jetbrains.lsp4ij.RellTestCase
+import net.postchain.rellide.jetbrains.lsp4ij.getRellLanguageServerItem
+import net.postchain.rellide.jetbrains.lsp4ij.getRellLanguageServerStatus
 import net.postchain.rellide.jetbrains.services.RellProjectService
+import org.jetbrains.concurrency.runAsync
 
 class RellTestLineMarkerProvider : LineMarkerProvider {
     override fun getLineMarkerInfo(element: PsiElement): LineMarkerInfo<*>? {
+        val languageServerStatus = getRellLanguageServerStatus(element.project)
+        if (languageServerStatus != ServerStatus.started) {
+            return null
+        }
         val projectService = element.project.service<RellProjectService>()
         val testCase = projectService.getTestCase(element) ?: return null
 
