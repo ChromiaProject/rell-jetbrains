@@ -21,6 +21,9 @@ import org.jetbrains.concurrency.runAsync
 
 class RellTestLineMarkerProvider : LineMarkerProvider {
     override fun getLineMarkerInfo(element: PsiElement): LineMarkerInfo<*>? {
+        if (element !is RellXFunctionDef) {
+            return null
+        }
         val languageServerStatus = getRellLanguageServerStatus(element.project)
         if (languageServerStatus != ServerStatus.started) {
             return null
