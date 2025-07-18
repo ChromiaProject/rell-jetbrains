@@ -1,5 +1,10 @@
 # Changelog
 
+## [0.2.4]
+
+### Fixed
+- Fix freezing UI while language server is indexing project
+
 ## [0.2.3]
 
 ### Fixed

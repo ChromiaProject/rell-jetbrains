@@ -12,7 +12,9 @@ import com.intellij.openapi.application.invokeLater
 import com.intellij.openapi.components.service
 import com.intellij.openapi.project.Project
 import com.intellij.openapi.vfs.VirtualFile
+import com.redhat.devtools.lsp4ij.ServerStatus
 import net.postchain.rellide.jetbrains.lsp4ij.RellTestFile
+import net.postchain.rellide.jetbrains.lsp4ij.getRellLanguageServerStatus
 import net.postchain.rellide.jetbrains.services.RellProjectService
 import net.postchain.rellide.jetbrains.testing.RellTestConfigurationFactory
 import net.postchain.rellide.jetbrains.testing.RellTestRunConfiguration
@@ -39,7 +41,10 @@ class RunRellTestAction : AnAction("Run Rell Test", "Run the selected Rell test 
         val project = e.project
         val virtualFile = e.getData(CommonDataKeys.VIRTUAL_FILE)
 
-        val isVisible = project != null && virtualFile != null && getRellTestFile(project, virtualFile) != null
+        val isVisible = project != null &&
+                virtualFile != null &&
+                getRellLanguageServerStatus(project) == ServerStatus.started &&
+                getRellTestFile(project, virtualFile) != null
         e.presentation.isEnabledAndVisible = isVisible
     }
 

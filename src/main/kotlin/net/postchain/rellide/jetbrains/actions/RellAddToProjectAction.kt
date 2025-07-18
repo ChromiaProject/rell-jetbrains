@@ -13,12 +13,14 @@ import com.intellij.openapi.ui.popup.JBPopupFactory
 import com.intellij.openapi.ui.popup.PopupStep
 import com.intellij.openapi.ui.popup.util.BaseListPopupStep
 import com.redhat.devtools.lsp4ij.LanguageServerManager
+import com.redhat.devtools.lsp4ij.ServerStatus
 import kotlinx.coroutines.future.await
 import kotlinx.coroutines.runBlocking
 import net.postchain.rellide.jetbrains.lsp4ij.AddToProjectParams
 import net.postchain.rellide.jetbrains.lsp4ij.RellServerApi
 import net.postchain.rellide.jetbrains.lsp4ij.TemplateOptions
 import net.postchain.rellide.jetbrains.lsp4ij.getRellLanguageServerItem
+import net.postchain.rellide.jetbrains.lsp4ij.getRellLanguageServerStatus
 import net.postchain.rellide.jetbrains.util.normalizedUri
 import java.io.File
 
@@ -80,7 +82,8 @@ class RellAddToProjectAction : AnAction(
     override fun getActionUpdateThread(): ActionUpdateThread = ActionUpdateThread.BGT
 
     override fun update(e: AnActionEvent) {
-        e.presentation.isEnabled = e.project != null
+        val project = e.project
+        e.presentation.isEnabled = project != null && getRellLanguageServerStatus(project) == ServerStatus.started
     }
 
     fun refreshProjectRoot(project: Project) {
