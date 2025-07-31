@@ -5,3 +5,4 @@ build
 .secrets
 language-server
 .intellijPlatform
+.DS_Store
