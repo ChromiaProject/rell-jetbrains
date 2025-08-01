@@ -1,5 +1,12 @@
 # Changelog
 
+## [0.2.5]
+
+### Fixed
+- Rell language server:
+  * Ensure LSP takes new dependencies into account after `chr install`
+  * Inlay hints related bugs
+
 ## [0.2.4]
 
 ### Fixed
