@@ -96,6 +96,11 @@ class RellTestRunProfileState(
             }
         }
 
+        val hideLibWarningsParam = "--hide-lib-warnings"
+        if (!commandLine.parametersList.hasParameter(hideLibWarningsParam)) {
+            commandLine.addParameter(hideLibWarningsParam)
+        }
+
         return commandLine
     }
 
@@ -145,9 +150,10 @@ class RellTestResultsListener(
     private val processHandler: ProcessHandler
 ) : ProcessListener {
     private var failed = false
+    private val failedTestMarkerText = "***** FAILED *****"
 
     override fun onTextAvailable(event: ProcessEvent, outputType: Key<*>) {
-        if (outputType == ProcessOutputTypes.STDERR) {
+        if (event.text.contains(failedTestMarkerText)) {
             failed = true
         }
     }
