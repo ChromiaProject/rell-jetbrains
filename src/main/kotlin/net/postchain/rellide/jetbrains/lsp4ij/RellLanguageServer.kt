@@ -28,7 +28,7 @@ class RellLanguageServer(val project: Project) : OSProcessStreamConnectionProvid
         val pluginDescriptor = PluginManagerCore.getPlugin(PluginId.getId(PLUGIN_ID))
             ?: throw IllegalStateException("Cannot find plugin by ID: $PLUGIN_ID")
         val lspJarPath = pluginDescriptor.pluginPath.toAbsolutePath()
-            .resolve("language-server/rell-language-server-0.8.7.jar")
+            .resolve("language-server/rell-language-server-0.8.8.jar")
 
         val jvmExecutablePath = computeJavaPath()
 
