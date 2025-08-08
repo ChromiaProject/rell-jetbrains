@@ -1,5 +1,11 @@
 # Changelog
 
+## [0.2.6]
+
+### Fixed
+- Test runner status reporting
+- Diagnostics reporting
+
 ## [0.2.5]
 
 ### Fixed
