@@ -19,6 +19,11 @@ import io.sentry.protocol.Message
 
 class SentryReportSubmitter : ErrorReportSubmitter() {
 
+    private val rellRelevantPackages = setOf(
+        "net.postchain.rellide.jetbrains",
+        "com.redhat.devtools.lsp4ij"
+    )
+
     init {
         Sentry.init { options ->
             options.dsn = "https://428edffffc07a615e459992d991f5640@o4508080756162560.ingest.de.sentry.io/4508210896765009"
@@ -45,7 +50,16 @@ class SentryReportSubmitter : ErrorReportSubmitter() {
             return true
         }
 
-        for (event in events) {
+        val rellRelatedEvents = events.filter { event ->
+            isRellPluginRelated(event)
+        }
+
+        if (rellRelatedEvents.isEmpty()) {
+            consumer.consume(SubmittedReportInfo(null, "Error not related to Rell plugin", NEW_ISSUE))
+            return true
+        }
+
+        for (event in rellRelatedEvents) {
             val exception = event.throwable
             val sentryEvent = SentryEvent(exception).apply {
                 message = Message().apply {  message = event.message }
@@ -69,4 +83,21 @@ class SentryReportSubmitter : ErrorReportSubmitter() {
         consumer.consume(SubmittedReportInfo(null, "Error has been successfully reported", NEW_ISSUE))
         return true
     }
+
+    private fun isRellPluginRelated(event: IdeaLoggingEvent): Boolean =
+            event.throwable?.isFromRellPlugin() == true || event.isRellReportingEvent()
+
+    private fun IdeaLoggingEvent.isRellReportingEvent(): Boolean =
+            (this as? IdeaReportingEvent)?.plugin?.pluginId?.idString in rellRelevantPackages
+
+    private fun Throwable?.isFromRellPlugin(): Boolean = this
+                    ?.stackTrace
+                    ?.asSequence()
+                    ?.any { element ->
+                        element.className.startsWithAny(rellRelevantPackages)
+                    }
+                    ?: false
+
+    private fun String.startsWithAny(prefixes: Set<String>): Boolean =
+            prefixes.any { startsWith(it) }
 }
