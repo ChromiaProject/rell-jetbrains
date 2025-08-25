@@ -4,6 +4,7 @@ import com.intellij.openapi.application.ApplicationManager
 import com.intellij.openapi.diagnostic.Logger
 import com.intellij.openapi.project.Project
 import com.intellij.terminal.ui.TerminalWidget
+import net.postchain.rellide.jetbrains.settings.RellPluginSettingsState
 import org.jetbrains.plugins.terminal.TerminalToolWindowManager
 import java.io.IOException
 
@@ -35,7 +36,8 @@ class ChromiaCommandExecutor(private val project: Project) {
             widget.apply {
                 requestFocus()
                 sendCommandToExecute("cd ${workingDirectory ?: project.basePath}")
-                sendCommandToExecute(command)
+                val finalCommand = prepareCommand(command)
+                sendCommandToExecute(finalCommand)
             }
 
         } catch (e: IOException) {
@@ -43,6 +45,15 @@ class ChromiaCommandExecutor(private val project: Project) {
         }
     }
 
+    private fun prepareCommand(command: String): String {
+        val prefix = "chr"
+        val globalChrExecutable = RellPluginSettingsState.instance.chromiaCliExecutable
+        return if (command.startsWith("$prefix ") && globalChrExecutable.isNotBlank()) {
+            command.replaceFirst(prefix, globalChrExecutable)
+        } else {
+            command
+        }
+    }
     private fun getTerminalWidget(command: String, workingDirectory: String?): TerminalWidget {
         val manager = TerminalToolWindowManager.getInstance(project)
         val projectPath = workingDirectory ?: project.basePath
