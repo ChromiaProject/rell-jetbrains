@@ -59,25 +59,24 @@ class RunRellTestAction : AnAction("Run Rell Test", "Run the selected Rell test 
             null
         }
     }
+}
 
-    private fun createTestConfiguration(
-            project: Project,
-            testFile: VirtualFile,
-            runManager: RunManager,
-            rellTestFile: RellTestFile
-    ): RunnerAndConfigurationSettings {
-        val factory = RellTestConfigurationFactory.getInstance()
-        val configurationName = testFile.nameWithoutExtension
+fun createTestConfiguration(
+        project: Project,
+        testFile: VirtualFile,
+        runManager: RunManager,
+        rellTestFile: RellTestFile
+): RunnerAndConfigurationSettings {
+    val factory = RellTestConfigurationFactory.getInstance()
+    val configurationName = testFile.nameWithoutExtension
 
-        val configurationSettings = runManager.createConfiguration(configurationName, factory)
-        val configuration = configurationSettings.configuration as RellTestRunConfiguration
+    val configurationSettings = runManager.createConfiguration(configurationName, factory)
+    val configuration = configurationSettings.configuration as RellTestRunConfiguration
 
-        val options = configuration.options
-        options.setTestScope(TestScope.MODULE)
-        options.setTestModule(rellTestFile.moduleName)
-        options.setWorkingDirectory(project.basePath)
-        options.setChrExecutable("chr")
+    val options = configuration.options
+    options.setTestScope(TestScope.MODULE)
+    options.setTestModule(rellTestFile.moduleName)
+    options.setWorkingDirectory(project.basePath)
 
-        return configurationSettings
-    }
-} 
+    return configurationSettings
+}

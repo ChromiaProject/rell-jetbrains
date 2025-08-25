@@ -4,6 +4,7 @@ import com.intellij.openapi.application.ApplicationManager
 import com.intellij.openapi.diagnostic.Logger
 import com.intellij.openapi.project.Project
 import com.intellij.terminal.ui.TerminalWidget
+import net.postchain.rellide.jetbrains.settings.RellPluginSettingsState
 import org.jetbrains.plugins.terminal.TerminalToolWindowManager
 import java.io.IOException
 
@@ -35,11 +36,22 @@ class ChromiaCommandExecutor(private val project: Project) {
             widget.apply {
                 requestFocus()
                 sendCommandToExecute("cd ${workingDirectory ?: project.basePath}")
-                sendCommandToExecute(command)
+                val finalCommand = prepareCommand(command)
+                sendCommandToExecute(finalCommand)
             }
 
         } catch (e: IOException) {
             logger.error("Cannot run command in terminal. Error:$e")
+        }
+    }
+
+    private fun prepareCommand(command: String): String {
+        val prefix = "chr"
+        val globalChrExecutable = RellPluginSettingsState.instance.chromiaCliExecutable
+        return if (command.startsWith("$prefix ") && globalChrExecutable.isNotBlank()) {
+            command.replaceFirst(prefix, globalChrExecutable)
+        } else {
+            command
         }
     }
 

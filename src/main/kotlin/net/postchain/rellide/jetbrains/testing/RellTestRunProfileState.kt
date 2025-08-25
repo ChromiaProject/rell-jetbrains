@@ -13,6 +13,7 @@ import com.intellij.execution.testframework.sm.runner.SMTRunnerConsoleProperties
 import com.intellij.execution.testframework.sm.runner.SMTestLocator
 import com.intellij.openapi.util.Key
 import jetbrains.buildServer.messages.serviceMessages.ServiceMessageTypes
+import net.postchain.rellide.jetbrains.settings.RellPluginSettingsState
 import java.io.File
 
 /**
@@ -48,12 +49,19 @@ class RellTestRunProfileState(
 
         // Set the executable
         val executable = options.getChrExecutable()
-        if (executable.isNullOrBlank()) {
-            commandLine.exePath = "chr"
-        } else {
-            val (command, parameters) = parseCommand(executable)
+        val globalSettings = RellPluginSettingsState.instance
+        val finalExecutable = when {
+            !executable.isNullOrBlank() -> executable
+            globalSettings.chromiaCliExecutable.isNotBlank() -> globalSettings.chromiaCliExecutable
+            else -> "chr"
+        }
+        
+        if (finalExecutable.isNotBlank()) {
+            val (command, parameters) = parseCommand(finalExecutable)
             commandLine.exePath = command
             commandLine.addParameters(parameters)
+        } else {
+            commandLine.exePath = "chr"
         }
 
         val workingDir = options.getWorkingDirectory()

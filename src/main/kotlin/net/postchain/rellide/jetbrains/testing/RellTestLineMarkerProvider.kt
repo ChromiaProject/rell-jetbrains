@@ -8,19 +8,44 @@ import com.intellij.execution.RunnerAndConfigurationSettings
 import com.intellij.execution.executors.DefaultRunExecutor
 import com.intellij.execution.runners.ExecutionUtil
 import com.intellij.icons.AllIcons
+import com.intellij.openapi.actionSystem.CommonDataKeys
 import com.intellij.openapi.components.service
 import com.intellij.openapi.editor.markup.GutterIconRenderer
 import com.intellij.psi.PsiElement
 import com.redhat.devtools.lsp4ij.ServerStatus
 import net.postchain.rellide.jetbrains.language.psi.RellXFunctionDef
+import net.postchain.rellide.jetbrains.language.psi.RellXModuleHeader
 import net.postchain.rellide.jetbrains.lsp4ij.RellTestCase
+import net.postchain.rellide.jetbrains.lsp4ij.RellTestFile
 import net.postchain.rellide.jetbrains.lsp4ij.getRellLanguageServerItem
 import net.postchain.rellide.jetbrains.lsp4ij.getRellLanguageServerStatus
 import net.postchain.rellide.jetbrains.services.RellProjectService
+import net.postchain.rellide.jetbrains.testing.actions.createTestConfiguration
 import org.jetbrains.concurrency.runAsync
 
 class RellTestLineMarkerProvider : LineMarkerProvider {
     override fun getLineMarkerInfo(element: PsiElement): LineMarkerInfo<*>? {
+        if (isTestModuleHeader(element)) {
+            val rellTestFile = getRellTestFileForElement(element) ?: return null
+            val project = element.project
+            val virtualFile = element.containingFile.virtualFile ?: return null
+
+            return LineMarkerInfo(
+                    element,
+                    element.textRange,
+                    AllIcons.RunConfigurations.TestState.Run_run,
+                    { rellTestFile.moduleName },
+                    { e, elt ->
+                        val runManager = RunManager.getInstance(project)
+                        val configurationSettings = createTestConfiguration(project, virtualFile, runManager, rellTestFile)
+                        runManager.addConfiguration(configurationSettings)
+                        runManager.selectedConfiguration = configurationSettings
+                        ExecutionUtil.runConfiguration(configurationSettings, DefaultRunExecutor.getRunExecutorInstance())
+                    },
+                    GutterIconRenderer.Alignment.CENTER,
+                    { "Run tests in module" }
+            )
+        }
         if (element !is RellXFunctionDef) {
             return null
         }
@@ -42,6 +67,25 @@ class RellTestLineMarkerProvider : LineMarkerProvider {
                 GutterIconRenderer.Alignment.CENTER,
                 { "Run test" }
         )
+    }
+
+    private fun isTestModuleHeader(element: PsiElement): Boolean {
+        if (element !is RellXModuleHeader) {
+            return false
+        }
+        return element.xModifiers.xModifierList.find {
+            it.xAnnotation?.xName?.xNameNode?.id?.text == "test"
+        } != null
+    }
+
+    private fun getRellTestFileForElement(element: PsiElement): RellTestFile? {
+        val languageServerStatus = getRellLanguageServerStatus(element.project)
+        if (languageServerStatus != ServerStatus.started) {
+            return null
+        }
+        val projectService = element.project.service<RellProjectService>()
+        val virtualFile = element.containingFile?.virtualFile ?: return null
+        return projectService.getTestFile(virtualFile)
     }
 
     private fun getAnchorElement(element: PsiElement): PsiElement? {
