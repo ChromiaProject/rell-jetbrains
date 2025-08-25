@@ -54,6 +54,7 @@ class ChromiaCommandExecutor(private val project: Project) {
             command
         }
     }
+
     private fun getTerminalWidget(command: String, workingDirectory: String?): TerminalWidget {
         val manager = TerminalToolWindowManager.getInstance(project)
         val projectPath = workingDirectory ?: project.basePath
