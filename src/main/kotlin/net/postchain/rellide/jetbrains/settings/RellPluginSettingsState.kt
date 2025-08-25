@@ -18,6 +18,7 @@ import com.intellij.util.xmlb.XmlSerializerUtil
 )
 class RellPluginSettingsState : PersistentStateComponent<RellPluginSettingsState> {
     var indexCaching: Boolean = true
+    var chromiaCliExecutable: String = ""
 
     override fun getState(): RellPluginSettingsState {
         return this
