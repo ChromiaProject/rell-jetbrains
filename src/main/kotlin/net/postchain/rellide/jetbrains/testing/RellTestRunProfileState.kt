@@ -164,6 +164,10 @@ class RellTestResultsListener(
         if (event.text.contains(failedTestMarkerText)) {
             failed = true
         }
+
+        if (outputType == ProcessOutputTypes.STDERR && event.text.contains("ERROR:")) {
+            failed = true
+        }
     }
 
     override fun startNotified(event: ProcessEvent) {
