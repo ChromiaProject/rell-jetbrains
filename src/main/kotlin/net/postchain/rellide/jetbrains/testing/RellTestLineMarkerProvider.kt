@@ -103,10 +103,6 @@ class RellTestLineMarkerProvider : LineMarkerProvider {
         return projectService.getTestFile(virtualFile)
     }
 
-    private fun getAnchorElement(element: PsiElement): PsiElement? {
-        return element
-    }
-
     private fun runTest(element: PsiElement, testCase: RellTestCase) {
         val project = element.project
         val runManager = RunManager.getInstance(project)
