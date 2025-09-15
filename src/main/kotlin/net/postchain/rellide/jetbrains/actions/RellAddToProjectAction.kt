@@ -6,13 +6,13 @@ import com.intellij.openapi.actionSystem.ActionUpdateThread
 import com.intellij.openapi.actionSystem.AnAction
 import com.intellij.openapi.actionSystem.AnActionEvent
 import com.intellij.openapi.application.ApplicationManager
+import com.intellij.openapi.progress.runBlockingCancellable
 import com.intellij.openapi.project.Project
 import com.intellij.openapi.project.guessProjectDir
 import com.intellij.openapi.roots.ProjectRootManager
 import com.intellij.openapi.ui.popup.JBPopupFactory
 import com.intellij.openapi.ui.popup.PopupStep
 import com.intellij.openapi.ui.popup.util.BaseListPopupStep
-import com.redhat.devtools.lsp4ij.LanguageServerManager
 import com.redhat.devtools.lsp4ij.ServerStatus
 import kotlinx.coroutines.future.await
 import kotlinx.coroutines.runBlocking
@@ -58,14 +58,14 @@ class RellAddToProjectAction : AnAction(
 
     private fun executeSelectedAction(selectedValue: FeatureOption, project: Project) {
         try {
-            runBlocking {
+            runBlockingCancellable {
                 val languageServerItem = getRellLanguageServerItem(project)
 
                 if (languageServerItem == null) {
                     project.notifyUser("Rell Language server is not running", "Error", NotificationType.ERROR)
                 } else {
                     val rellServer = languageServerItem.server as RellServerApi
-                    val targetDirUri = project.guessProjectDir()?.normalizedUri() ?: return@runBlocking
+                    val targetDirUri = project.guessProjectDir()?.normalizedUri() ?: return@runBlockingCancellable
                     val options = TemplateOptions(
                             includeDevContainer = selectedValue.id == "dev_container",
                     )
