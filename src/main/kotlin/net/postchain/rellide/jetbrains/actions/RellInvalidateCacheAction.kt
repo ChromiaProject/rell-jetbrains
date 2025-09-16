@@ -4,9 +4,8 @@ import com.intellij.notification.NotificationType
 import com.intellij.openapi.actionSystem.ActionUpdateThread
 import com.intellij.openapi.actionSystem.AnAction
 import com.intellij.openapi.actionSystem.AnActionEvent
-import com.redhat.devtools.lsp4ij.LanguageServerManager
+import com.intellij.openapi.progress.runBlockingCancellable
 import kotlinx.coroutines.future.await
-import kotlinx.coroutines.runBlocking
 import net.postchain.rellide.jetbrains.lsp4ij.RellServerApi
 import net.postchain.rellide.jetbrains.lsp4ij.getRellLanguageServerItem
 
@@ -20,7 +19,7 @@ class RellInvalidateCacheAction : AnAction(
         val project = e.project ?: return
 
         try {
-            runBlocking {
+            runBlockingCancellable {
                 val languageServerItem = getRellLanguageServerItem(project)
 
                 if (languageServerItem == null) {

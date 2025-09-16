@@ -1,14 +1,11 @@
 package net.postchain.rellide.jetbrains.services
 
 import com.intellij.openapi.components.Service
+import com.intellij.openapi.progress.runBlockingCancellable
 import com.intellij.openapi.project.Project
 import com.intellij.openapi.vfs.VirtualFile
 import com.intellij.psi.PsiElement
-import com.redhat.devtools.lsp4ij.LanguageServerItem
-import com.redhat.devtools.lsp4ij.LanguageServerManager
 import kotlinx.coroutines.future.await
-import kotlinx.coroutines.runBlocking
-import net.postchain.rellide.jetbrains.language.psi.RellXFunctionDef
 import net.postchain.rellide.jetbrains.lsp4ij.RellServerApi
 import net.postchain.rellide.jetbrains.lsp4ij.RellTestCase
 import net.postchain.rellide.jetbrains.lsp4ij.RellTestFile
@@ -27,7 +24,7 @@ class RellProjectService(val project: Project) {
 
     fun listTestCases(fileUri: String): List<RellTestCase> {
         return testCasesCache.getOrPut(fileUri) {
-            runBlocking {
+            runBlockingCancellable {
                 getRellLanguageServerItem(project)?.let { lsItem ->
                     val rellServer = lsItem.server as RellServerApi
                     rellServer.listTestCases(fileUri).await()
@@ -38,7 +35,7 @@ class RellProjectService(val project: Project) {
 
     fun getTestFiles(workspaceUri: String): List<RellTestFile> {
         return testFilesCache.getOrPut(workspaceUri) {
-            runBlocking {
+            runBlockingCancellable {
                 getRellLanguageServerItem(project)?.let { lsItem ->
                     val rellServer = lsItem.server as RellServerApi
                     rellServer.getTestFiles(workspaceUri).await()
@@ -48,15 +45,11 @@ class RellProjectService(val project: Project) {
     }
 
     fun getTestCase(element: PsiElement): RellTestCase? {
-        if (element !is RellXFunctionDef) {
-            return null
-        }
-
         val virtualFile = element.containingFile?.virtualFile ?: return null
         val fileUri = virtualFile.normalizedUri()
         val testCases = listTestCases(fileUri)
 
-        return testCases.firstOrNull { it.name == element.xQualifiedName?.text }
+        return testCases.firstOrNull { it.name == element.text }
     }
 
     fun isTest(element: PsiElement): Boolean {
