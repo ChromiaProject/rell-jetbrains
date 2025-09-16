@@ -1,5 +1,15 @@
 # Changelog
 
+## [0.2.7]
+
+### Added
+- Run all tests in Rell module
+- Settings to set global chromia cli path
+
+### Fixed
+- Freeing UI
+- Report compilation error as failure when running tests
+
 ## [0.2.6]
 
 ### Fixed
