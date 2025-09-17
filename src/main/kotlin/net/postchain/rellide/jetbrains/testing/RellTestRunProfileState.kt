@@ -36,9 +36,10 @@ class RellTestRunProfileState(
         val processHandler = startProcess()
 
         val consoleProperties = RellTestConsoleProperties(configuration, executor)
-        val console = SMTestRunnerConnectionUtil.createAndAttachConsole("Rell Test", processHandler, consoleProperties)
 
+        // Order of attaching listeners matter!! First the test results listener, then the console
         processHandler.addProcessListener(RellTestResultsListener(consoleProperties, processHandler))
+        val console = SMTestRunnerConnectionUtil.createAndAttachConsole("Rell Test", processHandler, consoleProperties)
 
         return RellTestExecutionResult(console, processHandler, createActions(console, processHandler, executor))
     }
@@ -157,32 +158,20 @@ class RellTestResultsListener(
     private val consoleProperties: SMTRunnerConsoleProperties,
     private val processHandler: ProcessHandler
 ) : ProcessListener {
-    private var failed = false
-    private val failedTestMarkerText = "***** FAILED *****"
-
-    override fun onTextAvailable(event: ProcessEvent, outputType: Key<*>) {
-        if (event.text.contains(failedTestMarkerText)) {
-            failed = true
-        }
-
-        if (outputType == ProcessOutputTypes.STDERR && event.text.contains("ERROR:")) {
-            failed = true
-        }
-    }
 
     override fun startNotified(event: ProcessEvent) {
         val started = ServiceMessageBuilder.testStarted(consoleProperties.configuration.name).toString()
         sendMessage(started, event.processHandler)
     }
 
-    override fun processWillTerminate(event: ProcessEvent, willBeDestroyed: Boolean) {
-        if (failed) {
+    override fun processTerminated(event: ProcessEvent) {
+        if (event.exitCode != 0) {
             sendMessage(ServiceMessageBuilder.testFailed(consoleProperties.configuration.name)
                     .addAttribute(ServiceMessageTypes.MESSAGE, "")
-                    .toString(), processHandler)
+                    .toString(), event.processHandler)
         } else {
             sendMessage(ServiceMessageBuilder.testFinished(consoleProperties.configuration.name)
-                    .toString(), processHandler)
+                    .toString(), event.processHandler)
         }
     }
 

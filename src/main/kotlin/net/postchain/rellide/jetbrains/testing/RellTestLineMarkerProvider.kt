@@ -134,8 +134,6 @@ class RellTestLineMarkerProvider : LineMarkerProvider {
     }
 
     private fun getTestName(element: PsiElement): String {
-        return (element as? RellXFunctionDef)?.let {
-            "${it.xQualifiedName?.text}"
-        } ?: return "Unknown Test"
+        return element.text ?: return "Unknown Test"
     }
 }
