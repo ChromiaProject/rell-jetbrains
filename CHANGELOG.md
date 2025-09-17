@@ -1,5 +1,11 @@
 # Changelog
 
+## [0.2.8]
+
+### Fixed
+- Test run configuration name
+- Test runner reporting runtime errors
+
 ## [0.2.7]
 
 ### Added
