@@ -3,7 +3,7 @@ set -eu
 
 GROUP_ID=net/postchain/rell/toolbox
 ARTIFACT_ID=rell-language-server
-VERSION=0.8.8
+VERSION=0.8.10
 FILE_NAME=rell-language-server-$VERSION-all.jar
 LSP_URL=https://gitlab.com/api/v4/projects/51303085/packages/maven/$GROUP_ID/$ARTIFACT_ID/$VERSION/$FILE_NAME
 JAR_FILE=./language-server/$ARTIFACT_ID-$VERSION.jar
