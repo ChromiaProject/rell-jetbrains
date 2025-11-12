@@ -93,9 +93,7 @@ class SentryReportSubmitter : ErrorReportSubmitter() {
     private fun Throwable?.isFromRellPlugin(): Boolean = this
                     ?.stackTrace
                     ?.asSequence()
-                    ?.any { element ->
-                        element.className.startsWithAny(rellRelevantPackages)
-                    }
+                    ?.any { it.className.startsWithAny(rellRelevantPackages) }
                     ?: false
 
     private fun String.startsWithAny(prefixes: Set<String>): Boolean =
