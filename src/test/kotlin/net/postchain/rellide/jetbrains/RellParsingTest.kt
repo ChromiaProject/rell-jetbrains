@@ -5,6 +5,7 @@ import com.fasterxml.jackson.module.kotlin.jacksonObjectMapper
 import com.fasterxml.jackson.module.kotlin.readValue
 import com.intellij.testFramework.ParsingTestCase
 import com.intellij.testFramework.ParsingTestUtil
+import com.jetbrains.rd.util.printlnError
 import net.postchain.rellide.jetbrains.language.RellParserDefinition
 import java.io.File
 

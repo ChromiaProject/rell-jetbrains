@@ -13,4 +13,7 @@ public interface RellXBaseAttributeDefinition extends PsiElement {
   @Nullable
   RellXExpressionRef getXExpressionRef();
 
+  @NotNull
+  RellXModifiers getXModifiers();
+
 }

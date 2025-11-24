@@ -39,4 +39,10 @@ public class RellXFormalParameterImpl extends ASTWrapperPsiElement implements Re
     return findChildByClass(RellXExpression.class);
   }
 
+  @Override
+  @NotNull
+  public RellXModifiers getXModifiers() {
+    return findNotNullChildByClass(RellXModifiers.class);
+  }
+
 }

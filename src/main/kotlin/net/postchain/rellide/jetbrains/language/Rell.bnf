@@ -100,6 +100,7 @@ X_KeywordModifier ::= X_KeywordModifier0
 
 
 X_KeywordModifier0 ::= 'abstract'
+   | X_tkMUTABLE
    | 'override'
 
 
@@ -211,7 +212,7 @@ X_AttributeClause ::= X_AttributeDefinition
 X_AttributeDefinition ::= X_BaseAttributeDefinition X_tkSEMI
 
 
-X_BaseAttributeDefinition ::= (X_tkMUTABLE)? X_AttrHeader (X_tkASSIGN X_ExpressionRef)?
+X_BaseAttributeDefinition ::= X_Modifiers X_AttrHeader (X_tkASSIGN X_ExpressionRef)?
 
 
 X_AttrHeader ::= X_NameTypeAttrHeader
@@ -553,6 +554,7 @@ X_BinaryOperator ::= '=='
    | '%'
    | 'and'
    | 'or'
+   | '&'
    | X_tkIN
    | 'not' X_tkIN
    | '?:'
@@ -603,7 +605,7 @@ X_CommaSeparated_36 ::= X_tkLPAR (X_CommaSeparated_35)? X_tkRPAR
 X_CommaSeparated_35 ::= X_FormalParameter (X_tkCOMMA X_FormalParameter)* (X_tkCOMMA)?
 
 
-X_FormalParameter ::= X_AttrHeader (X_tkASSIGN X_Expression)?
+X_FormalParameter ::= X_Modifiers X_AttrHeader (X_tkASSIGN X_Expression)?
 
 
 X_FunctionBody ::= X_FunctionBodyShort

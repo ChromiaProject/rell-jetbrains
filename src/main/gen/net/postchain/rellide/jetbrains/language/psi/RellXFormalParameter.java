@@ -13,4 +13,7 @@ public interface RellXFormalParameter extends PsiElement {
   @Nullable
   RellXExpression getXExpression();
 
+  @NotNull
+  RellXModifiers getXModifiers();
+
 }
