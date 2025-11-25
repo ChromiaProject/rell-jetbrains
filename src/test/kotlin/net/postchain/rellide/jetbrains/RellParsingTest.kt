@@ -13,7 +13,10 @@ import java.io.File
 data class RellTestCaseSnippet(val files: Map<String, String>, val parsing: Map<String, List<Map<String, String>>>)
 
 
-abstract class RellParsingTestCase: ParsingTestCase("", "rell", true, RellParserDefinition()) {
+class RellParsingTest :  ParsingTestCase("", "rell", true, RellParserDefinition()) {
+
+    override fun getTestDataPath() = "build/rell-test-cases/test-cases"
+
     override fun parseFile(name: String?, text: String?): PsiFile {
         /* assertValidSeparators() in com.intellij.openapi.editor.impl.DocumentImpl doesn't accept '\r'.
         The following two resources state that Document don't accepts '\r'.
@@ -24,12 +27,6 @@ abstract class RellParsingTestCase: ParsingTestCase("", "rell", true, RellParser
         val normalizedLineSeparator = text?.replace("\r\n", "\n")?.replace("\r", "\n")
         return super.parseFile(name, normalizedLineSeparator)
     }
-}
-
-
-class RellParsingTest : RellParsingTestCase() {
-
-    override fun getTestDataPath() = "build/rell-test-cases/test-cases"
 
     fun testRellParser() {
         val snippetFiles = getSnippetFiles()
