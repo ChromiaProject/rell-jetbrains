@@ -31,6 +31,7 @@ class RellParsingTest :  ParsingTestCase("", "rell", true, RellParserDefinition(
     fun testRellParser() {
         val snippetFiles = getSnippetFiles()
         val mapper = jacksonObjectMapper()
+        throw Error("I FAILED")
         snippetFiles.forEach { snippetFile ->
             val cases = mapper.readValue<List<RellTestCaseSnippet>>(snippetFile)
             cases.forEach(::validateTestCase)
