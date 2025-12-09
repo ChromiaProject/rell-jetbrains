@@ -35,10 +35,10 @@ class RellTestRunConfigurationEditor(private val project: Project) : SettingsEdi
 
     private fun setupUI() {
         workingDirectoryField.addBrowseFolderListener(
-                "Select Working Directory",
-                "Choose the working directory for test execution",
                 project,
                 FileChooserDescriptorFactory.createSingleFolderDescriptor()
+                        .withTitle("Select Working Directory")
+                        .withDescription("Choose the working directory for test execution")
         )
 
         testScopeComboBox.addActionListener {
