@@ -1,5 +1,12 @@
 # Changelog
 
+## [0.3.0]
+
+### Added
+- Rell Language Server with Rell version 0.14.16
+- Intellij 2025.3 support
+- LSP4IJ 0.19.0 support
+
 ## [0.2.9]
 
 ### Added
