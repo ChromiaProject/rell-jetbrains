@@ -13,6 +13,8 @@ class RellCodeStyleSettingsProvider : CodeStyleSettingsProvider() {
 
     override fun getConfigurableDisplayName() = RellLanguage.INSTANCE.displayName
 
+    override fun getLanguage(): Language = RellLanguage.INSTANCE
+
     override fun createConfigurable(settings: CodeStyleSettings, originalSettings: CodeStyleSettings) =
         object : CodeStyleAbstractConfigurable(settings, originalSettings, configurableDisplayName) {
             override fun createPanel(settings: CodeStyleSettings) = RellCodeStyleMainPanel(currentSettings, settings)
