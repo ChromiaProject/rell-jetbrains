@@ -1,5 +1,10 @@
 # Changelog
 
+## [0.3.1]
+
+### Added
+- Rell Language Server with Rell version 0.15.0
+
 ## [0.3.0]
 
 ### Added
