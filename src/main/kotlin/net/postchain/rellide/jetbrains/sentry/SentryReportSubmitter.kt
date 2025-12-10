@@ -1,6 +1,5 @@
 package net.postchain.rellide.jetbrains.sentry
 
-import com.intellij.diagnostic.IdeaReportingEvent
 import com.intellij.ide.plugins.PluginManagerCore
 import com.intellij.openapi.application.ApplicationInfo
 import com.intellij.openapi.diagnostic.ErrorReportSubmitter
@@ -88,7 +87,7 @@ class SentryReportSubmitter : ErrorReportSubmitter() {
             event.throwable?.isFromRellPlugin() == true || event.isRellReportingEvent()
 
     private fun IdeaLoggingEvent.isRellReportingEvent(): Boolean =
-            (this as? IdeaReportingEvent)?.plugin?.pluginId?.idString in rellRelevantPackages
+            this.plugin?.pluginId?.idString in rellRelevantPackages
 
     private fun Throwable?.isFromRellPlugin(): Boolean = this
                     ?.stackTrace
