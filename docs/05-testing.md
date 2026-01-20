@@ -22,6 +22,7 @@ This document describes the plugin's testing approach, available test types, and
    ```json
    {
      "files": {
+       // "filename": "file content"
        "test.rell": "entity user { name: text; }"
      },
      "parsing": {
