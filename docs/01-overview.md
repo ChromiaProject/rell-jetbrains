@@ -33,11 +33,13 @@ Provides IDE integration for `.rell` source files:
 ## Why Does This Exist?
 
 Rell is a domain-specific language for blockchain applications.
-This plugin makes Rell development practical in professional IDEs by providing the same quality-of-life features developers expect from mainstream languages (Java, Python, etc.).
+This plugin makes Rell development practical in Jetbrains IDEs.
 
 **Business Context:**
 - Part of Chromia platform tooling
 - Integrates with Chromia CLI (`chr` command)
+- Depends on Rell Language Server, that is part of [rell-toolbox](https://gitlab.com/chromaway/core-tools/rell-toolbox) project
+- Depends on Rell languag.  [Rell repository](https://gitlab.com/chromaway/rell)
 - Uses Sentry for error tracking (organization: `chromaway-ab-za`)
 
 ---

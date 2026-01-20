@@ -35,19 +35,9 @@ override fun createConnectionProvider(project: Project): LanguageServerConnectio
 
 **Role:** Launches embedded LSP server JAR as subprocess.
 
-**Key Code:**
-```kotlin
-val javaCmd = ProcessHandle.current()?.info()?.command()?.orElse("java") ?: "java"
-val maxHeapSize = JVMHeapSizeManager.determineMaxHeapSize()
-
-ProcessBuilder()
-    .command(javaCmd, "-Xmx${maxHeapSize}M", "-jar", jarPath, "--stdio")
-    .start()
-```
 
 **Design Decision - JVM Heap Size:**
 - Uses `JVMHeapSizeManager.determineMaxHeapSize()` to calculate heap
-- Default: `min(availableMemory * 0.25, 2048MB)`
 - **Why:** Large Rell projects can have many files. Generous heap prevents OutOfMemoryError during indexing.
 
 **Where Is the LSP JAR?**
@@ -91,7 +81,9 @@ Standard LSP doesn't cover IDE-specific features like test discovery or project 
 "keyword" → DefaultLanguageHighlighterColors.KEYWORD
 ```
 
-**Why Needed:** LSP semantic tokens are standardized strings. IDE needs to map them to actual TextAttributesKey objects for rendering.
+**Why Needed:** LSP semantic tokens are standardized strings. 
+IDE needs to map them to actual TextAttributesKey objects for rendering.
+[More details](https://microsoft.github.io/language-server-protocol/specifications/lsp/3.17/specification/#textDocument_semanticTokens)
 
 **How It Works:**
 1. LSP sends semantic tokens: `[(line, col, length, tokenType, modifiers), ...]`
@@ -160,25 +152,6 @@ override fun getIcon() = RellIcons.FILE
 
 **Why in Lexer?** Rell supports arbitrary-precision numbers (BigInteger, BigDecimal). The lexer validates numeric literals to prevent overflow/precision loss.
 
-**Example from `_RellLexer.flex`:**
-```java
-// Validates integer is within -2^63 to 2^63-1
-private boolean validateInteger(String text, boolean negative) {
-    if (text.length() > 19) return false;
-    // ... boundary checking logic ...
-}
-
-// Validates BigInteger doesn't exceed 131,072 digits
-private boolean validateBigInteger(String text) {
-    return text.length() <= 131_072;
-}
-
-// Validates BigDecimal precision (20 fractional digits, 131,072 total)
-private boolean validateDecimal(String text) {
-    // ... precision checking logic ...
-}
-```
-
 ---
 
 ## 3. Test Runner
@@ -212,41 +185,6 @@ private boolean validateDecimal(String text) {
 ### RellTestRunProfileState.kt
 
 **Role:** Executes test command and captures results.
-
-**Execution Flow:**
-
-1. **Build Command:**
-   ```kotlin
-   val command = mutableListOf(chrPath, "test")
-   when (testScope) {
-       MODULE -> command.add(moduleName)
-       BLOCKCHAIN -> command.add("--blockchain")
-       TEST_PATTERN -> command.addAll(listOf("--pattern", testPattern))
-       ALL_IN_PROJECT -> { /* no additional args */ }
-   }
-   command.addAll(listOf("--output-format", "json", "--no-color"))
-   ```
-
-2. **Launch Process:**
-   ```kotlin
-   val commandLine = GeneralCommandLine(command)
-       .withWorkDirectory(workingDirectory)
-       .withCharset(Charsets.UTF_8)
-
-   val handler = ColoredProcessHandler(commandLine)
-   ```
-
-3. **Attach Result Listener:**
-   ```kotlin
-   val listener = RellTestResultsListener(...)
-   handler.addProcessListener(listener)
-   ```
-
-4. **Display in Test Runner:**
-   ```kotlin
-   val console = SMTRunnerConsoleView(...)
-   return DefaultExecutionResult(console, handler)
-   ```
 
 **Output Format:** Chromia CLI outputs JSON with test results. Listener parses this and converts to Service Messages protocol (TeamCity format) that IDE understands.
 
@@ -337,7 +275,6 @@ private boolean validateDecimal(String text) {
 - `.rellformat` file in project root (parsed by LSP server, not plugin)
 - Settings: `max_line_width`, `insert_spaces`, `tab_size`
 
-**Known Gap:** How `.rellformat` is discovered and parsed by LSP is not evident from plugin code. Assumed LSP handles this.
 
 ---
 

@@ -23,7 +23,7 @@
 
 ### Why Grammar-Kit Parser Despite LSP?
 
-**What:** The plugin generates a local parser from BNF grammar using JetBrains Grammar-Kit.
+**What:** The plugin generates a local parser from BNF grammar used by JetBrains IDE platforms, even though the LSP server also performs parsing.
 
 **Why:**
 
@@ -33,9 +33,6 @@ Even though the LSP server handles compilation, the IDE still needs a local AST 
 
 2. **PSI Tree Navigation:** JetBrains IDEs use PSI (Program Structure Interface) trees for local navigation features. Some IDE features expect a PSI tree to exist.
 
-3. **Offline Capabilities:** Users can browse code structure without waiting for server responses.
-
-**Trade-off:** The local parser must stay synchronized with the language server's grammar.
 
 ### Why Test Runner Integration?
 
@@ -90,7 +87,7 @@ Even though the LSP server handles compilation, the IDE still needs a local AST 
 ### Lifecycle: Plugin Initialization to User Action
 
 **1. Plugin Loads (IDE Startup)**
-- IDE reads `META-INF/plugin.xml`
+- IDE reads `src/main/resources/META-INF/plugin.xml`
 - Registers language (`RellLanguage`), file type (`.rell`)
 - Registers LSP factory (`RellLanguageServerFactory`)
 - Registers test configuration type
@@ -103,13 +100,7 @@ Even though the LSP server handles compilation, the IDE still needs a local AST 
 - LSP4IJ detects Rell file and calls `RellLanguageServerFactory.createConnectionProvider()`
 - Factory returns `RellLanguageServer` (subprocess mode) or `RellSocketLanguageServer` (socket mode)
 - LSP server starts on first `.rell` file opening (embedded JAR launched as subprocess or connection made to port 5008)
-- Initialization options sent to server:
-  ```json
-  {
-    "indexCaching": true/false,
-    "inlayHints": { ... }
-  }
-  ```
+- Initialization options sent to server
 
 **3. Language Intelligence (User Types Code)**
 - IDE sends `textDocument/didChange` notification to LSP
