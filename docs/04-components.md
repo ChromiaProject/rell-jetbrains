@@ -10,6 +10,10 @@ This document provides a detailed breakdown of the plugin's core components, exp
 
 ## 1. Language Server Integration (`lsp4ij/` - 505 lines)
 
+LSP4IJ is a LSP and DAP client for JetBrains IDEs.
+
+LSP4IJ Repository: https://github.com/redhat-developer/lsp4ij
+
 **Purpose:** Bridge between IDE and Rell LSP server.
 
 ### RellLanguageServerFactory.kt

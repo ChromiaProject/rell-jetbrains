@@ -45,11 +45,26 @@ intellijPlatform {
 ```
 
 **External Maven Repositories:**
-- **Rell GitLab Registry:** `https://gitlab.com/api/v4/projects/32802097/packages/maven`
-- **Postchain GitLab Registry:** `https://gitlab.com/api/v4/projects/32294340/packages/maven`
-- **Chromia GitLab Registry:** `https://gitlab.com/api/v4/projects/50818999/packages/maven`
+- **Rell GitLab Registry:** `https://gitlab.com/api/v4/projects/32802097`
+- **Postchain GitLab Registry:** `https://gitlab.com/api/v4/projects/32294340`
+- **Chromia GitLab Registry:** `https://gitlab.com/api/v4/projects/50818999`
 
 **Why GitLab Maven?** Rell and related libraries are hosted on private GitLab repositories (not Maven Central).
+
+
+### Jenkins pipeline
+
+Internal Jenkins pipeline automates publishing plugin to JetBrains Marketplace.
+Ask Chromia DevOps team for access.
+
+Release steps:
+- After merging new features to `main`, Manually trigger Jenkins pipeline build. (pipeline: rell-jetbrains)
+- It will build, sign, and publish the plugin to JetBrains Marketplace.
+- Check [JetBrains Marketplace](https://plugins.jetbrains.com/) for new version.
+- Ask DevTools team credentials to log in to Marketplace and check submission status.
+- Release isn't automatically available. review takes time (usually few business days).
+- Jetbrains is periodically scanning the plugin for compatibility and security issues and reports back (through email)
+
 
 ### Sentry Integration
 
