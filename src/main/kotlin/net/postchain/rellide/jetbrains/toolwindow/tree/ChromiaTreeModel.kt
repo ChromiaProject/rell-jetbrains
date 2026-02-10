@@ -122,7 +122,7 @@ class ChromiaTreeModel(private val project: Project) : DefaultTreeModel(createRo
         nodeCategory.add(createCommandNode(
                 "Start", "chr node start",
                 "Start the Chromia node",
-                AllIcons.Actions.Run_anything,
+                AllIcons.Actions.RunAnything,
                 chromiaProject.path
         ))
 
