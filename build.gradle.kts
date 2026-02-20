@@ -21,19 +21,20 @@ plugins {
     // Gradle Qodana Plugin
     id("org.jetbrains.qodana") version "2024.1.9"
     // Gradle Kover Plugin
-    id("org.jetbrains.kotlinx.kover") version "0.8.3"
+    id("org.jetbrains.kotlinx.kover") version "0.9.1"
     // Sentry Plugin
     id("io.sentry.jvm.gradle") version "4.13.0"
 }
 
+val sentryAuthToken: String? = System.getenv("SENTRY_AUTH_TOKEN")
 sentry {
     // Generates a JVM (Java, Kotlin, etc.) source bundle and uploads your source code to Sentry.
     // This enables source context, allowing you to see your source
     // code as part of your stack traces in Sentry.
-    includeSourceContext = true
+    includeSourceContext = sentryAuthToken != null
     org = "chromaway-ab-za"
     projectName = "rell-jetbrains"
-    authToken = System.getenv("SENTRY_AUTH_TOKEN")
+    authToken = System.getenv("SENTRY_AUTH_TOKEN") ?: ""
 }
 
 dependencies {

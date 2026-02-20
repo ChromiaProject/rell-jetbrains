@@ -181,7 +181,7 @@ class ChromiaTreeModel(private val project: Project) : DefaultTreeModel(createRo
         seederCategory.add(createCommandNode(
                 "Generate", "chr seeder generate",
                 "Generate seed data",
-                AllIcons.Actions.Run_anything,
+                AllIcons.Actions.RunAnything,
                 chromiaProject.path
         ))
         projectNode.add(seederCategory)
