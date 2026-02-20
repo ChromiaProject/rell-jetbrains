@@ -21,7 +21,7 @@ plugins {
     // Gradle Qodana Plugin
     id("org.jetbrains.qodana") version "2024.1.9"
     // Gradle Kover Plugin
-    id("org.jetbrains.kotlinx.kover") version "0.8.3"
+    id("org.jetbrains.kotlinx.kover") version "0.9.1"
     // Sentry Plugin
     id("io.sentry.jvm.gradle") version "4.13.0"
 }
