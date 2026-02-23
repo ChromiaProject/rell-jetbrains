@@ -11,8 +11,6 @@ import com.intellij.openapi.project.Project
 import com.intellij.openapi.project.ProjectManager
 import com.intellij.openapi.startup.ProjectActivity
 import com.intellij.util.messages.MessageBusConnection
-import com.redhat.devtools.lsp4ij.LanguageServerManager
-import net.postchain.rellide.jetbrains.services.RellProjectService.Companion.RELL_LANGUAGE_SERVER_ID
 import org.eclipse.lsp4j.DidChangeConfigurationParams
 
 @Service(Service.Level.PROJECT)

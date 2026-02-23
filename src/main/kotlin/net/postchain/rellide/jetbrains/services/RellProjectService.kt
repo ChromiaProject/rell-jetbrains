@@ -14,7 +14,6 @@ import net.postchain.rellide.jetbrains.util.normalizedUri
 @Service(Service.Level.PROJECT)
 class RellProjectService(val project: Project) {
     companion object {
-        const val RELL_LANGUAGE_SERVER_ID = "rellLanguageServer"
         private const val CACHE_DURATION_MS = 1000L
     }
 
