@@ -7,7 +7,6 @@ import com.intellij.openapi.vfs.VirtualFile
 import com.intellij.psi.PsiElement
 import kotlinx.coroutines.future.await
 import net.postchain.rellide.jetbrains.lsp4ij.RellServerApi
-import net.postchain.rellide.jetbrains.lsp4ij.RellTestCase
 import net.postchain.rellide.jetbrains.lsp4ij.RellTestFile
 import net.postchain.rellide.jetbrains.lsp4ij.getRellLanguageServerItem
 import net.postchain.rellide.jetbrains.util.normalizedUri
@@ -15,50 +14,31 @@ import net.postchain.rellide.jetbrains.util.normalizedUri
 @Service(Service.Level.PROJECT)
 class RellProjectService(val project: Project) {
     companion object {
-        const val RELL_LANGUAGE_SERVER_ID = "rellLanguageServer"
         private const val CACHE_DURATION_MS = 1000L
     }
 
-    private val testCasesCache = TimedCache<String, List<RellTestCase>>(CACHE_DURATION_MS)
-    private val testFilesCache = TimedCache<String, List<RellTestFile>>(CACHE_DURATION_MS)
+    private val testFilesCache = TimedCache<String, RellTestFile>(CACHE_DURATION_MS)
 
-    fun listTestCases(fileUri: String): List<RellTestCase> {
-        return testCasesCache.getOrPut(fileUri) {
-            runBlockingCancellable {
-                getRellLanguageServerItem(project)?.let { lsItem ->
-                    val rellServer = lsItem.server as RellServerApi
-                    rellServer.listTestCases(fileUri).await()
-                }
-            } ?: emptyList()
+    fun getTestFile(fileUri: String): RellTestFile? {
+        testFilesCache.get(fileUri)?.let { return it }
+        val result = runBlockingCancellable {
+            getRellLanguageServerItem(project)?.let { lsItem ->
+                val rellServer = lsItem.server as RellServerApi
+                rellServer.getTestFile(fileUri).await()
+            }
         }
-    }
-
-    fun getTestFiles(workspaceUri: String): List<RellTestFile> {
-        return testFilesCache.getOrPut(workspaceUri) {
-            runBlockingCancellable {
-                getRellLanguageServerItem(project)?.let { lsItem ->
-                    val rellServer = lsItem.server as RellServerApi
-                    rellServer.getTestFiles(workspaceUri).await()
-                }
-            } ?: emptyList()
-        }
-    }
-
-    fun getTestCase(element: PsiElement): RellTestCase? {
-        val virtualFile = element.containingFile?.virtualFile ?: return null
-        val fileUri = virtualFile.normalizedUri()
-        val testCases = listTestCases(fileUri)
-
-        return testCases.firstOrNull { it.name == element.text }
-    }
-
-    fun isTest(element: PsiElement): Boolean {
-        return getTestCase(element) != null
+        if (result != null) testFilesCache.put(fileUri, result)
+        return result
     }
 
     fun getTestFile(virtualFile: VirtualFile): RellTestFile? {
         val fileUri = virtualFile.normalizedUri()
-        val testFiles = getTestFiles(fileUri)
-        return testFiles.firstOrNull { it.uri.toString() == fileUri }
+        return getTestFile(fileUri)
+    }
+
+
+    fun isTest(element: PsiElement): Boolean {
+        val virtualFile = element.containingFile?.virtualFile ?: return false
+        return getTestFile(virtualFile) != null
     }
 }

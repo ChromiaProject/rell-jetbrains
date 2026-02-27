@@ -10,67 +10,78 @@ import com.intellij.icons.AllIcons
 import com.intellij.openapi.application.runReadAction
 import com.intellij.openapi.components.service
 import com.intellij.openapi.editor.markup.GutterIconRenderer
+import com.intellij.openapi.vfs.VirtualFile
 import com.intellij.psi.PsiElement
 import com.intellij.psi.impl.source.tree.LeafPsiElement
 import com.intellij.psi.util.elementType
-import com.redhat.devtools.lsp4ij.ServerStatus
 import net.postchain.rellide.jetbrains.language.psi.RellTypes
 import net.postchain.rellide.jetbrains.language.psi.RellXFunctionDef
 import net.postchain.rellide.jetbrains.language.psi.RellXModuleHeader
 import net.postchain.rellide.jetbrains.lsp4ij.RellTestCase
 import net.postchain.rellide.jetbrains.lsp4ij.RellTestFile
-import net.postchain.rellide.jetbrains.lsp4ij.getRellLanguageServerStatus
+import net.postchain.rellide.jetbrains.lsp4ij.rellLanguageServerIsRunning
 import net.postchain.rellide.jetbrains.services.RellProjectService
 import net.postchain.rellide.jetbrains.testing.actions.createTestConfiguration
 
 class RellTestLineMarkerProvider : LineMarkerProvider {
     override fun getLineMarkerInfo(element: PsiElement): LineMarkerInfo<*>? {
         return runReadAction {
-            if (element !is LeafPsiElement) {
-                return@runReadAction null
-            }
+            if (element !is LeafPsiElement) return@runReadAction null
 
-            if (isTestModuleHeader(element)) {
-                val rellTestFile = getRellTestFileForElement(element) ?: return@runReadAction null
-                val project = element.project
-                val virtualFile = element.containingFile.virtualFile ?: return@runReadAction null
+            val isModuleHeader = isTestModuleHeader(element)
+            val isFunctionName = isFunctionName(element)
+            if (!isModuleHeader && !isFunctionName) return@runReadAction null
 
-                return@runReadAction LineMarkerInfo(
-                        element,
-                        element.textRange,
-                        AllIcons.RunConfigurations.TestState.Run_run,
-                        { rellTestFile.moduleName },
-                        { e, elt ->
-                            val runManager = RunManager.getInstance(project)
-                            val configurationSettings = createTestConfiguration(project, virtualFile, runManager, rellTestFile)
-                            runManager.addConfiguration(configurationSettings)
-                            runManager.selectedConfiguration = configurationSettings
-                            ExecutionUtil.runConfiguration(configurationSettings, DefaultRunExecutor.getRunExecutorInstance())
-                        },
-                        GutterIconRenderer.Alignment.CENTER,
-                        { "Run tests in module" }
-                )
-            }
-            if (!isFunctionName(element)) {
-                return@runReadAction null
-            }
-            val languageServerStatus = getRellLanguageServerStatus(element.project)
-            if (languageServerStatus != ServerStatus.started) {
-                return@runReadAction null
-            }
-            val projectService = element.project.service<RellProjectService>()
-            val testCase = projectService.getTestCase(element) ?: return@runReadAction null
+            val virtualFile = element.containingFile?.virtualFile ?: return@runReadAction null
+            val testFile = getTestFileForElement(element, virtualFile) ?: return@runReadAction null
 
-            return@runReadAction LineMarkerInfo(
-                    element,
-                    element.textRange,
-                    AllIcons.RunConfigurations.TestState.Run,
-                    { getTestName(element) },
-                    { e, elt -> runTest(elt, testCase) },
-                    GutterIconRenderer.Alignment.CENTER,
-                    { "Run test" }
-            )
+            when {
+                isModuleHeader -> return@runReadAction createTestModuleLineMarker(element, testFile, virtualFile)
+                else -> {
+                    val testCase = testFile.testCases.firstOrNull { it.name == element.text } ?: return@runReadAction null
+                    return@runReadAction createTestCaseLineMarker(element, testCase)
+                }
+            }
         }
+    }
+
+    private fun createTestCaseLineMarker(
+        element: LeafPsiElement,
+        testCase: RellTestCase
+    ): LineMarkerInfo<LeafPsiElement> = LineMarkerInfo(
+        element,
+        element.textRange,
+        AllIcons.RunConfigurations.TestState.Run,
+        { getTestName(element) },
+        { _, elt -> runTest(elt, testCase) },
+        GutterIconRenderer.Alignment.CENTER,
+        { "Run test" }
+    )
+
+    private fun createTestModuleLineMarker(
+        element: LeafPsiElement,
+        testFile: RellTestFile,
+        virtualFile: VirtualFile
+    ): LineMarkerInfo<LeafPsiElement> = LineMarkerInfo(
+        element,
+        element.textRange,
+        AllIcons.RunConfigurations.TestState.Run_run,
+        { testFile.moduleName },
+        { _, elt ->
+            val project = elt.project
+            val runManager = RunManager.getInstance(project)
+            val configurationSettings = createTestConfiguration(project, virtualFile, runManager, testFile)
+            runManager.addConfiguration(configurationSettings)
+            runManager.selectedConfiguration = configurationSettings
+            ExecutionUtil.runConfiguration(configurationSettings, DefaultRunExecutor.getRunExecutorInstance())
+        },
+        GutterIconRenderer.Alignment.CENTER,
+        { "Run tests in module" }
+    )
+
+    private fun getTestFileForElement(element: PsiElement, virtualFile: VirtualFile): RellTestFile? {
+        if (!rellLanguageServerIsRunning(element.project)) return null
+        return element.project.service<RellProjectService>().getTestFile(virtualFile)
     }
 
     private fun isFunctionName(element: PsiElement): Boolean {
@@ -91,16 +102,6 @@ class RellTestLineMarkerProvider : LineMarkerProvider {
             return false
         }
         return element.text == "test"
-    }
-
-    private fun getRellTestFileForElement(element: PsiElement): RellTestFile? {
-        val languageServerStatus = getRellLanguageServerStatus(element.project)
-        if (languageServerStatus != ServerStatus.started) {
-            return null
-        }
-        val projectService = element.project.service<RellProjectService>()
-        val virtualFile = element.containingFile?.virtualFile ?: return null
-        return projectService.getTestFile(virtualFile)
     }
 
     private fun runTest(element: PsiElement, testCase: RellTestCase) {

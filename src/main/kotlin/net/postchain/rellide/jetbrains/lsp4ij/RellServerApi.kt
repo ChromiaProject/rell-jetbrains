@@ -15,6 +15,9 @@ interface RellServerApi : LanguageServer {
     @JsonRequest("rell/listTestFiles")
     fun getTestFiles(workspaceUri: String): CompletableFuture<List<RellTestFile>>
 
+    @JsonRequest("rell/getTestFile")
+    fun getTestFile(workspaceUri: String): CompletableFuture<RellTestFile?>
+
     @JsonRequest("rell/listTestCases")
     fun listTestCases(testFileUri: String): CompletableFuture<List<RellTestCase>>
 
