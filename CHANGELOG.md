@@ -3,7 +3,9 @@
 ## [0.3.1]
 
 ### Added
-- Rell Language Server with Rell version 0.15.0
+- Rell Language Server with Rell version 0.15.2
+### Fixed
+- Optimized test discovery to avoid plugin freeze
 
 ## [0.3.0]
 
