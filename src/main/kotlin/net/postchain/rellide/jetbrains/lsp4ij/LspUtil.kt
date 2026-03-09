@@ -8,6 +8,7 @@ import com.redhat.devtools.lsp4ij.ServerStatus
 const val RELL_LANGUAGE_SEVER_ID = "rellLanguageServer"
 
 fun getRellLanguageServerItem(project: Project): LanguageServerItem? {
+    if (!rellLanguageServerIsRunning(project)) return null
     return LanguageServerManager.getInstance(project)
             .getLanguageServer(RELL_LANGUAGE_SEVER_ID)
             .get()
