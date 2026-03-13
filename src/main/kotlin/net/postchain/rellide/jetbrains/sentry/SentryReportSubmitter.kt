@@ -9,11 +9,14 @@ import com.intellij.openapi.diagnostic.SubmittedReportInfo.SubmissionStatus.NEW_
 import com.intellij.openapi.extensions.PluginId
 import com.intellij.openapi.util.SystemInfo
 import com.intellij.util.Consumer
-import io.sentry.Sentry
-import java.awt.Component
+import io.sentry.Scope
+import io.sentry.Scopes
+import io.sentry.SentryClient
 import io.sentry.SentryEvent
 import io.sentry.SentryLevel
+import io.sentry.SentryOptions
 import io.sentry.protocol.Message
+import java.awt.Component
 
 
 class SentryReportSubmitter : ErrorReportSubmitter() {
@@ -23,19 +26,32 @@ class SentryReportSubmitter : ErrorReportSubmitter() {
         "com.redhat.devtools.lsp4ij"
     )
 
-    init {
-        Sentry.init { options ->
-            options.dsn = "https://428edffffc07a615e459992d991f5640@o4508080756162560.ingest.de.sentry.io/4508210896765009"
-            // Set tracesSampleRate to 1.0 to capture 100% of transactions for tracing.
-            // We recommend adjusting this value in production.
-            options.tracesSampleRate = 1.0
-            options.isDebug = false
-            options.environment = "production"
-            options.release = "rell-jetbrains@$pluginVersion"
-        }
-    }
-
     private val pluginVersion = PluginManagerCore.getPlugin(PluginId.getId("net.postchain.rellide.jetbrains"))?.version ?: "unknown"
+
+    private val scopes: Scopes by lazy {
+        val options = SentryOptions().apply {
+            dsn = "https://428edffffc07a615e459992d991f5640@o4508080756162560.ingest.de.sentry.io/4508210896765009"
+            tracesSampleRate = 1.0
+            isDebug = false
+            environment = "production"
+            release = "rell-jetbrains@$pluginVersion"
+            setBeforeSend { event, _ ->
+                val throwable = event.throwable
+                if (throwable != null && !throwable.isFromRellPlugin()) {
+                    return@setBeforeSend null
+                }
+                event
+            }
+        }
+
+        val globalScope = Scope(options)
+        val isolationScope = Scope(options)
+        val scope = Scope(options)
+
+        globalScope.bindClient(SentryClient(options))
+
+        Scopes(scope, isolationScope, globalScope, "RellPlugin.init")
+    }
 
     override fun getReportActionText() = "Report error to Rell plugin maintainers"
 
@@ -76,7 +92,7 @@ class SentryReportSubmitter : ErrorReportSubmitter() {
                     setExtra("additional_info", additionalInfo)
                 }
             }
-            Sentry.captureEvent(sentryEvent)
+            scopes.captureEvent(sentryEvent)
         }
 
         consumer.consume(SubmittedReportInfo(null, "Error has been successfully reported", NEW_ISSUE))
