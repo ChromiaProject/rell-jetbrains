@@ -1,5 +1,9 @@
 # Changelog
 
+## [0.3.3]
+### Fixed
+- Improved error reporting reliability
+
 ## [0.3.2]
 ### Fixed
 - Adds safeguard check to see if server is running before getting server item
