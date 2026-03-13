@@ -23,7 +23,7 @@ plugins {
     // Gradle Kover Plugin
     id("org.jetbrains.kotlinx.kover") version "0.9.1"
     // Sentry Plugin
-    id("io.sentry.jvm.gradle") version "4.13.0"
+    id("io.sentry.jvm.gradle") version "5.8.0"
 }
 
 val sentryAuthToken: String? = System.getenv("SENTRY_AUTH_TOKEN")
@@ -39,7 +39,7 @@ sentry {
 
 dependencies {
     rellTestCasesConfiguration(group = "net.postchain.rell", name = "rell-api-gtx", version = properties("rellVersion").get(), classifier = "rell-test-cases", ext = "zip")
-    implementation("io.sentry:sentry:7.16.0")
+    implementation("io.sentry:sentry:8.16.0")
     testImplementation("junit:junit:4.13.2")
     testImplementation("com.fasterxml.jackson.module:jackson-module-kotlin:2.17.2")
     testImplementation("org.opentest4j:opentest4j:1.3.0")
