@@ -39,7 +39,7 @@ sentry {
 
 dependencies {
     rellTestCasesConfiguration(group = "net.postchain.rell", name = "rell-api-gtx", version = properties("rellVersion").get(), classifier = "rell-test-cases", ext = "zip")
-    implementation("io.sentry:sentry:8.16.0")
+    implementation("io.sentry:sentry:8.29.0")
     testImplementation("junit:junit:4.13.2")
     testImplementation("com.fasterxml.jackson.module:jackson-module-kotlin:2.17.2")
     testImplementation("org.opentest4j:opentest4j:1.3.0")
