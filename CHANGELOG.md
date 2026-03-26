@@ -1,5 +1,9 @@
 # Changelog
 
+## [0.3.4]
+### Added
+- Support for Jetbrains 261 releases
+
 ## [0.3.3]
 ### Fixed
 - Improved error reporting reliability
