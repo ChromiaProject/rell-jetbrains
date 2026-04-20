@@ -30,10 +30,6 @@ version = "0.0.1"
 repositories {
     mavenCentral()
     maven {
-        name = "bintray"
-        url = uri("https://jcenter.bintray.com")
-    }
-    maven {
         name = "etherjar"
         url = uri("https://maven.emrld.io")
     }
@@ -51,6 +47,4 @@ repositories {
     }
 }
 
-kotlin {
-    jvmToolchain(21)
-}
+kotlin.jvmToolchain(21)

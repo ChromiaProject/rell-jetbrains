@@ -45,7 +45,7 @@ override fun createConnectionProvider(project: Project): LanguageServerConnectio
 - **Why:** Large Rell projects can have many files. Generous heap prevents OutOfMemoryError during indexing.
 
 **Where Is the LSP JAR?**
-- JAR file gets downloaded by running `./get-lsp.sh` script and placed in `language-server/rell-language-server-<LSP_SERVER_VERSION>.jar`
+- JAR file gets downloaded by running `./get-lsp.sh` script and placed in `language-server/rell-toolbox-language-server-<RELL_VERSION>.jar`
 
 ### RellServerApi.kt
 

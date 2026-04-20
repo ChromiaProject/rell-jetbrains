@@ -6,3 +6,6 @@ build
 language-server
 .intellijPlatform
 .DS_Store
+.kotlin/
+.claude/settings.local.json
+*.hprof

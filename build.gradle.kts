@@ -47,7 +47,6 @@ dependencies {
         plugins(providers.gradleProperty("platformPlugins").map { it.split(',') })
         bundledPlugins(providers.gradleProperty("platformBundledPlugins").map { it.split(',') })
         create(properties("platformType"), properties("platformVersion"))
-        instrumentationTools()
         pluginVerifier()
         zipSigner()
         testFramework(TestFrameworkType.Platform)
@@ -72,10 +71,6 @@ version = properties("pluginVersion").get()
 repositories {
     mavenCentral()
     maven {
-        name = "bintray"
-        url = uri("https://jcenter.bintray.com")
-    }
-    maven {
         name = "etherjar"
         url = uri("https://maven.emrld.io")
     }
@@ -90,10 +85,6 @@ repositories {
     maven {
         name = "Chromia parent GitLab Registry"
         url = uri("https://gitlab.com/api/v4/projects/50818999/packages/maven")
-    }
-    maven {
-        name = "Rell Toolbox Registry"
-        url = uri("https://gitlab.com/api/v4/projects/51303085/packages/maven")
     }
     // IntelliJ Platform Gradle Plugin Repositories Extension - read more: https://plugins.jetbrains.com/docs/intellij/tools-intellij-platform-gradle-plugin-repositories-extension.html
     intellijPlatform {

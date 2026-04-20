@@ -1,11 +1,11 @@
 #!/bin/bash
 set -eu
 
-GROUP_ID=net/postchain/rell/toolbox
-ARTIFACT_ID=rell-language-server
-VERSION=0.9.0
-FILE_NAME=rell-language-server-$VERSION-all.jar
-LSP_URL=https://gitlab.com/api/v4/projects/51303085/packages/maven/$GROUP_ID/$ARTIFACT_ID/$VERSION/$FILE_NAME
+GROUP_ID=net/postchain/rell
+ARTIFACT_ID=rell-toolbox-language-server
+VERSION=$(grep '^rellVersion' gradle.properties | sed 's/.*=[[:space:]]*//')
+FILE_NAME=$ARTIFACT_ID-$VERSION-all.jar
+LSP_URL=https://gitlab.com/api/v4/projects/32802097/packages/maven/$GROUP_ID/$ARTIFACT_ID/$VERSION/$FILE_NAME
 JAR_FILE=./language-server/$ARTIFACT_ID-$VERSION.jar
 mkdir -p ./language-server
 
