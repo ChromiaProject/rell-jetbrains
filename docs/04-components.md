@@ -140,7 +140,7 @@ override fun getIcon() = RellIcons.FILE
 
 **Process (from `docs/update_grammar.md`):**
 
-1. Update Rell version in `bnf-grammar-generator/gradle.properties` and `gradle.properties`
+1. Update the `rell` version in `gradle/libs.versions.toml`
 2. Run `bnf-grammar-generator/src/main/kotlin/.../BnfGrammar.kt` main function
 3. This introspects Rell compiler's grammar and generates BNF to stdout
 4. Manually review and update `src/main/kotlin/.../Rell.bnf`

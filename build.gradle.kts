@@ -1,4 +1,3 @@
-import org.gradle.kotlin.dsl.intellijPlatform
 import org.jetbrains.changelog.Changelog
 import org.jetbrains.changelog.markdownToHTML
 import org.jetbrains.intellij.platform.gradle.TestFrameworkType
@@ -6,24 +5,16 @@ import org.jetbrains.intellij.platform.gradle.TestFrameworkType
 fun properties(key: String) = providers.gradleProperty(key)
 fun environment(key: String) = providers.environmentVariable(key)
 
-val rellTestCasesConfiguration by configurations.creating
-
+val rellTestCasesConfiguration: Configuration by configurations.creating
 
 plugins {
-    // Java support
-    id("java")
-    // Kotlin support
-    id("org.jetbrains.kotlin.jvm") version "2.2.0"
-    // Gradle IntelliJ Plugin
-    id("org.jetbrains.intellij.platform") version "2.10.4"
-    // Gradle Changelog Plugin
-    id("org.jetbrains.changelog") version "2.2.1"
-    // Gradle Qodana Plugin
-    id("org.jetbrains.qodana") version "2024.1.9"
-    // Gradle Kover Plugin
-    id("org.jetbrains.kotlinx.kover") version "0.9.1"
-    // Sentry Plugin
-    id("io.sentry.jvm.gradle") version "5.8.0"
+    java
+    alias(libs.plugins.kotlin.jvm)
+    alias(libs.plugins.intellij.platform)
+    alias(libs.plugins.changelog)
+    alias(libs.plugins.qodana)
+    alias(libs.plugins.kover)
+    alias(libs.plugins.sentry)
 }
 
 val sentryAuthToken: String? = System.getenv("SENTRY_AUTH_TOKEN")
@@ -38,11 +29,11 @@ sentry {
 }
 
 dependencies {
-    rellTestCasesConfiguration(group = "net.postchain.rell", name = "rell-api-gtx", version = properties("rellVersion").get(), classifier = "rell-test-cases", ext = "zip")
-    implementation("io.sentry:sentry:8.29.0")
-    testImplementation("junit:junit:4.13.2")
-    testImplementation("com.fasterxml.jackson.module:jackson-module-kotlin:2.17.2")
-    testImplementation("org.opentest4j:opentest4j:1.3.0")
+    rellTestCasesConfiguration(group = "net.postchain.rell", name = "rell-api-gtx", version = libs.versions.rell.get(), classifier = "rell-test-cases", ext = "zip")
+    implementation(libs.sentry)
+    testImplementation(libs.junit)
+    testImplementation(libs.jackson.kotlin)
+    testImplementation(libs.opentest4j)
     intellijPlatform {
         plugins(providers.gradleProperty("platformPlugins").map { it.split(',') })
         bundledPlugins(providers.gradleProperty("platformBundledPlugins").map { it.split(',') })
@@ -67,26 +58,20 @@ tasks.compileTestKotlin {
 group = properties("pluginGroup").get()
 version = properties("pluginVersion").get()
 
-// Configure project's dependencies
 repositories {
     mavenCentral()
-    maven {
+    maven("https://maven.emrld.io") {
         name = "etherjar"
-        url = uri("https://maven.emrld.io")
     }
-    maven {
-        name = "Rell GitLab Registry"
-        url = uri("https://gitlab.com/api/v4/projects/32802097/packages/maven")
+    maven("https://gitlab.com/api/v4/projects/32802097/packages/maven") {
+        name = "rell"
     }
-    maven {
-        name = "Postchain GitLab Registry"
-        url = uri("https://gitlab.com/api/v4/projects/32294340/packages/maven")
+    maven("https://gitlab.com/api/v4/projects/32294340/packages/maven") {
+        name = "postchain"
     }
-    maven {
-        name = "Chromia parent GitLab Registry"
-        url = uri("https://gitlab.com/api/v4/projects/50818999/packages/maven")
+    maven("https://gitlab.com/api/v4/projects/50818999/packages/maven") {
+        name = "chromia-parent"
     }
-    // IntelliJ Platform Gradle Plugin Repositories Extension - read more: https://plugins.jetbrains.com/docs/intellij/tools-intellij-platform-gradle-plugin-repositories-extension.html
     intellijPlatform {
         defaultRepositories()
     }
@@ -95,15 +80,9 @@ repositories {
 sourceSets["main"].java.srcDirs("src/main/gen")
 
 // Set the JVM language level used to build the project. Use Java 11 for 2020.3+, and Java 17 for 2022.2+.
-kotlin {
-    jvmToolchain(21)
-}
+kotlin.jvmToolchain(21)
+java.toolchain.languageVersion = JavaLanguageVersion.of(21)
 
-java {
-    toolchain {
-        languageVersion.set(JavaLanguageVersion.of(21))
-    }
-}
 intellijPlatform {
     pluginConfiguration {
         version = properties("pluginVersion")
@@ -174,20 +153,15 @@ changelog {
     keepUnreleasedSection.set(false)
 }
 
-kover {
-    reports {
-        total {
-            xml {
-                onCheck = true
-            }
+kover.reports {
+    total {
+        xml {
+            onCheck = true
         }
     }
 }
 
 tasks {
-    wrapper {
-        gradleVersion = properties("gradleVersion").get()
-    }
     prepareSandbox {
         doLast {
             copy {
@@ -204,22 +178,20 @@ tasks {
     }
 }
 
-intellijPlatformTesting {
-    runIde {
-        register("runIdeForUiTests") {
-            task {
-                jvmArgumentProviders += CommandLineArgumentProvider {
-                    listOf(
+intellijPlatformTesting.runIde {
+    register("runIdeForUiTests") {
+        task {
+            jvmArgumentProviders += CommandLineArgumentProvider {
+                listOf(
                         "-Drobot-server.port=8082",
                         "-Dide.mac.message.dialogs.as.sheets=false",
                         "-Djb.privacy.policy.text=<!--999.999-->",
                         "-Djb.consents.confirmation.enabled=false",
-                    )
-                }
+                )
             }
-            plugins {
-                robotServerPlugin()
-            }
+        }
+        plugins {
+            robotServerPlugin()
         }
     }
 }

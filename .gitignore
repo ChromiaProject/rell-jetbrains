@@ -8,4 +8,6 @@ language-server
 .DS_Store
 .kotlin/
 .claude/settings.local.json
+CLAUDE.local.md
+.mcp.json
 *.hprof

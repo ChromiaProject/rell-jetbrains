@@ -1,15 +1,13 @@
 @file:JvmName("BnfGrammarGenerator")
 package net.postchain.rellide.jetbrains.grammar
 
-import net.postchain.rell.base.utils.grammar.GrammarUtils
-
 import com.github.h0tk3y.betterParse.combinators.*
 import com.github.h0tk3y.betterParse.grammar.ParserReference
 import net.postchain.rell.base.compiler.parser.RellToken
 import net.postchain.rell.base.compiler.parser.RellTokens
-import net.postchain.rell.base.compiler.parser.S_Grammar
 import net.postchain.rell.base.utils.LateInit
-import org.apache.commons.collections4.MapUtils
+import net.postchain.rell.base.utils.capitalizeEx
+import net.postchain.rell.base.utils.grammar.GrammarUtils
 
 fun main() {
     generateHeader()
@@ -277,7 +275,7 @@ private object BnfNontermGen {
     }
 
     private fun createTokenType(name: String): String {
-        val tail = if (name !in specialTokens) "" else name.toLowerCase().capitalize()
+        val tail = if (name !in specialTokens) "" else name.lowercase().replaceFirstChar(Char::uppercaseChar)
         val type = nontermNameToBnf("token$tail")
         if (type !in actions) {
             val token = if (name in specialTokens) name else null
@@ -298,7 +296,7 @@ private object BnfNontermGen {
 
 private object BnfGramExprGen {
     private val parsers = GrammarUtils.getParsers()
-    private val nonterms = MapUtils.invertMap(parsers).toMap()
+    private val nonterms = parsers.entries.associate { (k, v) -> v to k }
 
     fun createBnfGramExpr(parser: Any): BnfGramExpr {
         return createBnfGramExpr0(parser)
@@ -343,7 +341,7 @@ private object BnfGramExprGen {
 }
 
 private fun nontermNameToBnf(name: String): String {
-    return "X_" + name.capitalize()
+    return "X_" + name.capitalizeEx()
 }
 
 private fun termNameToBnf(name: String): String {
@@ -379,7 +377,7 @@ private sealed class BnfExpr {
 }
 
 private class BnfExpr_Symbol(private val name: String): BnfExpr() {
-    override fun generate() = "$name"
+    override fun generate() = name
 }
 
 private class BnfExpr_Token(private val text: String): BnfExpr() {

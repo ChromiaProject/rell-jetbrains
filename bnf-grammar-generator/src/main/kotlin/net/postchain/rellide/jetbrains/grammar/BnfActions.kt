@@ -82,7 +82,7 @@ sealed class BnfAction {
 
 class BnfAction_Token(private val name: String?): BnfAction() {
     override fun generate(type: String): List<String> {
-        val tail = if (name == null) "" else name.toLowerCase().capitalize()
+        val tail = if (name == null) "" else name.lowercase().replaceFirstChar(Char::uppercaseChar)
         println("                Object a = RellcUtils.token$tail(obj);")
         return listOf("a")
     }
@@ -96,7 +96,7 @@ class BnfAction_General(private val attrs: List<BnfAttr>): BnfAction() {
         println("                $fullType node = ($fullType) obj;")
 
         for (attr in attrs) {
-            val getter = "get" + attr.name.toUpperCase()
+            val getter = "get" + attr.name.uppercase()
             val expr = if (attr.many) {
                 "RellcUtils.processList(ctx, node.$getter())"
             } else {
