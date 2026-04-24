@@ -47,9 +47,9 @@ class ChromiaCommandExecutor(private val project: Project) {
 
     private fun prepareCommand(command: String): String {
         val prefix = "chr"
-        val globalChrExecutable = RellPluginSettingsState.instance.chromiaCliExecutable
-        return if (command.startsWith("$prefix ") && globalChrExecutable.isNotBlank()) {
-            command.replaceFirst(prefix, globalChrExecutable)
+        val substitution = RellPluginSettingsState.instance.chromiaCliShellSubstitution()
+        return if (command.startsWith("$prefix ") && !substitution.isNullOrBlank()) {
+            command.replaceFirst(prefix, substitution)
         } else {
             command
         }

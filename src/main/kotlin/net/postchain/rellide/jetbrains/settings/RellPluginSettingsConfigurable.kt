@@ -25,20 +25,23 @@ class RellPluginSettingsConfigurable : Configurable {
 
     override fun isModified(): Boolean {
         val settings = RellPluginSettingsState.instance
-        return settings.indexCaching != settingsComponent?.indexCachingState ||
-               settings.chromiaCliExecutable != settingsComponent?.chromiaCliExecutableState
+        val component = settingsComponent ?: return false
+        return settings.indexCaching != component.indexCachingState ||
+            settings.chromiaCliCommand != component.chromiaCliCommandState
     }
 
     override fun apply() {
         val settings = RellPluginSettingsState.instance
-        settings.indexCaching = settingsComponent?.indexCachingState ?: false
-        settings.chromiaCliExecutable = settingsComponent?.chromiaCliExecutableState ?: ""
+        val component = settingsComponent ?: return
+        settings.indexCaching = component.indexCachingState
+        settings.chromiaCliCommand = component.chromiaCliCommandState
     }
 
     override fun reset() {
         val settings = RellPluginSettingsState.instance
-        settingsComponent?.indexCachingState = settings.indexCaching
-        settingsComponent?.chromiaCliExecutableState = settings.chromiaCliExecutable
+        val component = settingsComponent ?: return
+        component.indexCachingState = settings.indexCaching
+        component.chromiaCliCommandState = settings.chromiaCliCommand
     }
 
     override fun disposeUIResources() {

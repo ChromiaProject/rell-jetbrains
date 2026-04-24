@@ -46,24 +46,22 @@ class RellTestRunProfileState(
 
     private fun createCommandLine(): GeneralCommandLine {
         val options = configuration.options
-        val commandLine = GeneralCommandLine()
 
-        // Set the executable
-        val executable = options.getChrExecutable()
-        val globalSettings = RellPluginSettingsState.instance
-        val finalExecutable = when {
-            !executable.isNullOrBlank() -> executable
-            globalSettings.chromiaCliExecutable.isNotBlank() -> globalSettings.chromiaCliExecutable
-            else -> "chr"
+        val testArgs = buildList {
+            add("test")
+            when (options.getTestScope()) {
+                TestScope.MODULE -> options.getTestModule()?.let { add("--modules"); add(it) }
+                TestScope.BLOCKCHAIN -> options.getTestBlockchain()?.let { add("--blockchain"); add(it) }
+                TestScope.TEST_PATTERN -> options.getTestPattern()?.let { add("--tests"); add(it) }
+                TestScope.ALL_IN_PROJECT -> Unit
+            }
+            options.getAdditionalArguments()?.takeIf { it.isNotBlank() }?.let {
+                addAll(it.split(Regex("\\s+")))
+            }
+            if (none { it == "--hide-lib-warnings" }) add("--hide-lib-warnings")
         }
-        
-        if (finalExecutable.isNotBlank()) {
-            val (command, parameters) = parseCommand(finalExecutable)
-            commandLine.exePath = command
-            commandLine.addParameters(parameters)
-        } else {
-            commandLine.exePath = "chr"
-        }
+
+        val commandLine = resolveExecutable(options.getChrExecutable(), testArgs)
 
         val workingDir = options.getWorkingDirectory()
         if (!workingDir.isNullOrBlank()) {
@@ -73,60 +71,12 @@ class RellTestRunProfileState(
             commandLine.setWorkDirectory(File(environment.project.basePath ?: "."))
         }
 
-        // Add test command and parameters based on scope
-        commandLine.addParameter("test")
-        when (options.getTestScope()) {
-            TestScope.MODULE -> {
-                options.getTestModule()?.let {
-                    commandLine.addParameter("--modules")
-                    commandLine.addParameter(it)
-                }
-            }
-            TestScope.BLOCKCHAIN -> {
-                options.getTestBlockchain()?.let {
-                    commandLine.addParameter("--blockchain")
-                    commandLine.addParameter(it)
-                }
-            }
-            TestScope.TEST_PATTERN -> {
-                options.getTestPattern()?.let {
-                    commandLine.addParameter("--tests")
-                    commandLine.addParameter(it)
-                }
-            }
-            TestScope.ALL_IN_PROJECT -> {
-                // No additional parameters needed for this scope
-            }
-        }
-
-        options.getAdditionalArguments()?.let { args ->
-            if (args.isNotBlank()) {
-                commandLine.addParameters(args.split("\\s+".toRegex()))
-            }
-        }
-
-        val hideLibWarningsParam = "--hide-lib-warnings"
-        if (!commandLine.parametersList.hasParameter(hideLibWarningsParam)) {
-            commandLine.addParameter(hideLibWarningsParam)
-        }
-
         return commandLine
     }
 
-    private data class CommandParseResult(
-            val command: String,
-            val parameters: List<String>
-    )
-
-    private fun parseCommand(command: String): CommandParseResult {
-        val trimmed = command.trim()
-        if (trimmed.isBlank()) {
-            return CommandParseResult("", emptyList())
-        }
-
-        val parts = trimmed.split(Regex("\\s+"))
-        return CommandParseResult(parts.first(), parts.drop(1))
-    }
+    private fun resolveExecutable(perRunExecutable: String?, testArgs: List<String>): GeneralCommandLine =
+        RellPluginSettingsState.instance.buildChromiaCliCommandLine(testArgs, perRunExecutable)
+            ?: GeneralCommandLine("chr").apply { addParameters(testArgs) }
 }
 
 /**
