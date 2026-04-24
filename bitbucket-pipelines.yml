@@ -1,21 +1,14 @@
-image: gradle:8.4.0-jdk21
+image: eclipse-temurin:21-jdk-noble
 
 definitions:
   steps:
     - step: &build-and-test-step
         name: Build and Test IntelliJ Plugin
-        caches:
-          - gradle
+        caches: [ gradle ]
         script:
           - chmod +x ./gradlew
-          - echo "Starting build..."
-          - ./gradlew buildPlugin
-          - echo "Build finished"
-          - echo "Starting testing..."
-          - ./gradlew test
-          - echo "Tests finished"
-        artifacts:
-          - build/distributions/*.zip
+          - ./gradlew buildPlugin test --build-cache
+        artifacts: [ build/distributions/*.zip ]
 
 pipelines:
   pull-requests:
