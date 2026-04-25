@@ -72,6 +72,9 @@ repositories {
     maven("https://gitlab.com/api/v4/projects/50818999/packages/maven") {
         name = "chromia-parent"
     }
+    maven("https://gitlab.com/api/v4/projects/64941451/packages/maven") {
+        name = "chromia-cli-tools"
+    }
     intellijPlatform {
         defaultRepositories()
     }
@@ -161,13 +164,20 @@ kover.reports {
     }
 }
 
+val rellLanguageServerRuntime: Configuration = configurations.detachedConfiguration(
+    dependencies.create("net.postchain.rell:rell-toolbox-language-server:${libs.versions.rell.get()}")
+).apply {
+    isTransitive = true
+    attributes {
+        attribute(Usage.USAGE_ATTRIBUTE, objects.named(Usage::class, Usage.JAVA_RUNTIME))
+        attribute(Category.CATEGORY_ATTRIBUTE, objects.named(Category::class, Category.LIBRARY))
+    }
+}
+
 tasks {
     prepareSandbox {
-        doLast {
-            copy {
-                from("${project.projectDir}/language-server")
-                into("${destinationDir.path}/${properties("pluginName").get()}/language-server")
-            }
+        from(rellLanguageServerRuntime) {
+            into("${properties("pluginName").get()}/language-server")
         }
     }
     runIde {
@@ -195,3 +205,4 @@ intellijPlatformTesting.runIde {
         }
     }
 }
+

@@ -9,10 +9,10 @@ import com.intellij.openapi.util.SystemInfo
 import com.intellij.openapi.vfs.VirtualFile
 import com.redhat.devtools.lsp4ij.server.OSProcessStreamConnectionProvider
 import net.postchain.rellide.jetbrains.settings.RellPluginSettingsState
-import java.io.File
-import kotlin.Any
-import kotlin.IllegalStateException
-import kotlin.String
+import kotlin.io.path.Path
+import kotlin.io.path.absolutePathString
+import kotlin.io.path.div
+import kotlin.io.path.pathString
 
 class RellLanguageServer(val project: Project) : OSProcessStreamConnectionProvider() {
     private val extraOptions = listOf(
@@ -25,33 +25,33 @@ class RellLanguageServer(val project: Project) : OSProcessStreamConnectionProvid
     )
 
     init {
-        val pluginDescriptor = PluginManagerCore.getPlugin(PluginId.getId(PLUGIN_ID))
-            ?: throw IllegalStateException("Cannot find plugin by ID: $PLUGIN_ID")
-        val lspJarPath = pluginDescriptor.pluginPath.toAbsolutePath()
-            .resolve("language-server/rell-toolbox-language-server-0.15.3.jar")
+        val pluginDescriptor = checkNotNull(PluginManagerCore.getPlugin(PluginId.getId(PLUGIN_ID))) {
+            "Cannot find plugin by ID: $PLUGIN_ID"
+        }
+
+        val lspLibDir = pluginDescriptor.pluginPath.toAbsolutePath() / "language-server"
+        val classpath = (lspLibDir / "*").pathString
 
         val jvmExecutablePath = computeJavaPath()
 
-        val launchCommands = listOf(jvmExecutablePath, *extraOptions.toTypedArray(), "-jar", lspJarPath.toString())
+        val launchCommands = listOf(jvmExecutablePath, *extraOptions.toTypedArray(), "-cp", classpath, LSP_MAIN_CLASS)
         setCommandLine(GeneralCommandLine(launchCommands))
     }
 
-    override fun getInitializationOptions(rootUri: VirtualFile?): Any? {
+    override fun getInitializationOptions(rootUri: VirtualFile?): Any {
         val pluginSettings = RellPluginSettingsState.instance
         val inlayHintsSettings = project.service<RellInlayHintsConfigurationListener>().getInlayHintsSettings()
-        
-        return mapOf(
-            "indexCaching" to pluginSettings.indexCaching,
-            "inlayHints" to inlayHintsSettings
-        )
+
+        return mapOf("indexCaching" to pluginSettings.indexCaching, "inlayHints" to inlayHintsSettings)
     }
-    
-    private fun computeJavaPath(): String {
-        return File(System.getProperty("java.home"), "bin/java" + (if (SystemInfo.isWindows) ".exe" else "")).absolutePath
-    }
+
+    private fun computeJavaPath(): String = Path(
+        System.getProperty("java.home"), "bin/java" + (if (SystemInfo.isWindows) ".exe" else "")
+    ).absolutePathString()
 
     companion object {
         private const val PLUGIN_ID = "net.postchain.rellide.jetbrains"
         private const val DEFAULT_MAX_HEAP_SIZE_IN_MB = 2048
+        private const val LSP_MAIN_CLASS = "net.postchain.rell.toolbox.lsp.StdioMainKt"
     }
 }
