@@ -1,5 +1,10 @@
 # Changelog
 
+## [0.3.5]
+### Added
+- Rell Language Server with Rell version 0.15.4
+- Better settings UI for Chromia CLI
+
 ## [0.3.4]
 ### Added
 - Support for Jetbrains 261 releases
