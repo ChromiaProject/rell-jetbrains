@@ -9,12 +9,7 @@ import com.intellij.openapi.diagnostic.SubmittedReportInfo.SubmissionStatus.NEW_
 import com.intellij.openapi.extensions.PluginId
 import com.intellij.openapi.util.SystemInfo
 import com.intellij.util.Consumer
-import io.sentry.Scope
-import io.sentry.Scopes
-import io.sentry.SentryClient
-import io.sentry.SentryEvent
-import io.sentry.SentryLevel
-import io.sentry.SentryOptions
+import io.sentry.*
 import io.sentry.protocol.Message
 import java.awt.Component
 

@@ -8,7 +8,6 @@ import org.jetbrains.annotations.PropertyKey
 private const val BUNDLE = "messages.RellBundle"
 
 object RellBundle : DynamicBundle(BUNDLE) {
-
     @Suppress("SpreadOperator")
     @JvmStatic
     fun message(@PropertyKey(resourceBundle = BUNDLE) key: String, vararg params: Any) =

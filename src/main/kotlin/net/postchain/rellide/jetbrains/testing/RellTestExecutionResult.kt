@@ -14,9 +14,4 @@ class RellTestExecutionResult(
     console: ConsoleView,
     processHandler: ProcessHandler,
     actions: Array<AnAction>
-) : DefaultExecutionResult(console, processHandler, *actions), ExecutionResult {
-    
-    init {
-        // Add any custom initialization if needed
-    }
-} 
+) : DefaultExecutionResult(console, processHandler, *actions), ExecutionResult

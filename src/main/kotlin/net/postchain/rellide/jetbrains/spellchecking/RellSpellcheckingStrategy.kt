@@ -9,13 +9,14 @@ import com.intellij.spellchecker.tokenizer.SpellcheckingStrategy
 import com.intellij.spellchecker.tokenizer.TokenConsumer
 import com.intellij.spellchecker.tokenizer.Tokenizer
 import net.postchain.rellide.jetbrains.language.RellLanguage
-import net.postchain.rellide.jetbrains.language.psi.RellTypes
+import net.postchain.rellide.jetbrains.language.parser.RellLexer
+import net.postchain.rellide.jetbrains.language.psi.RellPsiElementTypes
 
 class RellSpellcheckingStrategy : SpellcheckingStrategy() {
     override fun isMyContext(element: PsiElement) = RellLanguage.INSTANCE.`is`(element.language)
 
     override fun getTokenizer(element: PsiElement?): Tokenizer<*> = when {
-        element?.node?.elementType == RellTypes.STRING -> StringExpressionTokenizer
+        element?.node?.elementType == RellPsiElementTypes.token(RellLexer.RULE_STRING) -> StringExpressionTokenizer
         else -> super.getTokenizer(element)
     }
 }
@@ -35,7 +36,7 @@ object StringExpressionTokenizer : EscapeSequenceTokenizer<LeafPsiElement>() {
         val unescapedText = StringBuilder()
         val offsets = IntArray(text.length + 1)
         CodeInsightUtilCore.parseStringCharacters(text, unescapedText, offsets)
-        EscapeSequenceTokenizer.processTextWithOffsets(element, consumer, unescapedText, offsets, 1)
+        processTextWithOffsets(element, consumer, unescapedText, offsets, 1)
     }
 }
 

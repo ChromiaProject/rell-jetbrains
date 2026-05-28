@@ -17,7 +17,7 @@ import kotlin.io.path.pathString
 class RellLanguageServer(val project: Project) : OSProcessStreamConnectionProvider() {
     private val extraOptions = listOf(
         "-Xms128m",
-        "-Xmx${JVMHeapSizeManager.determineMaxHeapSizeMB() ?: DEFAULT_MAX_HEAP_SIZE_IN_MB}m",
+        "-Xmx${JvmHeapSizeManager.determineMaxHeapSizeMB() ?: DEFAULT_MAX_HEAP_SIZE_IN_MB}m",
         "-Duser.language=en",
         "-Duser.region=US",
         "-DLspIncludeDefinition=false",
@@ -35,7 +35,7 @@ class RellLanguageServer(val project: Project) : OSProcessStreamConnectionProvid
         val jvmExecutablePath = computeJavaPath()
 
         val launchCommands = listOf(jvmExecutablePath, *extraOptions.toTypedArray(), "-cp", classpath, LSP_MAIN_CLASS)
-        setCommandLine(GeneralCommandLine(launchCommands))
+        commandLine = GeneralCommandLine(launchCommands)
     }
 
     override fun getInitializationOptions(rootUri: VirtualFile?): Any {

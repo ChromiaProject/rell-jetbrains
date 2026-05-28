@@ -1,6 +1,7 @@
 [versions]
 kotlin = "2.2.0"
-rell = "0.15.4"
+rell = "0.16.0"
+antlr = "4.13.2"
 
 intellij-platform = "2.10.4"
 changelog = "2.2.1"
@@ -18,8 +19,8 @@ sentry = { module = "io.sentry:sentry", version.ref = "sentry" }
 jackson-kotlin = { module = "com.fasterxml.jackson.module:jackson-module-kotlin", version.ref = "jackson" }
 junit = { module = "junit:junit", version.ref = "junit" }
 opentest4j = { module = "org.opentest4j:opentest4j", version.ref = "opentest4j" }
-
-rell-base = { module = "net.postchain.rell:rell-base", version.ref = "rell" }
+antlr = { module = "org.antlr:antlr4", version.ref = "antlr" }
+antlr-runtime = { module = "org.antlr:antlr4-runtime", version.ref = "antlr" }
 
 [plugins]
 kotlin-jvm = { id = "org.jetbrains.kotlin.jvm", version.ref = "kotlin" }

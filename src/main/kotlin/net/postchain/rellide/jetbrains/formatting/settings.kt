@@ -8,6 +8,20 @@ import com.intellij.lang.Language
 import com.intellij.psi.codeStyle.*
 import net.postchain.rellide.jetbrains.language.RellLanguage
 
+private val INDENT_SAMPLE: String = """
+    operation initialize() {
+        require(op_context.is_signer(chain_context.args.admin_pubkey));
+    	initialize_system();
+    }
+
+    operation process(account_id: byte_array, auth_descriptor_id: byte_array, id: byte_array) {
+    	val account = account @ {.id == account_id};
+    	require_auth(account, auth_descriptor_id, list<text>());
+
+    	activate(account, id);
+    }
+  """.trimIndent()
+
 class RellCodeStyleSettingsProvider : CodeStyleSettingsProvider() {
     override fun createCustomSettings(settings: CodeStyleSettings) = RellCodeStyleSettings(settings)
 
@@ -43,23 +57,9 @@ class RellLanguageCodeStyleSettingsProvider : LanguageCodeStyleSettingsProvider(
 
     override fun customizeDefaults(
         commonSettings: CommonCodeStyleSettings,
-        indentOptions: CommonCodeStyleSettings.IndentOptions
+        indentOptions: CommonCodeStyleSettings.IndentOptions,
     ) {
     }
 
-    override fun getIndentOptionsEditor(): IndentOptionsEditor? = SmartIndentOptionsEditor()
-
-    private val INDENT_SAMPLE: String = """
-    operation initialize() {
-        require(op_context.is_signer(chain_context.args.admin_pubkey));
-    	initialize_system();
-    }
-
-    operation process(account_id: byte_array, auth_descriptor_id: byte_array, id: byte_array) {
-    	val account = account @ {.id == account_id};
-    	require_auth(account, auth_descriptor_id, list<text>());
-
-    	activate(account, id);
-    }
-  """.trimIndent()
+    override fun getIndentOptionsEditor(): IndentOptionsEditor = SmartIndentOptionsEditor()
 }

@@ -1,4 +1,5 @@
 package net.postchain.rellide.jetbrains.colors
+
 import com.intellij.openapi.options.colors.AttributesDescriptor
 import com.intellij.openapi.options.colors.ColorDescriptor
 import com.intellij.openapi.options.colors.ColorSettingsPage
@@ -6,12 +7,11 @@ import net.postchain.rellide.jetbrains.language.RellIcons
 import net.postchain.rellide.jetbrains.language.RellLanguage
 import net.postchain.rellide.jetbrains.language.RellSyntaxHighlighter
 
-class RellColorSettingsPage : ColorSettingsPage {
-    private val ATTRIBUTES: Array<AttributesDescriptor> = RellColor.values().map { it.attributesDescriptor }.toTypedArray()
-    private val ANNOTATOR_TAGS = RellColor.values().associateBy({ it.name }, { it.textAttributesKey })
+private val ATTRIBUTES: Array<AttributesDescriptor> = RellColor.entries.map { it.attributesDescriptor }.toTypedArray()
+private val ANNOTATOR_TAGS = RellColor.entries.associateBy({ it.name }, { it.textAttributesKey })
 
-    private val DEMO_TEXT by lazy {
-        """
+private val DEMO_TEXT by lazy {
+    """
             struct category_node {
             	name;
             	interfaces: list<text>;
@@ -44,8 +44,9 @@ class RellColorSettingsPage : ColorSettingsPage {
             	);
             }
         """.trimIndent()
-    }
+}
 
+class RellColorSettingsPage : ColorSettingsPage {
     override fun getDisplayName() = RellLanguage.INSTANCE.displayName
     override fun getIcon() = RellIcons.FILE
     override fun getAttributeDescriptors() = ATTRIBUTES

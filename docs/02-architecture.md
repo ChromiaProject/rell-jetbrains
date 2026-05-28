@@ -21,9 +21,11 @@
 4. **Independent Updates:** Language features can be updated by releasing new LSP server versions without requiring plugin updates (as long as LSP protocol remains compatible).
 
 
-### Why Grammar-Kit Parser Despite LSP?
+### Why a Local ANTLR Parser Despite LSP?
 
-**What:** The plugin generates a local parser from BNF grammar used by JetBrains IDE platforms, even though the LSP server also performs parsing.
+**What:** The plugin builds a local parser from Rell's own ANTLR grammar (`Rell.g4`), consumed via [antlr4-intellij-adaptor](https://github.com/antlr/antlr4-intellij-adaptor), even though the LSP server also performs parsing.
+
+Rell 0.16.0 retired the better-parse combinator parser in favor of ANTLR and removed the BNF-generation helper that previously fed a Grammar-Kit grammar (release note #10). The ANTLR grammar shipped in `rell-base` is now the single source of truth for Rell syntax, so the plugin consumes it directly instead of maintaining a hand-synced `Rell.bnf`.
 
 **Why:**
 
@@ -54,34 +56,20 @@ Even though the LSP server handles compilation, the IDE still needs a local AST 
 
 ### Component Diagram
 
-```
-┌─────────────────────────────────────────────────────────┐
-│                   JetBrains IDE                         │
-│  ┌───────────────────────────────────────────────────┐  │
-│  │         Rell Plugin (This Codebase)               │  │
-│  │                                                   │  │
-│  │  ┌─────────────┐      ┌──────────────────────┐    │  │
-│  │  │  Language   │◄────►│  LSP4IJ Integration  │    │  │
-│  │  │  Definition │      │  (RellLanguageServer)│    │  │
-│  │  │  (Grammar)  │      └──────────┬───────────┘    │  │
-│  │  └─────────────┘                 │                │  │
-│  │                                  │ LSP Protocol   │  │
-│  │  ┌─────────────┐                 │                │  │
-│  │  │    Test     │                 ▼                │  │
-│  │  │   Runner    │      ┌──────────────────────┐    │  │
-│  │  └──────┬──────┘      │   Rell Language      │    │  │
-│  │         │             │   Server Process     │    │  │
-│  │         │             │  (Separate JVM)      │    │  │
-│  │         │             └──────────────────────┘    │  │
-│  │         │ Launches                                │  │
-│  │         ▼                                         │  │
-│  │  ┌─────────────┐                                  │  │
-│  │  │  Chromia    │  (External)                      │  │
-│  │  │    CLI      │                                  │  │
-│  │  │  (`chr`)    │                                  │  │
-│  │  └─────────────┘                                  │  │
-│  └───────────────────────────────────────────────────┘  │
-└─────────────────────────────────────────────────────────┘
+```mermaid
+flowchart TB
+    subgraph IDE["JetBrains IDE"]
+        subgraph Plugin["Rell Plugin (This Codebase)"]
+            Lang["Language Definition<br/>(Grammar)"]
+            LSP4IJ["LSP4IJ Integration<br/>(RellLanguageServer)"]
+            Test["Test Runner"]
+            Server["Rell Language Server Process<br/>(Separate JVM)"]
+            Lang <--> LSP4IJ
+            LSP4IJ -->|LSP Protocol| Server
+        end
+    end
+    CLI["Chromia CLI<br/>(chr, external)"]
+    Test -->|Launches| CLI
 ```
 
 ### Lifecycle: Plugin Initialization to User Action
@@ -130,29 +118,18 @@ Even though the LSP server handles compilation, the IDE still needs a local AST 
 
 ### Data Flow: How Code Gets Analyzed
 
+```mermaid
+flowchart TB
+    A["User Types in Editor"] --> B["IDE Editor Buffer Updates"]
+    B -->|textDocument/didChange| C["LSP Server"]
+    C --> D["Parse → Type Check → Lint"]
+    D -->|textDocument/publishDiagnostics| E["IDE Displays Errors/Warnings"]
+    D -->|textDocument/semanticTokens/full| F["Semantic Tokens"]
+    F --> G["RellSemanticTokensColorProvider Maps to Colors"]
+    G --> H["IDE Updates Syntax Highlighting"]
 ```
-User Types in Editor
-       ↓
-IDE Editor Buffer Updates
-       ↓
-textDocument/didChange → LSP Server
-       ↓
-LSP Server: Parse → Type Check → Lint
-       ↓
-textDocument/publishDiagnostics ← LSP Server
-       ↓
-IDE Displays Errors/Warnings
-       ↓
-(In Parallel)
-       ↓
-textDocument/semanticTokens/full → LSP Server
-       ↓
-Semantic Tokens ← LSP Server
-       ↓
-RellSemanticTokensColorProvider Maps to Colors
-       ↓
-IDE Updates Syntax Highlighting
-```
+
+> The diagnostics path (`publishDiagnostics`) and the semantic-tokens path run in parallel — both are produced from the same server-side analysis of the changed document.
 
 ---
 

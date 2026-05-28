@@ -1,21 +1,18 @@
 package net.postchain.rellide.jetbrains.completion
 
-import com.intellij.codeInsight.completion.CompletionContributor
-import com.intellij.codeInsight.completion.CompletionParameters
-import com.intellij.codeInsight.completion.CompletionProvider
-import com.intellij.codeInsight.completion.CompletionResultSet
-import com.intellij.codeInsight.completion.CompletionType
+import com.intellij.codeInsight.completion.*
 import com.intellij.codeInsight.lookup.LookupElementBuilder
 import com.intellij.patterns.PlatformPatterns
 import com.intellij.util.ProcessingContext
 import net.postchain.rellide.jetbrains.language.RellLanguage
-import net.postchain.rellide.jetbrains.language.psi.RellTypes
+import net.postchain.rellide.jetbrains.language.parser.RellLexer
+import net.postchain.rellide.jetbrains.language.psi.RellPsiElementTypes
 
 class KeywordCompletionContributor : CompletionContributor() {
     init {
         extend(
             CompletionType.BASIC,
-            PlatformPatterns.psiElement(RellTypes.ID).withLanguage(RellLanguage.INSTANCE),
+            PlatformPatterns.psiElement(RellPsiElementTypes.token(RellLexer.RULE_ID)).withLanguage(RellLanguage.INSTANCE),
             KeywordCompletionProvider()
         )
     }

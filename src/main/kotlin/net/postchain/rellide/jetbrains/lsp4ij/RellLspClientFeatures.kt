@@ -14,7 +14,7 @@ class RellLspClientFeatures : LSPClientFeatures() {
     override fun getFileUri(file: VirtualFile): URI? {
         val diskFile = File(file.path)
         return if (diskFile.exists()) {
-            return diskFile.toURI()
+            diskFile.toURI()
         } else {
             super.getFileUri(file)
         }

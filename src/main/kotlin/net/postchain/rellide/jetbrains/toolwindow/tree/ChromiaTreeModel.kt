@@ -3,8 +3,8 @@ package net.postchain.rellide.jetbrains.toolwindow.tree
 import com.intellij.icons.AllIcons
 import com.intellij.openapi.project.Project
 import net.postchain.rellide.jetbrains.language.RellIcons
-import net.postchain.rellide.jetbrains.toolwindow.settings.ChromiaToolWindowSettings
 import net.postchain.rellide.jetbrains.toolwindow.project.ChromiaProjectDiscovery
+import net.postchain.rellide.jetbrains.toolwindow.settings.ChromiaToolWindowSettings
 import javax.swing.tree.DefaultTreeModel
 
 /**

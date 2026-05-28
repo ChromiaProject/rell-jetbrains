@@ -17,7 +17,7 @@ import javax.swing.JPanel
  */
 class RellTestRunConfigurationEditor(private val project: Project) : SettingsEditor<RellTestRunConfiguration>() {
 
-    private val testScopeComboBox = ComboBox(TestScope.values())
+    private val testScopeComboBox: ComboBox<TestScope> = ComboBox(TestScope.entries.toTypedArray())
     private val testModuleField = JBTextField()
     private val testBlockchainField = JBTextField()
     private val testPatternField = JBTextField()

@@ -1,6 +1,6 @@
 package net.postchain.rellide.jetbrains.language
 
-import com.intellij.lexer.FlexAdapter
+import net.postchain.rellide.jetbrains.language.parser.RellLexer
+import org.antlr.intellij.adaptor.lexer.ANTLRLexerAdaptor
 
-
-class RellLexerAdapter : FlexAdapter(_RellLexer(null)) {}
+class RellLexerAdapter : ANTLRLexerAdaptor(RellLanguage.INSTANCE, RellLexer(null))

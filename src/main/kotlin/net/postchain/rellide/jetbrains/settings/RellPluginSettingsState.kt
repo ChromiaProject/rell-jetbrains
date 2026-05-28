@@ -66,10 +66,21 @@ class RellPluginSettingsState : PersistentStateComponent<RellPluginSettingsState
     }
 
     /**
-     * Returns the string to substitute for the `chr` prefix when composing a terminal command line.
-     * The returned value is raw (no shell wrapping) since the terminal already runs a shell.
+     * Builds a [GeneralCommandLine] from a full `chr ...` command string (as composed by the
+     * Chromia tool window). The leading `chr` token is replaced with the effective CLI command and
+     * the whole line is run through the system shell, so any shell constructs in [command] are
+     * preserved. Returns null when no command is configured and nothing was auto-detected.
      */
-    fun chromiaCliShellSubstitution(): String? = effectiveCommand()
+    fun buildChromiaCliCommandLineFromString(command: String): GeneralCommandLine? {
+        val substitution = effectiveCommand() ?: return null
+        val prefix = "chr"
+        val fullCmd = if (command == prefix || command.startsWith("$prefix ")) {
+            command.replaceFirst(prefix, substitution)
+        } else {
+            command
+        }
+        return wrapInShell(fullCmd)
+    }
 
     private fun effectiveCommand(): String? =
         chromiaCliCommand.trim().takeIf { it.isNotBlank() } ?: detectChromiaCliPath()
@@ -109,7 +120,7 @@ class RellPluginSettingsState : PersistentStateComponent<RellPluginSettingsState
             """docker run --rm -v "%cd%:%cd%" -w "%cd%" """ +
                 "registry.gitlab.com/chromaway/core-tools/chromia-cli/chr:latest chr"
         } else {
-            """docker run --rm -v "${'$'}(pwd):${'$'}(pwd)" -w "${'$'}(pwd)" """ +
+            """docker run --rm -v "$(pwd):$(pwd)" -w "$(pwd)" """ +
                 "registry.gitlab.com/chromaway/core-tools/chromia-cli/chr:latest chr"
         }
 

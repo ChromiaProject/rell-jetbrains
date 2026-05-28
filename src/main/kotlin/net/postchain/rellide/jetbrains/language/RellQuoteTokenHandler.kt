@@ -1,17 +1,10 @@
 package net.postchain.rellide.jetbrains.language
+
 import com.intellij.codeInsight.editorActions.SimpleTokenSetQuoteHandler
 import com.intellij.openapi.editor.Editor
 import com.intellij.openapi.editor.highlighter.HighlighterIterator
-import net.postchain.rellide.jetbrains.language.psi.RellTokenSets
-import net.postchain.rellide.jetbrains.language.psi.RellTypes
+import net.postchain.rellide.jetbrains.language.psi.RellPsiElementTypes
 
-
-class RellQuoteTokenHandler : SimpleTokenSetQuoteHandler(RellTokenSets.STRING) {
+class RellQuoteTokenHandler : SimpleTokenSetQuoteHandler(RellPsiElementTypes.STRINGS) {
     override fun hasNonClosedLiteral(editor: Editor?, iterator: HighlighterIterator?, offset: Int) = true
-    override fun isOpeningQuote(iterator: HighlighterIterator?, offset: Int): Boolean {
-        if(iterator?.tokenType == RellTypes.STRING_NOT_CLOSED) {
-            return true;
-        }
-        return super.isOpeningQuote(iterator, offset)
-    }
 }

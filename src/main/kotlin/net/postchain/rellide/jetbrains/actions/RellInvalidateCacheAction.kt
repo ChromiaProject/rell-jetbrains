@@ -14,7 +14,6 @@ class RellInvalidateCacheAction : AnAction(
     "Invalidates and removes the Rell cache folder",
     null
 ) {
-
     override fun actionPerformed(e: AnActionEvent) {
         val project = e.project ?: return
 

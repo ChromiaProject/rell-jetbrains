@@ -33,7 +33,7 @@ class RellSocketLanguageServer(private val project: Project) : StreamConnectionP
 
     override fun getOutputStream(): OutputStream? = outputStream
 
-    override fun getInitializationOptions(rootUri: VirtualFile?): Any? {
+    override fun getInitializationOptions(rootUri: VirtualFile?): Any {
         val pluginSettings = RellPluginSettingsState.instance
         val inlayHintsSettings = project.service<RellInlayHintsConfigurationListener>().getInlayHintsSettings()
         

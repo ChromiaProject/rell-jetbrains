@@ -3,8 +3,8 @@ package net.postchain.rellide.jetbrains.toolwindow
 import com.intellij.openapi.project.Project
 import com.intellij.ui.components.JBScrollPane
 import com.intellij.ui.treeStructure.Tree
-import net.postchain.rellide.jetbrains.toolwindow.tree.ChromiaTreeModel
 import net.postchain.rellide.jetbrains.toolwindow.tree.ChromiaTreeCellRenderer
+import net.postchain.rellide.jetbrains.toolwindow.tree.ChromiaTreeModel
 import javax.swing.JComponent
 
 /**
@@ -12,12 +12,10 @@ import javax.swing.JComponent
  * Contains a tree structure with Chromia CLI commands that can be executed.
  */
 class ChromiaToolWindow(private val project: Project) {
-
     private val tree: Tree
-    val treeModel: ChromiaTreeModel
-    
+    val treeModel: ChromiaTreeModel = ChromiaTreeModel(project)
+
     init {
-        treeModel = ChromiaTreeModel(project)
         tree = Tree(treeModel)
         setupTree()
     }
@@ -37,9 +35,7 @@ class ChromiaToolWindow(private val project: Project) {
         tree.expandRow(0)
     }
     
-    fun getContent(): JComponent {
-        return JBScrollPane(tree)
-    }
+    fun getContent(): JComponent = JBScrollPane(tree)
     
     fun refreshTree() {
         treeModel.reload()

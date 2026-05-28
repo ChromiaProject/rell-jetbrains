@@ -38,7 +38,7 @@ intellijPlatform {
     create("IC", "2025.2.4")  // IntelliJ Community 2025.2.4
     bundledPlugins("com.intellij")
     plugins(
-        "com.redhat.devtools.lsp4ij:0.19.0",
+        "com.redhat.devtools.lsp4ij:0.19.4",
         "org.jetbrains.plugins.terminal:251.26094.87"
     )
 }

@@ -8,47 +8,23 @@ This document describes the plugin's testing approach, available test types, and
 
 ---
 
-## Parser Tests (`RellParsingTest.kt`)
+## Parser Sanity Test (`RellAntlrGrammarTest.kt`)
 
-**Purpose:** Ensure generated parser produces correct PSI trees.
+**Purpose:** Confirm the ANTLR-generated lexer/parser instantiate (ATN deserialization succeeds against the bundled `antlr4-runtime`) and parse representative Rell.
 
 ### Approach
 
-1. **Test Data Source:** JSON files from Rell LSP package
-   - Downloaded during build from `net.postchain.rell:rell-api-gtx:0.15.0` (classifier: `rell-test-cases`)
-   - Extracted to `build/rell-test-cases/test-cases/*.json`
+- Run `RellLexer` + `RellParser` directly on Rell snippets via the ANTLR runtime.
+- Assert a representative module parses with **no** syntax errors, and that malformed input **does** produce errors.
 
-2. **Test Case Format:**
-   ```json
-   {
-     "files": {
-       // "filename": "file content"
-       "test.rell": "entity user { name: text; }"
-     },
-     "parsing": {
-       "test.rell": [
-         // Expected errors (if any)
-       ]
-     }
-   }
-   ```
+This is a thin smoke test. The grammar itself is the upstream source of truth and is exhaustively validated in `rell-base` (the 0.16.0 build runs a differential gate comparing the ANTLR parser against the legacy parser across the whole corpus), so the plugin does not re-host that corpus.
 
-3. **Validation:**
-   - Parse each `.rell` source from JSON
-   - Generate PSI tree
-   - Verify no error elements exist (for valid code)
-   - Verify error elements exist at correct positions (for invalid code)
-
-### Why This Approach
-
-- **Single Source of Truth:** Test cases come from Rell compiler team
-- **Automatic Updates:** Upgrading Rell version pulls new test cases
-- **Comprehensive:** Rell compiler has extensive test suite
+> The old `RellParsingTest.kt` consumed `net.postchain.rell:rell-api-gtx:<ver>:rell-test-cases.zip`. That artifact is no longer published (0.16.0 made it an internal Gradle configuration), and it validated the removed Grammar-Kit parser — so it was dropped.
 
 ### Test Execution
 
 ```bash
-./gradlew test --tests "RellParsingTest"
+./gradlew test --tests "RellAntlrGrammarTest"
 ```
 
 ---

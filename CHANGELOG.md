@@ -1,5 +1,11 @@
 # Changelog
 
+## [0.3.6]
+### Added
+- Rell Language Server with Rell version 0.16.0
+### Changed
+- Reworked the editor parser/lexer to consume Rell's ANTLR grammar via antlr4-intellij-adaptor, replacing the removed GrammarKit BNF generator
+
 ## [0.3.5]
 ### Added
 - Rell Language Server with Rell version 0.15.4

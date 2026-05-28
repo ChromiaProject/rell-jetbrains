@@ -14,9 +14,11 @@ import com.intellij.openapi.vfs.VirtualFile
 import com.intellij.psi.PsiElement
 import com.intellij.psi.impl.source.tree.LeafPsiElement
 import com.intellij.psi.util.elementType
-import net.postchain.rellide.jetbrains.language.psi.RellTypes
-import net.postchain.rellide.jetbrains.language.psi.RellXFunctionDef
-import net.postchain.rellide.jetbrains.language.psi.RellXModuleHeader
+import net.postchain.rellide.jetbrains.language.parser.RellLexer
+import net.postchain.rellide.jetbrains.language.parser.RellParser
+import net.postchain.rellide.jetbrains.language.psi.RellPsiElementTypes
+import net.postchain.rellide.jetbrains.language.psi.ancestorOfRule
+import net.postchain.rellide.jetbrains.language.psi.isRule
 import net.postchain.rellide.jetbrains.lsp4ij.RellTestCase
 import net.postchain.rellide.jetbrains.lsp4ij.RellTestFile
 import net.postchain.rellide.jetbrains.lsp4ij.rellLanguageServerIsRunning
@@ -85,23 +87,19 @@ class RellTestLineMarkerProvider : LineMarkerProvider {
     }
 
     private fun isFunctionName(element: PsiElement): Boolean {
-        if (element.elementType != RellTypes.ID) {
-            return false
-        }
-        if (element.parent?.parent?.parent?.parent !is RellXFunctionDef) {
-            return false
-        }
-        return true
+        if (element.elementType != ID_TOKEN) return false
+        // functionDef -> qualifiedName -> ID; the ID is the function's (possibly qualified) name.
+        val qualifiedName = element.parent ?: return false
+        if (!qualifiedName.isRule(RellParser.RULE_qualifiedName)) return false
+        return qualifiedName.parent?.isRule(RellParser.RULE_functionDef) == true
     }
 
     private fun isTestModuleHeader(element: PsiElement): Boolean {
-        if (element.elementType != RellTypes.ID) {
-            return false
-        }
-        if (element.parent?.parent?.parent?.parent?.parent?.parent !is RellXModuleHeader) {
-            return false
-        }
-        return element.text == "test"
+        if (element.elementType != ID_TOKEN) return false
+        if (element.text != "test") return false
+        // `@test module;` -> the "test" name is the RULE_ID of an annotation inside the module header.
+        if (element.ancestorOfRule(RellParser.RULE_annotation) == null) return false
+        return element.ancestorOfRule(RellParser.RULE_moduleHeader) != null
     }
 
     private fun runTest(element: PsiElement, testCase: RellTestCase) {
@@ -134,7 +132,7 @@ class RellTestLineMarkerProvider : LineMarkerProvider {
         return settings
     }
 
-    private fun getTestName(element: PsiElement): String {
-        return element.text ?: return "Unknown Test"
-    }
+    private fun getTestName(element: PsiElement): String = element.text ?: "Unknown Test"
 }
+
+private val ID_TOKEN = RellPsiElementTypes.token(RellLexer.RULE_ID)

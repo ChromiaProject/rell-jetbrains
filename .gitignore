@@ -11,3 +11,4 @@ language-server
 CLAUDE.local.md
 .mcp.json
 *.hprof
+.claude

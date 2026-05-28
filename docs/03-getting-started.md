@@ -70,30 +70,4 @@ This uses `RellSocketLanguageServer` instead of `RellLanguageServer`, connecting
 
 ---
 
-## Project Structure Quick Reference
-
-```
-rell-jetbrains/
-├── src/main/kotlin/net/postchain/rellide/jetbrains/
-│   ├── lsp4ij/          # Language Server Protocol integration (505 lines)
-│   ├── language/        # Parser, lexer, file type definitions
-│   ├── testing/         # Test runner integration (767 lines)
-│   ├── toolwindow/      # "Chromia" sidebar tool window
-│   ├── formatting/      # Code formatting integration
-│   ├── colors/          # Syntax highlighting colors
-│   ├── settings/        # Plugin settings UI
-│   ├── actions/         # Custom IDE actions
-│   └── services/        # Project-scoped services
-├── src/main/gen/        # Generated parser code (not in Git)
-├── src/main/resources/
-│   ├── META-INF/plugin.xml  # Plugin manifest
-│   ├── icons/           # UI icons
-│   └── fileTemplates/   # New file templates
-├── language-server/     # Embedded Rell LSP JAR (~56MB)
-├── bnf-grammar-generator/ # Separate tool to generate BNF from Rell grammar
-└── docs/                # Documentation
-```
-
----
-
 [← Previous: Architecture](02-architecture.md) | [Next: Components →](04-components.md)

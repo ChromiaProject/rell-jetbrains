@@ -18,7 +18,6 @@ class ChromiaTreeMouseListener(
     private val project: Project,
     private val treeModel: ChromiaTreeModel
 ) : MouseAdapter() {
-    
     private val commandExecutor = ChromiaCommandExecutor(project)
     
     override fun mouseClicked(e: MouseEvent) {

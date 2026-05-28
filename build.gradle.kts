@@ -5,10 +5,8 @@ import org.jetbrains.intellij.platform.gradle.TestFrameworkType
 fun properties(key: String) = providers.gradleProperty(key)
 fun environment(key: String) = providers.environmentVariable(key)
 
-val rellTestCasesConfiguration: Configuration by configurations.creating
-
 plugins {
-    java
+    antlr
     alias(libs.plugins.kotlin.jvm)
     alias(libs.plugins.intellij.platform)
     alias(libs.plugins.changelog)
@@ -18,6 +16,7 @@ plugins {
 }
 
 val sentryAuthToken: String? = System.getenv("SENTRY_AUTH_TOKEN")
+
 sentry {
     // Generates a JVM (Java, Kotlin, etc.) source bundle and uploads your source code to Sentry.
     // This enables source context, allowing you to see your source
@@ -28,12 +27,20 @@ sentry {
     authToken = System.getenv("SENTRY_AUTH_TOKEN") ?: ""
 }
 
+// Rell's ANTLR grammar (Rell.g4) ships in the `frontend` sources jar; we extract it at build time so
+// the editor parser always tracks the `rell` version in libs.versions.toml — no vendored grammar copy.
+val rellGrammar: Configuration by configurations.creating { isTransitive = false }
+
 dependencies {
-    rellTestCasesConfiguration(group = "net.postchain.rell", name = "rell-api-gtx", version = libs.versions.rell.get(), classifier = "rell-test-cases", ext = "zip")
+    rellGrammar("net.postchain.rell:frontend:${libs.versions.rell.get()}:sources@jar")
+    antlr(libs.antlr)
+    implementation(libs.antlr.runtime)
+
     implementation(libs.sentry)
     testImplementation(libs.junit)
     testImplementation(libs.jackson.kotlin)
     testImplementation(libs.opentest4j)
+
     intellijPlatform {
         plugins(providers.gradleProperty("platformPlugins").map { it.split(',') })
         bundledPlugins(providers.gradleProperty("platformBundledPlugins").map { it.split(',') })
@@ -42,17 +49,6 @@ dependencies {
         zipSigner()
         testFramework(TestFrameworkType.Platform)
     }
-}
-
-val testCasesDir = layout.buildDirectory.dir("rell-test-cases")
-
-val copyTestCases by tasks.registering(Copy::class) {
-    from({ zipTree(rellTestCasesConfiguration.singleFile) })
-    into(testCasesDir.map { it.dir("test-cases") })
-}
-
-tasks.compileTestKotlin {
-    dependsOn(copyTestCases)
 }
 
 group = properties("pluginGroup").get()
@@ -80,7 +76,43 @@ repositories {
     }
 }
 
-sourceSets["main"].java.srcDirs("src/main/gen")
+val antlrPackage = "net.postchain.rellide.jetbrains.language.parser"
+val grammarDir = layout.buildDirectory.dir("rell-grammar")
+
+// Unpack Rell.g4 from the frontend sources jar into a build dir that the antlr source set reads from.
+val extractRellGrammar by tasks.registering(Sync::class) {
+    group = "build setup"
+    description = "Unpacks Rell.g4 from the Rell frontend sources jar into the ANTLR grammar source dir."
+    from({ zipTree(rellGrammar.singleFile) }) { include("Rell.g4") }
+    into(grammarDir)
+}
+
+sourceSets["main"].extensions.getByName<SourceDirectorySet>("antlr")
+    .setSrcDirs(listOf(grammarDir.get().asFile))
+
+tasks.generateGrammarSource {
+    dependsOn(extractRellGrammar)
+    maxHeapSize = "1g"
+    arguments = arguments + listOf("-package", antlrPackage, "-no-listener", "-no-visitor")
+
+    outputDirectory = layout.buildDirectory
+        .dir("generated-src/antlr/main/${antlrPackage.replace('.', '/')}")
+        .get().asFile
+}
+
+// The ANTLR Gradle plugin only wires generation ahead of compileJava by default.
+tasks.compileKotlin {
+    dependsOn(tasks.generateGrammarSource)
+}
+tasks.named("compileTestKotlin") {
+    dependsOn(tasks.named("generateTestGrammarSource"))
+}
+
+// The antlr plugin leaks the ANTLR tool (+ ST4, antlr2/3 runtimes) onto the compile/api classpath.
+// We only need the tool for code generation, so detach it; the runtime is declared explicitly above.
+configurations.findByName("api")?.let { api ->
+    api.setExtendsFrom(api.extendsFrom.filterNot { it.name == "antlr" })
+}
 
 // Set the JVM language level used to build the project. Use Java 11 for 2020.3+, and Java 17 for 2022.2+.
 kotlin.jvmToolchain(21)
@@ -200,6 +232,7 @@ intellijPlatformTesting.runIde {
                 )
             }
         }
+
         plugins {
             robotServerPlugin()
         }

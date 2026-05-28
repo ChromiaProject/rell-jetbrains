@@ -1,15 +1,15 @@
 package net.postchain.rellide.jetbrains.lsp4ij
 
-import com.intellij.openapi.project.Project;
-import com.redhat.devtools.lsp4ij.LanguageServerFactory;
+import com.intellij.openapi.project.Project
+import com.redhat.devtools.lsp4ij.LanguageServerFactory
 import com.redhat.devtools.lsp4ij.client.LanguageClientImpl
 import com.redhat.devtools.lsp4ij.client.features.LSPClientFeatures
-import com.redhat.devtools.lsp4ij.server.StreamConnectionProvider;
-import org.eclipse.lsp4j.services.LanguageServer;
+import com.redhat.devtools.lsp4ij.server.StreamConnectionProvider
+import org.eclipse.lsp4j.services.LanguageServer
 
 class RellLanguageServerFactory : LanguageServerFactory {
-    companion object {
-        const val USE_SOCKET_PROPERTY = "rell.lsp.useSocket"
+    private companion object {
+        private const val USE_SOCKET_PROPERTY = "rell.lsp.useSocket"
     }
 
     override fun createConnectionProvider(project: Project): StreamConnectionProvider {
@@ -22,15 +22,9 @@ class RellLanguageServerFactory : LanguageServerFactory {
         }
     }
 
-    override fun createLanguageClient(project: Project): LanguageClientImpl {
-        return RellLanguageClient(project)
-    }
+    override fun createLanguageClient(project: Project): LanguageClientImpl = RellLanguageClient(project)
 
-    override fun getServerInterface(): Class<out LanguageServer> {
-        return RellServerApi::class.java
-    }
+    override fun getServerInterface(): Class<out LanguageServer> = RellServerApi::class.java
 
-    override fun createClientFeatures(): LSPClientFeatures {
-        return RellLspClientFeatures()
-    }
+    override fun createClientFeatures(): LSPClientFeatures = RellLspClientFeatures()
 }
