@@ -1,6 +1,6 @@
 # Changelog
 
-## [0.3.6]
+## [0.4.0]
 ### Added
 - Rell Language Server with Rell version 0.16.0
 ### Changed
