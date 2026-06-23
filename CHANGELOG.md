@@ -3,8 +3,12 @@
 ## [0.4.0]
 ### Added
 - Rell Language Server with Rell version 0.16.0
+- Support for IntelliJ Platform 2026.1 (built against the unified IntelliJ IDEA 2026.1.1 distribution)
 ### Changed
 - Reworked the editor parser/lexer to consume Rell's ANTLR grammar via antlr4-intellij-adaptor, replacing the removed GrammarKit BNF generator
+- Build against the unified IntelliJ IDEA distribution; Community is no longer published separately since 2025.3
+- Resolve the bundled Terminal plugin via `platformBundledPlugins` instead of a pinned marketplace build, so it tracks the platform version
+- Bumped IntelliJ Platform Gradle Plugin to 2.11.0
 
 ## [0.3.5]
 ### Added

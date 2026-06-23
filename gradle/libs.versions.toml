@@ -3,7 +3,7 @@ kotlin = "2.2.0"
 rell = "0.16.0"
 antlr = "4.13.2"
 
-intellij-platform = "2.10.4"
+intellij-platform = "2.11.0"
 changelog = "2.2.1"
 qodana = "2024.1.9"
 kover = "0.9.1"
