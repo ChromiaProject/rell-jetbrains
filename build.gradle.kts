@@ -104,10 +104,10 @@ tasks.generateGrammarSource {
 tasks.compileKotlin {
     dependsOn(tasks.generateGrammarSource)
 }
-// The Sentry source-context tasks read the main source set (which includes the ANTLR output dir)
+// The Sentry source-context tasks read the source sets (which include the ANTLR output dirs)
 // without declaring a dependency, tripping Gradle's implicit-dependency validation.
 tasks.matching { it.name == "generateSentryBundleIdJava" || it.name == "sentryCollectSourcesJava" }.configureEach {
-    dependsOn(tasks.generateGrammarSource)
+    dependsOn(tasks.generateGrammarSource, tasks.named("generateTestGrammarSource"))
 }
 tasks.named("compileTestKotlin") {
     dependsOn(tasks.named("generateTestGrammarSource"))
