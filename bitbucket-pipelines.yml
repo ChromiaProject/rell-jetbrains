@@ -15,14 +15,12 @@ definitions:
           - settings.gradle.kts
           - gradle.properties
       path: ~/.gradle/caches
-    # Configuration cache (.gradle/configuration-cache) — reusable across runs
-    # because the clone path is stable on Pipelines runners.
+    # Configuration cache (.gradle/configuration-cache).
     gradle-project:
       key: *gradle-cache-key
       path: .gradle
     # Compiled outputs so incremental compilation has something to diff against
-    # on a fresh container. Stale entries are fine — Gradle's up-to-date checks
-    # hash inputs, they don't trust timestamps.
+    # on a fresh container.
     gradle-build-output:
       key: *gradle-cache-key
       path: build
@@ -33,7 +31,7 @@ definitions:
         script:
           - chmod +x ./gradlew
           - export GRADLE_OPTS='-Dorg.gradle.daemon=false'
-          - ./gradlew --build-cache --parallel --configuration-cache buildPlugin test
+          - ./gradlew --build-cache buildPlugin test
         artifacts: [ build/distributions/*.zip ]
     - step: &release-build-step
         name: Build and Test (release)
@@ -41,11 +39,10 @@ definitions:
         caches: [ gradle-wrapper, gradle-home, gradle-project, gradle-build-output ]
         script:
           - chmod +x ./gradlew ./get-lsp.sh
-          - export GRADLE_OPTS='-Dorg.gradle.daemon=false'
           - export SENTRY_AUTH_TOKEN="$RELL_JETBRAINS_SENTRY_AUTH_TOKEN"
           - rm -rf language-server
           - ./get-lsp.sh
-          - ./gradlew --build-cache --parallel --configuration-cache buildPlugin test
+          - ./gradlew --build-cache buildPlugin test
         artifacts: [ build/distributions/*.zip ]
     - step: &publish-step
         name: Publish to JetBrains Marketplace
@@ -55,7 +52,6 @@ definitions:
         caches: [ gradle-wrapper, gradle-home, gradle-project, gradle-build-output ]
         script:
           - chmod +x ./gradlew ./get-lsp.sh
-          - export GRADLE_OPTS='-Dorg.gradle.daemon=false'
           - export SENTRY_AUTH_TOKEN="$RELL_JETBRAINS_SENTRY_AUTH_TOKEN"
           - export PRIVATE_KEY_PASSWORD="$RELL_JETBRAINS_PRIVATE_KEY_PASSWORD"
           - export PUBLISH_TOKEN="$RELL_JETBRAINS_PUBLISH_TOKEN"
@@ -66,7 +62,7 @@ definitions:
           - export CERTIFICATE_CHAIN=/tmp/chain.crt PRIVATE_KEY=/tmp/private.pem
           - rm -rf language-server
           - ./get-lsp.sh
-          - ./gradlew --build-cache --configuration-cache publishPlugin
+          - ./gradlew --build-cache publishPlugin
 
 pipelines:
   pull-requests:
