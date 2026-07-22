@@ -38,7 +38,6 @@ dependencies {
 
     implementation(libs.sentry)
     testImplementation(libs.junit)
-    testImplementation(libs.jackson.kotlin)
     testImplementation(libs.opentest4j)
 
     intellijPlatform {

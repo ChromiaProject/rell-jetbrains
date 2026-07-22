@@ -10,13 +10,11 @@ kover = "0.9.1"
 sentry-plugin = "5.8.0"
 
 sentry = "8.39.1"
-jackson = "2.21.2"
 junit = "4.13.2"
 opentest4j = "1.3.0"
 
 [libraries]
 sentry = { module = "io.sentry:sentry", version.ref = "sentry" }
-jackson-kotlin = { module = "com.fasterxml.jackson.module:jackson-module-kotlin", version.ref = "jackson" }
 junit = { module = "junit:junit", version.ref = "junit" }
 opentest4j = { module = "org.opentest4j:opentest4j", version.ref = "opentest4j" }
 antlr = { module = "org.antlr:antlr4", version.ref = "antlr" }
