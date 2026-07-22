@@ -7,7 +7,6 @@ import com.intellij.execution.RunnerAndConfigurationSettings
 import com.intellij.execution.executors.DefaultRunExecutor
 import com.intellij.execution.runners.ExecutionUtil
 import com.intellij.icons.AllIcons
-import com.intellij.openapi.application.runReadAction
 import com.intellij.openapi.components.service
 import com.intellij.openapi.editor.markup.GutterIconRenderer
 import com.intellij.openapi.vfs.VirtualFile
@@ -27,22 +26,22 @@ import net.postchain.rellide.jetbrains.testing.actions.createTestConfiguration
 
 class RellTestLineMarkerProvider : LineMarkerProvider {
     override fun getLineMarkerInfo(element: PsiElement): LineMarkerInfo<*>? {
-        return runReadAction {
-            if (element !is LeafPsiElement) return@runReadAction null
+        // Line marker providers are always called by the highlighting pass under a read action,
+        // so no explicit read lock is needed here.
+        if (element !is LeafPsiElement) return null
 
-            val isModuleHeader = isTestModuleHeader(element)
-            val isFunctionName = isFunctionName(element)
-            if (!isModuleHeader && !isFunctionName) return@runReadAction null
+        val isModuleHeader = isTestModuleHeader(element)
+        val isFunctionName = isFunctionName(element)
+        if (!isModuleHeader && !isFunctionName) return null
 
-            val virtualFile = element.containingFile?.virtualFile ?: return@runReadAction null
-            val testFile = getTestFileForElement(element, virtualFile) ?: return@runReadAction null
+        val virtualFile = element.containingFile?.virtualFile ?: return null
+        val testFile = getTestFileForElement(element, virtualFile) ?: return null
 
-            when {
-                isModuleHeader -> return@runReadAction createTestModuleLineMarker(element, testFile, virtualFile)
-                else -> {
-                    val testCase = testFile.testCases.firstOrNull { it.name == element.text } ?: return@runReadAction null
-                    return@runReadAction createTestCaseLineMarker(element, testCase)
-                }
+        return when {
+            isModuleHeader -> createTestModuleLineMarker(element, testFile, virtualFile)
+            else -> {
+                val testCase = testFile.testCases.firstOrNull { it.name == element.text } ?: return null
+                createTestCaseLineMarker(element, testCase)
             }
         }
     }

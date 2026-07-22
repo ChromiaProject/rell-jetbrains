@@ -1,6 +1,7 @@
 import org.jetbrains.changelog.Changelog
 import org.jetbrains.changelog.markdownToHTML
 import org.jetbrains.intellij.platform.gradle.TestFrameworkType
+import org.jetbrains.kotlin.gradle.dsl.JvmDefaultMode
 
 fun properties(key: String) = providers.gradleProperty(key)
 fun environment(key: String) = providers.environmentVariable(key)
@@ -120,6 +121,11 @@ configurations.findByName("api")?.let { api ->
 
 // Set the JVM language level used to build the project. Use Java 11 for 2020.3+, and Java 17 for 2022.2+.
 kotlin.jvmToolchain(21)
+
+// Don't generate DefaultImpls compatibility bridges: they surface as usages of deprecated
+// platform interface defaults (e.g. ToolWindowFactory.isApplicable) in the plugin verifier.
+kotlin.compilerOptions.jvmDefault = JvmDefaultMode.NO_COMPATIBILITY
+
 java.toolchain.languageVersion = JavaLanguageVersion.of(21)
 
 intellijPlatform {
