@@ -64,10 +64,10 @@ class RellTestRunProfileState(
 
         val workingDir = options.getWorkingDirectory()
         if (!workingDir.isNullOrBlank()) {
-            commandLine.setWorkDirectory(File(workingDir))
+            commandLine.workDirectory = File(workingDir)
         } else {
             // TODO: use subproject directory for multi-module projects
-            commandLine.setWorkDirectory(File(environment.project.basePath ?: "."))
+            commandLine.workDirectory = File(environment.project.basePath ?: ".")
         }
 
         return commandLine

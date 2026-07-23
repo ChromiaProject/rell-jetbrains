@@ -1,5 +1,13 @@
 # Changelog
 
+## [0.4.1]
+### Added
+- Rell Language Server with Rell version 0.16.1
+- Support for IntelliJ Platform 2026.2
+### Changed
+- Raised the minimum supported IDE version to 2025.2
+- Bumped Kotlin to 2.4.0
+
 ## [0.4.0]
 ### Added
 - Rell Language Server with Rell version 0.16.0

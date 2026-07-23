@@ -19,6 +19,14 @@ plugins {
 val sentryAuthToken: String? = System.getenv("SENTRY_AUTH_TOKEN")
 
 sentry {
+    // Auto-installation injects extra Sentry modules (e.g. sentry-jdbc at the plugin's bundled SDK
+    // version) into every resolved configuration — including the detached LSP runtime classpath,
+    // where they clash with the SDK version rell-toolbox ships. Sentry refuses mixed versions at
+    // runtime, which kills the language server on startup. All Sentry deps are declared explicitly.
+    autoInstallation {
+        enabled = false
+    }
+
     // Generates a JVM (Java, Kotlin, etc.) source bundle and uploads your source code to Sentry.
     // This enables source context, allowing you to see your source
     // code as part of your stack traces in Sentry.
@@ -214,6 +222,12 @@ val rellLanguageServerRuntime: Configuration = configurations.detachedConfigurat
         attribute(Usage.USAGE_ATTRIBUTE, objects.named(Usage::class, Usage.JAVA_RUNTIME))
         attribute(Category.CATEGORY_ATTRIBUTE, objects.named(Category::class, Category.LIBRARY))
     }
+    // The Sentry plugin's auto-install grafts sentry-jdbc (at this project's Sentry version) onto the
+    // postgresql driver via a component-metadata rule, and those rule results stick around in Gradle's
+    // metadata cache even with autoInstallation disabled. A mismatched module makes the Sentry SDK
+    // refuse to start inside the language server, killing it on launch — keep the LSP classpath to
+    // exactly what rell-toolbox declares.
+    exclude(group = "io.sentry", module = "sentry-jdbc")
 }
 
 tasks {

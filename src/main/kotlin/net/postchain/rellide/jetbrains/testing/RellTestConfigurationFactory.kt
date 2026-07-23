@@ -13,13 +13,10 @@ class RellTestConfigurationFactory(type: RellTestConfigurationType) : Configurat
     
     override fun getId(): String = "RellTestConfigurationFactory"
     
-    override fun createTemplateConfiguration(project: Project): RunConfiguration {
-        return RellTestRunConfiguration(project, this, "Rell Test")
-    }
+    override fun createTemplateConfiguration(project: Project): RunConfiguration =
+        RellTestRunConfiguration(project, this, "Rell Test")
 
-    override fun getOptionsClass(): Class<out BaseState>? {
-        return RellTestRunConfigurationOptions::class.java
-    }
+    override fun getOptionsClass(): Class<out BaseState> = RellTestRunConfigurationOptions::class.java
 
     companion object {
         fun getInstance(): RellTestConfigurationFactory {

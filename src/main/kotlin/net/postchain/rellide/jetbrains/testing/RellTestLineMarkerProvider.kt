@@ -89,8 +89,7 @@ class RellTestLineMarkerProvider : LineMarkerProvider {
         if (element.elementType != ID_TOKEN) return false
         // functionDef -> qualifiedName -> ID; the ID is the function's (possibly qualified) name.
         val qualifiedName = element.parent ?: return false
-        if (!qualifiedName.isRule(RellParser.RULE_qualifiedName)) return false
-        return qualifiedName.parent?.isRule(RellParser.RULE_functionDef) == true
+        return qualifiedName.isRule(RellParser.RULE_qualifiedName) && qualifiedName.parent?.isRule(RellParser.RULE_functionDef) == true
     }
 
     private fun isTestModuleHeader(element: PsiElement): Boolean {

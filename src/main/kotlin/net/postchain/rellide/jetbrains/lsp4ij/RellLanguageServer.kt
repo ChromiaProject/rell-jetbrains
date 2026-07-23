@@ -1,7 +1,7 @@
 package net.postchain.rellide.jetbrains.lsp4ij
 
 import com.intellij.execution.configurations.GeneralCommandLine
-import com.intellij.ide.plugins.PluginManager
+import com.intellij.ide.plugins.PluginManagerCore
 import com.intellij.openapi.components.service
 import com.intellij.openapi.extensions.PluginId
 import com.intellij.openapi.project.Project
@@ -25,7 +25,7 @@ class RellLanguageServer(val project: Project) : OSProcessStreamConnectionProvid
     )
 
     init {
-        val pluginDescriptor = checkNotNull(PluginManager.getInstance().findEnabledPlugin(PluginId.getId(PLUGIN_ID))) {
+        val pluginDescriptor = checkNotNull(PluginManagerCore.getPlugin(PluginId.getId(PLUGIN_ID))) {
             "Cannot find plugin by ID: $PLUGIN_ID"
         }
 

@@ -1,6 +1,6 @@
 package net.postchain.rellide.jetbrains.sentry
 
-import com.intellij.ide.plugins.PluginManager
+import com.intellij.ide.plugins.PluginManagerCore
 import com.intellij.openapi.application.ApplicationInfo
 import com.intellij.openapi.diagnostic.ErrorReportSubmitter
 import com.intellij.openapi.diagnostic.IdeaLoggingEvent
@@ -21,7 +21,7 @@ class SentryReportSubmitter : ErrorReportSubmitter() {
         "com.redhat.devtools.lsp4ij"
     )
 
-    private val pluginVersion = PluginManager.getInstance().findEnabledPlugin(PluginId.getId("net.postchain.rellide.jetbrains"))?.version ?: "unknown"
+    private val pluginVersion = PluginManagerCore.getPlugin(PluginId.getId("net.postchain.rellide.jetbrains"))?.version ?: "unknown"
 
     private val scopes: Scopes by lazy {
         val options = SentryOptions().apply {
