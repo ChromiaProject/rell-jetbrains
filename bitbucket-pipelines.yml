@@ -56,6 +56,14 @@ definitions:
         caches: [ gradle-wrapper, gradle-home, gradle-project, gradle-build-output ]
         script:
           - chmod +x ./gradlew ./get-lsp.sh
+          # Released versions are tagged with the plain version number; refuse to
+          # re-publish a version that already has a tag.
+          - VERSION=$(sed -n 's/^pluginVersion=//p' gradle.properties)
+          - |
+            if git ls-remote --exit-code --tags origin "refs/tags/$VERSION" > /dev/null; then
+              echo "Tag $VERSION already exists. Bump pluginVersion before releasing." >&2
+              exit 1
+            fi
           # Same 8192 MB budget as the release build step.
           - export GRADLE_OPTS='-Xmx3g -XX:MaxMetaspaceSize=768m -Dorg.gradle.daemon=false'
           - export SENTRY_AUTH_TOKEN="$RELL_JETBRAINS_SENTRY_AUTH_TOKEN"
@@ -69,6 +77,8 @@ definitions:
           - rm -rf language-server
           - ./get-lsp.sh
           - ./gradlew --build-cache "-Pkotlin.daemon.jvmargs=-Xmx2g" publishPlugin
+          - git tag "$VERSION" "$BITBUCKET_COMMIT"
+          - git push origin "refs/tags/$VERSION"
 
 pipelines:
   pull-requests:
