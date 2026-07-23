@@ -34,6 +34,17 @@ The plugin supports following features:
 
 ---
 
+## 🔀 Rell Version Compatibility
+
+The plugin reads `compile.rellVersion` from your project's `chromia.yml` and applies a
+version-exact toolchain per project: every Rell release from **0.16.0** up to the plugin's newest
+supported version gets its own grammar diagnostics and its own language server (older versions are
+downloaded on demand). Projects declaring a version below 0.16.0 get no language features and a
+one-click upgrade hint. Full details in
+[docs/COMPATIBILITY.md](https://bitbucket.org/chromawallet/rell-jetbrains/src/main/docs/COMPATIBILITY.md).
+
+---
+
 ## 🧪 Rell Test Runner
 
 Run and debug Rell tests directly from your JetBrains IDE:

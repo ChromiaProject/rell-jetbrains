@@ -1,3 +1,6 @@
+import java.security.MessageDigest
+import org.gradle.api.artifacts.component.ModuleComponentIdentifier
+import org.gradle.api.plugins.antlr.AntlrTask
 import org.jetbrains.changelog.Changelog
 import org.jetbrains.changelog.markdownToHTML
 import org.jetbrains.intellij.platform.gradle.TestFrameworkType
@@ -44,6 +47,19 @@ dependencies {
     rellGrammar("net.postchain.rell:frontend:${libs.versions.rell.get()}:sources@jar")
     antlr(libs.antlr)
     implementation(libs.antlr.runtime)
+
+    // Chromia project-model parsing (chromia.yml) — the same parser the Rell toolchain uses, so
+    // compile.rellVersion resolution matches `chr` and the language server exactly. Only the
+    // ChromiaModelProvider/ChromiaModel classes are used; the excluded modules serve toolbox code
+    // the plugin never loads:
+    implementation(libs.rell.toolbox.common) {
+        exclude(group = "net.postchain.rell", module = "rell-base")
+        exclude(group = "org.antlr")                    // the editor grammar declares its own antlr4-runtime
+        exclude(group = "org.ec4j.core")
+        exclude(group = "org.slf4j")                    // provided by the platform
+        exclude(group = "org.jetbrains.kotlin")         // the platform stdlib must win (see 6b7203c)
+        exclude(group = "com.fasterxml.jackson.module") // -kotlin module unused by the untyped YAML parse
+    }
 
     implementation(libs.sentry)
     testImplementation(libs.junit)
@@ -98,6 +114,66 @@ val extractRellGrammar by tasks.registering(Sync::class) {
 sourceSets["main"].extensions.getByName<SourceDirectorySet>("antlr")
     .setSrcDirs(listOf(grammarDir.get().asFile))
 
+// Compatibility mode (docs/COMPATIBILITY.md): every Rell release this plugin build supports,
+// oldest first. Bumping `rell` in libs.versions.toml requires appending the new version here —
+// the generation task fails otherwise, so the two can't drift.
+val supportedRellVersions = listOf("0.16.0", "0.16.1")
+
+val generateRellVersionRegistry by tasks.registering {
+    group = "build setup"
+    description = "Writes the supported Rell version list read by RellVersionRegistry at runtime."
+    val versions = supportedRellVersions
+    val rellVersion = libs.versions.rell.get()
+    val outDir = layout.buildDirectory.dir("generated-resources/rell-versions")
+    inputs.property("versions", versions)
+    inputs.property("rellVersion", rellVersion)
+    outputs.dir(outDir)
+    doLast {
+        check(versions.last() == rellVersion) {
+            "supportedRellVersions must end with the `rell` version from libs.versions.toml ($rellVersion), was: $versions"
+        }
+        val file = outDir.get().file("rell/supported-versions.txt").asFile
+        file.parentFile.mkdirs()
+        file.writeText(versions.joinToString("\n"))
+    }
+}
+
+sourceSets["main"].resources.srcDir(generateRellVersionRegistry)
+
+// Version-exact grammars for the supported Rell versions below the newest. The newest grammar keeps
+// driving the editor PSI through the default antlr pipeline above (IElementType identity must come
+// from a single grammar); each older version compiles into a version-suffixed package that
+// RellVersionSyntaxAnnotator runs for version-true syntax errors.
+val versionedGrammarRoots = supportedRellVersions.dropLast(1).map { version ->
+    val suffix = "v" + version.replace('.', '_')
+    val grammarConfig = configurations.create("rellGrammar${suffix.replaceFirstChar { it.uppercase() }}") {
+        isTransitive = false
+    }
+    dependencies { grammarConfig("net.postchain.rell:frontend:$version:sources@jar") }
+
+    val versionedGrammarDir = layout.buildDirectory.dir("rell-grammar-$suffix")
+    val extract = tasks.register<Sync>("extractRellGrammar${suffix.replaceFirstChar { it.uppercase() }}") {
+        group = "build setup"
+        description = "Unpacks Rell.g4 of Rell $version for the versioned syntax annotator."
+        from({ zipTree(grammarConfig.singleFile) }) { include("Rell.g4") }
+        into(versionedGrammarDir)
+    }
+
+    val outputRoot = layout.buildDirectory.dir("generated-src/antlr/$suffix")
+    val generate = tasks.register<AntlrTask>("generateRellGrammar${suffix.replaceFirstChar { it.uppercase() }}") {
+        group = "build setup"
+        description = "Generates the Rell $version ANTLR parser for the versioned syntax annotator."
+        dependsOn(extract)
+        setSource(versionedGrammarDir)
+        maxHeapSize = "1g"
+        arguments = arguments + listOf("-package", "$antlrPackage.$suffix", "-no-listener", "-no-visitor")
+        outputDirectory = outputRoot.get().dir("${antlrPackage.replace('.', '/')}/$suffix").asFile
+    }
+
+    sourceSets["main"].java.srcDir(outputRoot)
+    generate
+}
+
 tasks.generateGrammarSource {
     dependsOn(extractRellGrammar)
     maxHeapSize = "1g"
@@ -110,20 +186,26 @@ tasks.generateGrammarSource {
 
 // The ANTLR Gradle plugin only wires generation ahead of compileJava by default.
 tasks.compileKotlin {
-    dependsOn(tasks.generateGrammarSource)
+    dependsOn(tasks.generateGrammarSource, versionedGrammarRoots)
 }
+
+tasks.compileJava {
+    dependsOn(versionedGrammarRoots)
+}
+
 // The Sentry source-context tasks read the source sets (which include the ANTLR output dirs)
 // without declaring a dependency, tripping Gradle's implicit-dependency validation.
 tasks.matching { it.name == "generateSentryBundleIdJava" || it.name == "sentryCollectSourcesJava" }.configureEach {
-    dependsOn(tasks.generateGrammarSource, tasks.named("generateTestGrammarSource"))
+    dependsOn(tasks.generateGrammarSource, tasks.named("generateTestGrammarSource"), versionedGrammarRoots)
 }
-tasks.named("compileTestKotlin") {
+
+tasks.compileTestKotlin {
     dependsOn(tasks.named("generateTestGrammarSource"))
 }
 
 // The antlr plugin leaks the ANTLR tool (+ ST4, antlr2/3 runtimes) onto the compile/api classpath.
 // We only need the tool for code generation, so detach it; the runtime is declared explicitly above.
-configurations.findByName("api")?.let { api ->
+configurations.api.get().let { api ->
     api.setExtendsFrom(api.extendsFrom.filterNot { it.name == "antlr" })
 }
 
@@ -230,6 +312,58 @@ val rellLanguageServerRuntime: Configuration = configurations.detachedConfigurat
     exclude(group = "io.sentry", module = "sentry-jdbc")
 }
 
+// Lockfiles for the on-demand language-server runtimes of older supported Rell versions: the
+// plugin's RellLspRuntimeManager downloads exactly these artifacts at runtime, checksum-verified,
+// instead of bundling every version into the distribution.
+val olderRellLspRuntimes = supportedRellVersions.dropLast(1).map { version ->
+    version to configurations.detachedConfiguration(
+        dependencies.create("net.postchain.rell:rell-toolbox-language-server:$version")
+    ).apply {
+        isTransitive = true
+        attributes {
+            attribute(Usage.USAGE_ATTRIBUTE, objects.named(Usage::class, Usage.JAVA_RUNTIME))
+            attribute(Category.CATEGORY_ATTRIBUTE, objects.named(Category::class, Category.LIBRARY))
+        }
+        // Same metadata-cache hazard as rellLanguageServerRuntime above.
+        exclude(group = "io.sentry", module = "sentry-jdbc")
+    }
+}
+
+val generateRellLspLockfiles by tasks.registering {
+    group = "build setup"
+    description = "Writes GAV + SHA-256 lockfiles for the downloadable Rell language-server runtimes."
+
+    val outDir = layout.buildDirectory.dir("generated-resources/rell-lsp-lockfiles")
+    val artifactsPerVersion = olderRellLspRuntimes.map { (version, cfg) ->
+        version to cfg.incoming.artifacts.resolvedArtifacts.map { artifacts ->
+            artifacts.mapNotNull { artifact ->
+                val id = artifact.id.componentIdentifier as? ModuleComponentIdentifier ?: return@mapNotNull null
+                Triple("${id.group}:${id.module}:${id.version}", artifact.file.name, artifact.file)
+            }
+        }
+    }
+    inputs.files(olderRellLspRuntimes.map { it.second })
+    outputs.dir(outDir)
+
+    doLast {
+        // Recreate the lockfile dir so versions dropped from supportedRellVersions don't leave
+        // stale lockfiles behind that processResources would pack into the plugin.
+        val lockDir = outDir.get().dir("rell/lsp-lockfiles").asFile
+        lockDir.deleteRecursively()
+        lockDir.mkdirs()
+        for ((version, provider) in artifactsPerVersion) {
+            val lines = provider.get().sortedBy { it.second }.map { (gav, fileName, file) ->
+                val digest = MessageDigest.getInstance("SHA-256")
+                val sha256 = digest.digest(file.readBytes()).joinToString("") { byte -> "%02x".format(byte) }
+                "$gav $fileName $sha256"
+            }
+            File(lockDir, "$version.lock").writeText(lines.joinToString("\n"))
+        }
+    }
+}
+
+sourceSets.main.get().resources.srcDir(generateRellLspLockfiles)
+
 tasks {
     prepareSandbox {
         from(rellLanguageServerRuntime) {
@@ -262,4 +396,3 @@ intellijPlatformTesting.runIde {
         }
     }
 }
-

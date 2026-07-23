@@ -36,7 +36,12 @@ object RellSyntaxHighlighter : SyntaxHighlighterBase() {
         color(RellPsiElementTypes.RCURL, RellColor.BRACES)
         color(RellPsiElementTypes.SEMICOLON, RellColor.SEMICOLON)
 
-        RellPsiElementTypes.KEYWORD_TYPES.forEach { color(it, RellColor.KEYWORD) }
-        RellPsiElementTypes.OPERATOR_TYPES.forEach { color(it, RellColor.OPERATION_SIGN) }
+        for (type in RellPsiElementTypes.KEYWORD_TYPES) {
+            color(type, RellColor.KEYWORD)
+        }
+
+        for (type in RellPsiElementTypes.OPERATOR_TYPES) {
+            color(type, RellColor.OPERATION_SIGN)
+        }
     }
 }

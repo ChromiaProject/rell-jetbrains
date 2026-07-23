@@ -3,10 +3,19 @@
 ## [0.4.1]
 ### Added
 - Rell Language Server with Rell version 0.16.1
+- Rell version compatibility mode (see [docs/COMPATIBILITY.md](docs/COMPATIBILITY.md)): `compile.rellVersion` from the
+  nearest `chromia.yml` selects a version-exact toolchain per project, supporting every Rell
+  release from 0.16.0 up to the plugin's newest supported version &mdash; version-true syntax errors
+  (e.g. lambdas are flagged in 0.16.0 projects) and a version-matched language server, downloaded
+  on demand for older versions
+- Editor banners for unsupported (below 0.16.0) Rell versions &mdash; with a one-click
+  `rellVersion` upgrade fix &mdash; and for versions newer than the plugin knows
 - Support for IntelliJ Platform 2026.2
 ### Changed
 - Raised the minimum supported IDE version to 2025.2
 - Bumped Kotlin to 2.4.0
+- `chromia.yaml` (with the `.yaml` extension) is no longer treated as a project marker in the
+  Chromia tool window &mdash; the Rell toolchain only reads `chromia.yml`
 
 ## [0.4.0]
 ### Added

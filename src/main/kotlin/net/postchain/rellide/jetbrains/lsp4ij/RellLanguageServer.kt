@@ -14,7 +14,10 @@ import kotlin.io.path.absolutePathString
 import kotlin.io.path.div
 import kotlin.io.path.pathString
 
-class RellLanguageServer(val project: Project) : OSProcessStreamConnectionProvider() {
+class RellLanguageServer(
+    val project: Project,
+    lspLibDir: java.nio.file.Path = bundledLspLibDir(),
+) : OSProcessStreamConnectionProvider() {
     private val extraOptions = listOf(
         "-Xms128m",
         "-Xmx${JvmHeapSizeManager.determineMaxHeapSizeMB() ?: DEFAULT_MAX_HEAP_SIZE_IN_MB}m",
@@ -25,11 +28,6 @@ class RellLanguageServer(val project: Project) : OSProcessStreamConnectionProvid
     )
 
     init {
-        val pluginDescriptor = checkNotNull(PluginManagerCore.getPlugin(PluginId.getId(PLUGIN_ID))) {
-            "Cannot find plugin by ID: $PLUGIN_ID"
-        }
-
-        val lspLibDir = pluginDescriptor.pluginPath.toAbsolutePath() / "language-server"
         val classpath = (lspLibDir / "*").pathString
 
         val jvmExecutablePath = computeJavaPath()
@@ -53,5 +51,13 @@ class RellLanguageServer(val project: Project) : OSProcessStreamConnectionProvid
         private const val PLUGIN_ID = "net.postchain.rellide.jetbrains"
         private const val DEFAULT_MAX_HEAP_SIZE_IN_MB = 2048
         private const val LSP_MAIN_CLASS = "net.postchain.rell.toolbox.lsp.StdioMainKt"
+
+        /** The language-server runtime bundled with the plugin — always the newest supported Rell. */
+        fun bundledLspLibDir(): java.nio.file.Path {
+            val pluginDescriptor = checkNotNull(PluginManagerCore.getPlugin(PluginId.getId(PLUGIN_ID))) {
+                "Cannot find plugin by ID: $PLUGIN_ID"
+            }
+            return pluginDescriptor.pluginPath.toAbsolutePath() / "language-server"
+        }
     }
 }

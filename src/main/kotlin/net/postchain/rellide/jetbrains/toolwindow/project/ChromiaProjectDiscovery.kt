@@ -8,7 +8,8 @@ import java.io.File
  * Identifies subprojects that have Chromia configuration files.
  */
 object ChromiaProjectDiscovery {
-    private val indicators = listOf("chromia.yml", "chromia.yaml")
+    // Only chromia.yml: the Rell toolchain (chr, language server) never reads chromia.yaml.
+    private val indicators = listOf("chromia.yml")
 
     data class ChromiaProject(
         val name: String,

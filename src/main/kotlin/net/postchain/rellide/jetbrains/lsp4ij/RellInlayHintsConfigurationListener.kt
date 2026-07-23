@@ -39,7 +39,7 @@ class RellInlayHintsConfigurationListener : Disposable {
     }
 
     private fun onInlayHintsSettingsChanged() {
-        ProjectManager.getInstance().openProjects.forEach { project ->
+        for (project in ProjectManager.getInstance().openProjects) {
             sendConfigurationToLsp(project)
         }
     }

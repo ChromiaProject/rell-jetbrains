@@ -72,8 +72,8 @@ class KeywordCompletionProvider : CompletionProvider<CompletionParameters>() {
         context: ProcessingContext,
         result: CompletionResultSet
     ) {
-        keywords.forEach {
-            result.addElement(LookupElementBuilder.create(it).withBoldness(true))
+        for (keyword in keywords) {
+            result.addElement(LookupElementBuilder.create(keyword).withBoldness(true))
         }
     }
 

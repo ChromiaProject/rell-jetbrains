@@ -66,6 +66,16 @@
         <!-- Spellchecking -->
         <spellchecker.support language="Rell" implementationClass="net.postchain.rellide.jetbrains.spellchecking.RellSpellcheckingStrategy"/>
 
+        <!-- Version-exact syntax errors for projects on older supported Rell versions -->
+        <externalAnnotator language="Rell" implementationClass="net.postchain.rellide.jetbrains.chromia.RellVersionSyntaxAnnotator"/>
+
+        <!-- Banners for unsupported (below 0.16.0) and newer-than-known Rell versions -->
+        <editorNotificationProvider implementation="net.postchain.rellide.jetbrains.chromia.RellVersionEditorNotificationProvider"/>
+
+        <!-- Save-and-reload bar on chromia.yml while an edited rellVersion is unsaved -->
+        <editorNotificationProvider implementation="net.postchain.rellide.jetbrains.chromia.ChromiaConfigReloadNotificationProvider"/>
+        <postStartupActivity implementation="net.postchain.rellide.jetbrains.chromia.ChromiaConfigDocumentTracker"/>
+
         <!-- Custom icons -->
         <iconProvider implementation="net.postchain.rellide.jetbrains.icons.ChromiaYmlIconProvider" />
 
@@ -106,7 +116,17 @@
         <postStartupActivity implementation="net.postchain.rellide.jetbrains.lsp4ij.RellInlayHintsStartupActivity"/>
     </extensions>
 
+    <projectListeners>
+        <listener class="net.postchain.rellide.jetbrains.chromia.ChromiaConfigChangeListener"
+                  topic="com.intellij.openapi.vfs.newvfs.BulkFileListener"/>
+    </projectListeners>
+
     <extensions defaultExtensionNs="com.redhat.devtools.lsp4ij">
+        <!-- Per-version servers (docs/COMPATIBILITY.md): the newest supported Rell ships bundled
+             and keeps the historical server id; every older supported version gets its own server
+             entry backed by a downloaded runtime. The documentMatchers route each file to the
+             server of its chromia.yml-declared version — and to none below the compatibility
+             floor. -->
         <server id="rellLanguageServer"
                 name="Rell Language Server"
                 factoryClass="net.postchain.rellide.jetbrains.lsp4ij.RellLanguageServerFactory">
@@ -116,12 +136,31 @@
             </description>
         </server>
 
+        <server id="rellLanguageServer_0_16_0"
+                name="Rell Language Server (0.16.0)"
+                factoryClass="net.postchain.rellide.jetbrains.chromia.Rell0160LanguageServerFactory">
+            <description><![CDATA[
+            Rell Language Server for projects declaring compile.rellVersion 0.16.0
+        ]]>
+            </description>
+        </server>
+
         <languageMapping language="Rell"
                          serverId="rellLanguageServer"
-                         languageId="Rell"/>
+                         languageId="Rell"
+                         documentMatcher="net.postchain.rellide.jetbrains.chromia.RellNewestVersionDocumentMatcher"/>
+
+        <languageMapping language="Rell"
+                         serverId="rellLanguageServer_0_16_0"
+                         languageId="Rell"
+                         documentMatcher="net.postchain.rellide.jetbrains.chromia.Rell0160DocumentMatcher"/>
 
         <semanticTokensColorsProvider
                 serverId="rellLanguageServer"
+                class="net.postchain.rellide.jetbrains.lsp4ij.RellSemanticTokensColorProvider" />
+
+        <semanticTokensColorsProvider
+                serverId="rellLanguageServer_0_16_0"
                 class="net.postchain.rellide.jetbrains.lsp4ij.RellSemanticTokensColorProvider" />
     </extensions>
 
