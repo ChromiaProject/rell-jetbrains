@@ -16,6 +16,8 @@
 - Bumped Kotlin to 2.4.0
 - `chromia.yaml` (with the `.yaml` extension) is no longer treated as a project marker in the
   Chromia tool window &mdash; the Rell toolchain only reads `chromia.yml`
+### Fixed
+- Suppressed the `sun.misc.Unsafe` deprecation warnings printed by the language server on JDK 23+
 
 ## [0.4.0]
 ### Added

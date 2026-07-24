@@ -42,6 +42,21 @@ To run the plugin with socket connection to an external language server:
 Or use the intellij UI with the run configuration `Run Plugin with Socket LSP`
 This will launch the IDE with the plugin configured to connect to a language server running on localhost:5008.
 
+### Development against a Local Rell Clone
+To run the sandbox IDE with a language server built from Rell source instead of the published release:
+```sh
+  work/local-lsp.sh              # clones Rell into rell-local/ on first run, then runIde
+  work/local-lsp.sh --update     # fetch and fast-forward the clone first
+```
+`RELL_REF` selects a branch or tag (default `dev`), `RELL_REPO` a different remote.
+
+The clone is included into this build as a composite build, so `rell-toolbox-language-server` and
+`rell-toolbox-common` are built from source, and the editor grammar is read from the clone's
+`Rell.g4`. Only the newest supported Rell version is substituted — compatibility mode still
+downloads the published runtimes for older versions. Gradle drives both builds with one version and
+Rell needs a newer one than this project's wrapper ships, so the script runs the build through the
+clone's wrapper.
+
 ---
 
 Happy coding!

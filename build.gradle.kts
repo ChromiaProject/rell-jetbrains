@@ -39,12 +39,17 @@ sentry {
     authToken = System.getenv("SENTRY_AUTH_TOKEN") ?: ""
 }
 
+// Path of the local Rell clone in dev mode (work/local-lsp.sh); null for a regular build.
+val rellLocal: String? = providers.gradleProperty("rellLocal").orNull
+
 // Rell's ANTLR grammar (Rell.g4) ships in the `frontend` sources jar; we extract it at build time so
 // the editor parser always tracks the `rell` version in libs.versions.toml — no vendored grammar copy.
+// In dev mode it comes from the clone's source tree instead: a `:sources@jar` request can't be served
+// by the composite build's project substitution.
 val rellGrammar: Configuration by configurations.creating { isTransitive = false }
 
 dependencies {
-    rellGrammar("net.postchain.rell:frontend:${libs.versions.rell.get()}:sources@jar")
+    if (rellLocal == null) rellGrammar("net.postchain.rell:frontend:${libs.versions.rell.get()}:sources@jar")
     antlr(libs.antlr)
     implementation(libs.antlr.runtime)
 
@@ -107,7 +112,11 @@ val grammarDir = layout.buildDirectory.dir("rell-grammar")
 val extractRellGrammar by tasks.registering(Sync::class) {
     group = "build setup"
     description = "Unpacks Rell.g4 from the Rell frontend sources jar into the ANTLR grammar source dir."
-    from({ zipTree(rellGrammar.singleFile) }) { include("Rell.g4") }
+    if (rellLocal == null) {
+        from({ zipTree(rellGrammar.singleFile) }) { include("Rell.g4") }
+    } else {
+        from("$rellLocal/rell-base/frontend/src/main/antlr") { include("Rell.g4") }
+    }
     into(grammarDir)
 }
 

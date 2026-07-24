@@ -18,14 +18,18 @@ class RellLanguageServer(
     val project: Project,
     lspLibDir: java.nio.file.Path = bundledLspLibDir(),
 ) : OSProcessStreamConnectionProvider() {
-    private val extraOptions = listOf(
-        "-Xms128m",
-        "-Xmx${JvmHeapSizeManager.determineMaxHeapSizeMB() ?: DEFAULT_MAX_HEAP_SIZE_IN_MB}m",
-        "-Duser.language=en",
-        "-Duser.region=US",
-        "-DLspIncludeDefinition=false",
-        "-DLspResolveCompletion=true",
-    )
+    private val extraOptions = buildList {
+        add("-Xms128m")
+        add("-Xmx${JvmHeapSizeManager.determineMaxHeapSizeMB() ?: DEFAULT_MAX_HEAP_SIZE_IN_MB}m")
+        add("-Duser.language=en")
+        add("-Duser.region=US")
+        add("-DLspIncludeDefinition=false")
+        add("-DLspResolveCompletion=true")
+
+        // Apache Fory reaches for sun.misc.Unsafe memory access; without this the JDK prints a deprecation
+        // warning per launch. The option only exists since JDK 23, and older JBRs reject unknown options.
+        if (Runtime.version().feature() >= 23) add("--sun-misc-unsafe-memory-access=allow")
+    }
 
     init {
         val classpath = (lspLibDir / "*").pathString
