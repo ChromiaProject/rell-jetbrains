@@ -30,7 +30,6 @@ definitions:
         caches: [ gradle-wrapper, gradle-home, gradle-project, gradle-build-output ]
         script:
           - chmod +x ./gradlew
-          - export GRADLE_OPTS='-Dorg.gradle.daemon=false'
           - ./gradlew --build-cache buildPlugin test
         artifacts: [ build/distributions/*.zip ]
     - step: &release-build-step
@@ -42,7 +41,7 @@ definitions:
           # 2x step = 8192 MB. Budget: Gradle build JVM 3 GB heap + 768 MB
           # metaspace, Kotlin compile daemon 2 GB heap; the remaining ~2 GB
           # covers the forked test/headless-IDE JVMs and OS overhead.
-          - export GRADLE_OPTS='-Xmx3g -XX:MaxMetaspaceSize=768m -Dorg.gradle.daemon=false'
+          - export GRADLE_OPTS='-Xmx3g -XX:MaxMetaspaceSize=768m'
           - export SENTRY_AUTH_TOKEN="$RELL_JETBRAINS_SENTRY_AUTH_TOKEN"
           - rm -rf language-server
           - ./get-lsp.sh
@@ -72,7 +71,7 @@ definitions:
               exit 1
             fi
           # Same 8192 MB budget as the release build step.
-          - export GRADLE_OPTS='-Xmx3g -XX:MaxMetaspaceSize=768m -Dorg.gradle.daemon=false'
+          - export GRADLE_OPTS='-Xmx3g -XX:MaxMetaspaceSize=768m'
           - export SENTRY_AUTH_TOKEN="$RELL_JETBRAINS_SENTRY_AUTH_TOKEN"
           - export PRIVATE_KEY_PASSWORD="$RELL_JETBRAINS_PRIVATE_KEY_PASSWORD"
           - export PUBLISH_TOKEN="$RELL_JETBRAINS_PUBLISH_TOKEN"
