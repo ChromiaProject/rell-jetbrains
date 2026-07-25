@@ -56,12 +56,19 @@ definitions:
         caches: [ gradle-wrapper, gradle-home, gradle-project, gradle-build-output ]
         script:
           - chmod +x ./gradlew ./get-lsp.sh
+          # The temurin image has no git; the clone happens in the build setup
+          # phase, so the tag guard and the tag push below need it installed.
+          - apt-get update && apt-get install -y --no-install-recommends git
           # Released versions are tagged with the plain version number; refuse to
           # re-publish a version that already has a tag.
           - VERSION=$(sed -n 's/^pluginVersion=//p' gradle.properties)
           - |
-            if git ls-remote --exit-code --tags origin "refs/tags/$VERSION" > /dev/null; then
+            git ls-remote --exit-code --tags origin "refs/tags/$VERSION" > /dev/null && status=0 || status=$?
+            if [ "$status" -eq 0 ]; then
               echo "Tag $VERSION already exists. Bump pluginVersion before releasing." >&2
+              exit 1
+            elif [ "$status" -ne 2 ]; then
+              echo "git ls-remote failed with status $status." >&2
               exit 1
             fi
           # Same 8192 MB budget as the release build step.
