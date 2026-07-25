@@ -12,6 +12,7 @@ import net.postchain.rellide.jetbrains.settings.RellPluginSettingsState
 import kotlin.io.path.Path
 import kotlin.io.path.absolutePathString
 import kotlin.io.path.div
+import kotlin.io.path.exists
 import kotlin.io.path.pathString
 
 class RellLanguageServer(
@@ -25,6 +26,12 @@ class RellLanguageServer(
         add("-Duser.region=US")
         add("-DLspIncludeDefinition=false")
         add("-DLspResolveCompletion=true")
+
+        // The log4j2 config inside the language-server jar wires a Sentry appender into the root
+        // logger, which uploads every logged error without asking the user. Point log4j2 at our own
+        // config instead. Absent in local dev runs against a hand-placed jar, hence the check.
+        val log4jOverride = lspLibDir / LOG4J_OVERRIDE_FILE
+        if (log4jOverride.exists()) add("-Dlog4j2.configurationFile=${log4jOverride.absolutePathString()}")
 
         // Apache Fory reaches for sun.misc.Unsafe memory access; without this the JDK prints a deprecation
         // warning per launch. The option only exists since JDK 23, and older JBRs reject unknown options.
@@ -55,6 +62,7 @@ class RellLanguageServer(
         private const val PLUGIN_ID = "net.postchain.rellide.jetbrains"
         private const val DEFAULT_MAX_HEAP_SIZE_IN_MB = 2048
         private const val LSP_MAIN_CLASS = "net.postchain.rell.toolbox.lsp.StdioMainKt"
+        private const val LOG4J_OVERRIDE_FILE = "log4j2-override.properties"
 
         /** The language-server runtime bundled with the plugin — always the newest supported Rell. */
         fun bundledLspLibDir(): java.nio.file.Path {

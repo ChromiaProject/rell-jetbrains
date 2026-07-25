@@ -128,6 +128,14 @@ tab_size=4
 
 ---
 
+## 🔒 Privacy
+
+The plugin collects no analytics or telemetry. Crash reports are sent to ChromaWay's error tracker
+(Sentry, hosted in the EU) only when you explicitly submit one from the IDE's error dialog. The
+`PRIVACY_POLICY.md` file in the plugin repository describes exactly what a report contains.
+
+---
+
 ## 📖 Learn More
 
 * [Rell Documentation](https://docs.chromia.com/rell/rell-intro)

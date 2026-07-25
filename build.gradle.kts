@@ -155,12 +155,15 @@ sourceSets["main"].resources.srcDir(generateRellVersionRegistry)
 // RellVersionSyntaxAnnotator runs for version-true syntax errors.
 val versionedGrammarRoots = supportedRellVersions.dropLast(1).map { version ->
     val suffix = "v" + version.replace('.', '_')
+
     val grammarConfig = configurations.create("rellGrammar${suffix.replaceFirstChar { it.uppercase() }}") {
         isTransitive = false
     }
+
     dependencies { grammarConfig("net.postchain.rell:frontend:$version:sources@jar") }
 
     val versionedGrammarDir = layout.buildDirectory.dir("rell-grammar-$suffix")
+
     val extract = tasks.register<Sync>("extractRellGrammar${suffix.replaceFirstChar { it.uppercase() }}") {
         group = "build setup"
         description = "Unpacks Rell.g4 of Rell $version for the versioned syntax annotator."
@@ -378,7 +381,12 @@ tasks {
         from(rellLanguageServerRuntime) {
             into("${properties("pluginName").get()}/language-server")
         }
+
+        from(layout.projectDirectory.file("lsp-config/log4j2-override.properties")) {
+            into("${properties("pluginName").get()}/language-server")
+        }
     }
+
     runIde {
         // Pass specific JVM args only when a specific property is set
         if (project.hasProperty("useSocket")) {

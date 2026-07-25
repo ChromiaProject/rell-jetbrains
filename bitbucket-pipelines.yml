@@ -57,7 +57,7 @@ definitions:
           - chmod +x ./gradlew ./get-lsp.sh
           # The temurin image has no git; the clone happens in the build setup
           # phase, so the tag guard and the tag push below need it installed.
-          - apt-get update && apt-get install -y --no-install-recommends git
+          - apt-get update && apt-get install -y --no-install-recommends git curl
           # Released versions are tagged with the plain version number; refuse to
           # re-publish a version that already has a tag.
           - VERSION=$(sed -n 's/^pluginVersion=//p' gradle.properties)
@@ -73,6 +73,23 @@ definitions:
           # Same 8192 MB budget as the release build step.
           - export GRADLE_OPTS='-Xmx3g -XX:MaxMetaspaceSize=768m'
           - export SENTRY_AUTH_TOKEN="$RELL_JETBRAINS_SENTRY_AUTH_TOKEN"
+          # A missing token silently disables source context (build.gradle.kts),
+          # and a revoked one only fails deep inside the build — check both here.
+          - |
+            if [ -z "$SENTRY_AUTH_TOKEN" ]; then
+              echo "SENTRY_AUTH_TOKEN is empty: set RELL_JETBRAINS_SENTRY_AUTH_TOKEN before releasing." >&2
+              exit 1
+            fi
+            code=$(curl -sS -o /dev/null -w '%{http_code}' --max-time 20 --retry 2 \
+              -H "Authorization: Bearer $SENTRY_AUTH_TOKEN" \
+              https://sentry.io/api/0/organizations/chromaway-ab-za/)
+            case "$code" in
+              2??) ;;
+              *)
+                echo "Sentry rejected SENTRY_AUTH_TOKEN (HTTP $code). Rotate the token before releasing." >&2
+                exit 1
+                ;;
+            esac
           - export PRIVATE_KEY_PASSWORD="$RELL_JETBRAINS_PRIVATE_KEY_PASSWORD"
           - export PUBLISH_TOKEN="$RELL_JETBRAINS_PUBLISH_TOKEN"
           # The build reads CERTIFICATE_CHAIN / PRIVATE_KEY as file paths, so the

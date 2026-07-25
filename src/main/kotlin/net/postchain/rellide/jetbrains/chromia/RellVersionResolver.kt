@@ -11,9 +11,7 @@ import com.intellij.util.messages.Topic
 import net.postchain.rell.toolbox.chromia.ChromiaModelProvider
 import net.postchain.rellide.jetbrains.chromia.RellVersionResolution.Origin
 import java.io.IOException
-import java.nio.file.Files
 import java.util.concurrent.ConcurrentHashMap
-import kotlin.io.path.createTempDirectory
 import kotlin.io.path.createTempFile
 import kotlin.io.path.deleteIfExists
 
@@ -129,8 +127,6 @@ class RellVersionResolver(private val project: Project) {
         LOG.warn("Unreadable chromia.yml at ${configFile.path}; using ${RellVersionRegistry.max}")
         return ParsedConfig(declaredVersion = null, readable = false)
     }
-
-    operator fun div(file: com.intellij.openapi.vfs.VirtualFile) {}
 
     private data class ParsedConfig(val declaredVersion: String?, val readable: Boolean)
 

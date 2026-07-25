@@ -15,6 +15,7 @@ correct diagnostics.
 | Plugin version | Supported Rell versions | Bundled (newest) |
 |----------------|-------------------------|------------------|
 | 0.4.1          | 0.16.0, 0.16.1          | 0.16.1           |
+| 0.4.2          | 0.16.0, 0.16.1          | 0.16.1           |
 
 ## How the version is resolved
 

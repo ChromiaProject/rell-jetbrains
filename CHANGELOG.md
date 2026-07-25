@@ -1,5 +1,19 @@
 # Changelog
 
+## [0.4.2]
+### Added
+- `PRIVACY_POLICY.md`, documenting exactly what the plugin sends, when it is sent, and who receives it
+- A notice in the IDE error dialog describing what a crash report contains before you submit it
+### Changed
+- Crash reports submitted from the error dialog no longer carry the machine hostname, and absolute
+  paths in them are rewritten to drop your home directory &mdash; `/Users/jsmith/project` is sent as
+  `~/project`
+### Fixed
+- The bundled Rell language server no longer reports errors on its own. Versions 0.4.1 and earlier
+  shipped a language server that automatically uploaded every error it logged (including
+  absolute file paths) to ChromaWay's error tracker, without asking and with no way to opt
+  out. Crash reporting is now opt-in only, through the IDE's error dialog
+
 ## [0.4.1]
 ### Added
 - Rell Language Server with Rell version 0.16.1
