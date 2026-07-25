@@ -19,7 +19,7 @@
 
 # Verify plugin compatibility
 ./gradlew verifyPlugin
-# Checks compatibility with IntelliJ versions 242-253.*
+# Checks compatibility with IntelliJ versions 253.33813-262.*
 
 # Sign plugin (requires certificates)
 ./gradlew signPlugin

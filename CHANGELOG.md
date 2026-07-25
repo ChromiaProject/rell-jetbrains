@@ -5,6 +5,7 @@
 - `PRIVACY_POLICY.md`, documenting exactly what the plugin sends, when it is sent, and who receives it
 - A notice in the IDE error dialog describing what a crash report contains before you submit it
 ### Changed
+- Raised the minimum supported IDE version to 2025.3.6 (build 253.33813)
 - Crash reports submitted from the error dialog no longer carry the machine hostname, and absolute
   paths in them are rewritten to drop your home directory &mdash; `/Users/jsmith/project` is sent as
   `~/project`
