@@ -33,20 +33,29 @@ definitions:
           - ./gradlew --build-cache buildPlugin test
         artifacts: [ build/distributions/*.zip ]
     - step: &release-build-step
-        name: Build and Test (release)
+        name: Build, Test and Verify (release)
         size: 2x
         caches: [ gradle-wrapper, gradle-home, gradle-project, gradle-build-output ]
         script:
           - chmod +x ./gradlew ./get-lsp.sh
           # 2x step = 8192 MB. Budget: Gradle build JVM 3 GB heap + 768 MB
           # metaspace, Kotlin compile daemon 2 GB heap; the remaining ~2 GB
-          # covers the forked test/headless-IDE JVMs and OS overhead.
+          # covers the forked JVMs — test/headless IDE first, then the plugin
+          # verifier, which runs after the test JVMs are gone.
           - export GRADLE_OPTS='-Xmx3g -XX:MaxMetaspaceSize=768m'
           - export SENTRY_AUTH_TOKEN="$RELL_JETBRAINS_SENTRY_AUTH_TOKEN"
           - rm -rf language-server
           - ./get-lsp.sh
-          - ./gradlew --build-cache "-Pkotlin.daemon.jvmargs=-Xmx2g" buildPlugin test
-        artifacts: [ build/distributions/*.zip ]
+          # verifyPlugin runs the JetBrains Plugin Verifier against every IDE in
+          # the supported build range — the same check the Marketplace applies
+          # after upload, and what sank 0.4.1. It gates the manual publish step
+          # below, which Bitbucket only offers once this step is green.
+          - ./gradlew --build-cache "-Pkotlin.daemon.jvmargs=-Xmx2g" buildPlugin test verifyPlugin
+        artifacts:
+          - build/distributions/*.zip
+          # Per-IDE verifier reports, kept so a passing run can still be
+          # inspected for warnings the failure level does not act on.
+          - build/reports/pluginVerifier/**
     - step: &publish-step
         name: Publish to JetBrains Marketplace
         size: 2x
