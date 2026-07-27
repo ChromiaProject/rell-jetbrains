@@ -4,6 +4,7 @@ import org.gradle.api.plugins.antlr.AntlrTask
 import org.jetbrains.changelog.Changelog
 import org.jetbrains.changelog.markdownToHTML
 import org.jetbrains.intellij.platform.gradle.TestFrameworkType
+import org.jetbrains.intellij.platform.gradle.tasks.VerifyPluginTask.FailureLevel
 import org.jetbrains.kotlin.gradle.dsl.JvmDefaultMode
 
 fun properties(key: String) = providers.gradleProperty(key)
@@ -284,6 +285,18 @@ intellijPlatform {
     }
 
     pluginVerification {
+        // Only defects that make the plugin unpublishable or broken at runtime
+        // fail the build. The verifier also reports deprecated, experimental,
+        // internal and override-only API usages; those are advisory — they are
+        // still written to the verification report, but they must not block a
+        // release, since the platform accumulates them faster than we can
+        // migrate away from them.
+        failureLevel = listOf(
+                FailureLevel.COMPATIBILITY_PROBLEMS,
+                FailureLevel.INVALID_PLUGIN,
+                FailureLevel.MISSING_DEPENDENCIES,
+        )
+
         ides {
             recommended()
         }
