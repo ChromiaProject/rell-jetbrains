@@ -36,6 +36,21 @@ Even though the LSP server handles compilation, the IDE still needs a local AST 
 2. **PSI Tree Navigation:** JetBrains IDEs use PSI (Program Structure Interface) trees for local navigation features. Some IDE features expect a PSI tree to exist.
 
 
+### Why One Toolchain per Rell Version?
+
+**What:** A single plugin build carries several Rell toolchains at once. Every `.rell` file is routed
+to the grammar and the language server matching the `compile.rellVersion` declared in its nearest
+`chromia.yml`.
+
+**Why:** Rell changes syntax in patch releases (lambdas arrived in 0.16.1), and the compiler's own
+`compatibility` option gates library members and behavior switches, never syntax. Only the matching
+toolchain produces correct diagnostics, so the plugin ships one per supported version rather than
+approximating with the newest.
+
+The full rules — resolution, clamping, the 0.16.0 floor, downloaded runtimes — are in
+[COMPATIBILITY.md](COMPATIBILITY.md).
+
+
 ### Why Test Runner Integration?
 
 **What:** Custom "Rell Test" run configuration that launches Chromia CLI (`chr test`) and displays results in IDE test runner UI.
@@ -45,8 +60,6 @@ Even though the LSP server handles compilation, the IDE still needs a local AST 
 1. **Developer Workflow:** Running tests from the IDE (with gutter icons and keyboard shortcuts) is standard practice. Forcing developers to switch to terminal interrupts flow.
 
 2. **Result Visualization:** IDE test runners show pass/fail status, execution time, and failure messages in a familiar UI. Terminal output is harder to parse visually.
-
-3. **Debugging Integration:** Future enhancement potential to attach debuggers to test processes.
 
 **Alternative Considered (Not Chosen):** Could have used external terminal integration, but this provides worse UX and no structured result reporting.
 
@@ -60,15 +73,20 @@ Even though the LSP server handles compilation, the IDE still needs a local AST 
 flowchart TB
     subgraph IDE["JetBrains IDE"]
         subgraph Plugin["Rell Plugin (This Codebase)"]
-            Lang["Language Definition<br/>(Grammar)"]
-            LSP4IJ["LSP4IJ Integration<br/>(RellLanguageServer)"]
+            Lang["Language Definition<br/>(ANTLR grammar → PSI)"]
+            Route["Version Resolution<br/>(chromia.yml → toolchain)"]
+            LSP4IJ["LSP4IJ Integration<br/>(per-version server factories)"]
             Test["Test Runner"]
-            Server["Rell Language Server Process<br/>(Separate JVM)"]
             Lang <--> LSP4IJ
-            LSP4IJ -->|LSP Protocol| Server
+            Route --> Lang
+            Route --> LSP4IJ
         end
     end
+    Bundled["Rell Language Server<br/>bundled newest (separate JVM)"]
+    Downloaded["Rell Language Server<br/>older version (downloaded)"]
     CLI["Chromia CLI<br/>(chr, external)"]
+    LSP4IJ -->|LSP Protocol| Bundled
+    LSP4IJ -->|LSP Protocol| Downloaded
     Test -->|Launches| CLI
 ```
 
@@ -77,7 +95,7 @@ flowchart TB
 **1. Plugin Loads (IDE Startup)**
 - IDE reads `src/main/resources/META-INF/plugin.xml`
 - Registers language (`RellLanguage`), file type (`.rell`)
-- Registers LSP factory (`RellLanguageServerFactory`)
+- Registers one LSP4IJ `<server>` per supported Rell version, each with a document matcher
 - Registers test configuration type
 - Registers tool window factory
 
@@ -85,10 +103,14 @@ flowchart TB
 - IDE creates PSI file using `RellParserDefinition`
 - Local parser generates PSI tree from source
 - Basic syntax highlighting applied via `RellSyntaxHighlighter`
-- LSP4IJ detects Rell file and calls `RellLanguageServerFactory.createConnectionProvider()`
-- Factory returns `RellLanguageServer` (subprocess mode) or `RellSocketLanguageServer` (socket mode)
-- LSP server starts on first `.rell` file opening (embedded JAR launched as subprocess or connection made to port 5008)
-- Initialization options sent to server
+- LSP4IJ asks each registered document matcher whether it claims this file
+- `RellVersionResolver` walks up to the nearest `chromia.yml` and resolves the file's Rell version;
+  the matching version's matcher accepts, and the others decline (below the 0.16.0 floor, all decline)
+- The accepting server's factory returns `RellLanguageServer` (subprocess mode) or
+  `RellSocketLanguageServer` (socket mode, `-Drell.lsp.useSocket=true`)
+- The server starts on first `.rell` file opening (bundled classpath launched as a subprocess, or a
+  connection to port 5008)
+- Initialization options (index caching, inlay hints) sent to server
 
 **3. Language Intelligence (User Types Code)**
 - IDE sends `textDocument/didChange` notification to LSP
@@ -97,6 +119,8 @@ flowchart TB
 - Semantic tokens received from LSP
 - `RellSemanticTokensColorProvider` maps tokens to IDE colors
 - Syntax highlighting updates
+- On a project pinned to an older supported version, `RellVersionSyntaxAnnotator` additionally runs
+  that version's own ANTLR parser and reports syntax the version does not accept
 
 **4. User Invokes Action (e.g., Go to Definition)**
 - IDE sends `textDocument/definition` request to LSP
@@ -107,13 +131,20 @@ flowchart TB
 - Click gutter icon (provided by `RellTestLineMarkerProvider`)
 - IDE creates `RellTestRunConfiguration`
 - `RellTestRunProfileState.execute()` called
-- Builds command: `chr test <scope> --output-format json`
-- Launches process via `GeneralCommandLine`
-- `RellTestResultsListener` parses output (Service Messages protocol)
+- Builds command: `chr test --modules <module>` (or `--blockchain` / `--tests`), plus `--hide-lib-warnings`
+- Launches process through the system shell via `GeneralCommandLine`
+- The SM test runner parses the CLI's TeamCity service messages; `RellTestResultsListener` wraps the
+  run in a node reflecting the process exit code
 - Results displayed in test runner UI
 
-**6. Plugin Unload (IDE Shutdown)**
-- LSP server process terminated
+**6. `chromia.yml` Changes**
+- `ChromiaConfigChangeListener` sees the VFS event, drops `RellVersionResolver` caches and publishes
+  on the config topic
+- Highlighting restarts, banners re-evaluate, and the Rell language servers restart so files re-route
+  to the right toolchain
+
+**7. Plugin Unload (IDE Shutdown)**
+- LSP server processes terminated
 - Caches cleared
 
 ### Data Flow: How Code Gets Analyzed

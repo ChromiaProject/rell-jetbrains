@@ -6,67 +6,62 @@
 
 ## Prerequisites
 
-**Required:**
-- **JDK 21** (the plugin is built with Java 21 toolchain)
-- **Gradle 8.14+** (wrapper included)
-- **Git** (for version control)
-
-**Optional:**
-- **IntelliJ IDEA** (Community or Ultimate) for development
-- **Chromia CLI** (`chr` command) for test runner functionality
+- **JDK 21**
+- **Chromia CLI** (`chr`) — only needed to exercise the test runner and the Chromia tool window.
 
 ---
 
 ## Initial Setup
 
 ```bash
-# Clone the repository
 git clone https://bitbucket.org/chromawallet/rell-jetbrains.git
 cd rell-jetbrains
-
-# Build the plugin
 ./gradlew buildPlugin
-
-# The built plugin will be at:
-# build/distributions/rell-jetbrains-<VERSION>.zip
+# Output: build/distributions/rell-jetbrains-<VERSION>.zip
 ```
 
-**Windows:** Use `gradlew.bat` instead of `./gradlew`
+The Rell artifacts come from the Chromia GitLab Maven registries listed in `build.gradle.kts`, not
+from Maven Central.
 
 ---
 
 ## Running the Plugin in Development Mode
 
 ```bash
-# Launch IntelliJ IDEA with plugin loaded
 ./gradlew runIde
 ```
 
-This opens a "sandbox" IDE instance with the plugin installed. You can create test projects and verify plugin behavior.
+This opens a sandbox IDE instance with the plugin installed.
 
-**Development Tip:** To connect to an external language server running on port 5008 (useful for debugging the LSP server):
+To connect to an external language server on port 5008 instead of launching the bundled one (useful
+when debugging the server):
 
 ```bash
 ./gradlew runIde -PuseSocket
 ```
 
-This uses `RellSocketLanguageServer` instead of `RellLanguageServer`, connecting to `localhost:5008` instead of launching the embedded JAR.
+This uses `RellSocketLanguageServer` instead of `RellLanguageServer`.
+
+The `.run/` directory ships equivalent IDE run configurations: `Run Plugin`,
+`Run Plugin with Socket LSP`, `Run Tests`, `Run Verifications`, `Run Qodana`, `Run IDE for UI Tests`.
+
+To run the sandbox against a language server built from a local Rell clone, see
+[DEV_GUIDE.md](../DEV_GUIDE.md) (`work/local-lsp.sh`).
 
 ---
 
 ## Running Tests
 
 ```bash
-# Run all tests
 ./gradlew test
 
-# Run with code coverage
+# With code coverage
 ./gradlew test koverHtmlReport
 # Coverage report: build/reports/kover/html/index.html
 ```
 
-**What Tests Exist:**
-- **Parser Tests:** Validates generated parser against test cases from Rell language server
+Most tests run against a headless IDE fixture, so `test` starts a platform instance. See
+[Testing Strategy](05-testing.md) for what the suites cover.
 
 ---
 

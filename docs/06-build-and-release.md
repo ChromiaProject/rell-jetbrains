@@ -19,9 +19,10 @@
 
 # Verify plugin compatibility
 ./gradlew verifyPlugin
-# Checks compatibility with IntelliJ versions 253.33813-262.*
+# Runs the JetBrains Plugin Verifier against the recommended IDEs in the
+# 253.33813-262.* build range declared in gradle.properties
 
-# Sign plugin (requires certificates)
+# Sign plugin (requires CERTIFICATE_CHAIN / PRIVATE_KEY / PRIVATE_KEY_PASSWORD)
 ./gradlew signPlugin
 
 # Publish to JetBrains Marketplace
@@ -29,62 +30,94 @@
 # Requires PUBLISH_TOKEN environment variable
 ```
 
+`verifyPlugin` only fails on `COMPATIBILITY_PROBLEMS`, `INVALID_PLUGIN` and `MISSING_DEPENDENCIES`.
+Deprecated, experimental, internal and override-only API usages still land in
+`build/reports/pluginVerifier/`, but the platform accumulates them faster than they can be migrated
+away, so they do not block a release.
+
+### Build-generated inputs
+
+Three generation steps run before compilation, all driven by `supportedRellVersions` and the `rell`
+version in `gradle/libs.versions.toml`:
+
+- `extractRellGrammar` + `generateGrammarSource` — `Rell.g4` for the newest supported version, from
+  the `net.postchain.rell:frontend:<rell>:sources` jar, generating the editor parser/lexer. Each
+  older version gets its own extract/generate pair into a version-suffixed package.
+- `generateRellVersionRegistry` — `rell/supported-versions.txt`, read by `RellVersionRegistry`. It
+  fails the build if `supportedRellVersions` does not end with the `rell` version, so the two cannot
+  drift.
+- `generateRellLspLockfiles` — `rell/lsp-lockfiles/<version>.lock` (GAV + SHA-256) for the
+  downloadable language-server runtimes of older versions.
+
+The bundled language server is resolved from Maven as a detached configuration and copied into the
+plugin by `prepareSandbox`, together with `lsp-config/log4j2-override.properties`. There is no manual
+download step.
+
 ### Dependencies
 
-**Managed by Gradle IntelliJ Platform Plugin:**
+**Managed by the IntelliJ Platform Gradle Plugin** (configured from `gradle.properties`):
 
-```kotlin
-intellijPlatform {
-    create("IC", "2025.2.4")  // IntelliJ Community 2025.2.4
-    bundledPlugins("com.intellij")
-    plugins(
-        "com.redhat.devtools.lsp4ij:0.19.4",
-        "org.jetbrains.plugins.terminal:251.26094.87"
-    )
-}
+```properties
+platformType=IU
+platformVersion=2026.1.1
+platformPlugins=com.redhat.devtools.lsp4ij:0.20.1
+platformBundledPlugins=com.intellij, org.jetbrains.plugins.terminal
 ```
 
 **External Maven Repositories:**
 - **Rell GitLab Registry:** `https://gitlab.com/api/v4/projects/32802097`
 - **Postchain GitLab Registry:** `https://gitlab.com/api/v4/projects/32294340`
 - **Chromia GitLab Registry:** `https://gitlab.com/api/v4/projects/50818999`
+- **Chromia CLI tools GitLab Registry:** `https://gitlab.com/api/v4/projects/64941451`
+- **etherjar:** `https://maven.emrld.io`
 
-**Why GitLab Maven?** Rell and related libraries are hosted on private GitLab repositories (not Maven Central).
+**Why GitLab Maven?** Rell and related libraries are hosted on GitLab package registries (not Maven Central).
 
+`RellLspRuntimeManager` mirrors this list at runtime when downloading older language-server runtimes.
 
-### Jenkins pipeline
+### CI: Bitbucket Pipelines
 
-Internal Jenkins pipeline automates publishing plugin to JetBrains Marketplace.
-Ask Chromia DevOps team for access.
+`bitbucket-pipelines.yml` defines three steps:
 
-Release steps:
-- After merging new features to `main`, Manually trigger Jenkins pipeline build. (pipeline: rell-jetbrains)
-- It will build, sign, and publish the plugin to JetBrains Marketplace.
-- Check [JetBrains Marketplace](https://plugins.jetbrains.com/) for new version.
-- Ask DevTools team credentials to log in to Marketplace and check submission status.
-- Release isn't automatically available. review takes time (usually few business days).
-- Jetbrains is periodically scanning the plugin for compatibility and security issues and reports back (through email)
+- **Pull requests:** `buildPlugin test`.
+- **`main`:** the release build — `buildPlugin test verifyPlugin` with `SENTRY_AUTH_TOKEN` set, so
+  source context is uploaded. This gates the publish step, which Bitbucket only offers once the
+  build is green.
+- **Publish (manual trigger, Production deployment):** refuses to run if a git tag for the current
+  `pluginVersion` already exists, checks that `SENTRY_AUTH_TOKEN` is present and accepted by
+  Sentry, then runs `publishPlugin` and tags the commit with the plain version number.
 
+Released versions are therefore always tagged — which is why a `## [x.y.z]` section in CHANGELOG.md
+with a matching tag must never be edited.
+
+After publishing: the Marketplace review takes a few business days, and JetBrains periodically
+rescans published plugins for compatibility and security issues, reporting by email.
 
 ### Sentry Integration
 
-**Purpose:** Automatic error reporting for plugin crashes.
+**Purpose:** Crash reporting for plugin errors, submitted by the user from the IDE's error dialog.
 
 **Configuration (`build.gradle.kts`):**
 ```kotlin
 sentry {
-    includeSourceContext = true
+    autoInstallation { enabled = false }
+    includeSourceContext = sentryAuthToken != null
     org = "chromaway-ab-za"
     projectName = "rell-jetbrains"
-    authToken = System.getenv("SENTRY_AUTH_TOKEN")
+    authToken = System.getenv("SENTRY_AUTH_TOKEN") ?: ""
 }
 ```
 
-**Error Reporting (`SentryReportSubmitter.kt`):**
-- Catches uncaught exceptions in plugin code
-- Sends stack traces to Sentry
-- Includes IDE version, plugin version, OS info
+Auto-installation is off deliberately: it grafts extra Sentry modules onto every resolved
+configuration, including the language server's runtime classpath, and the Sentry SDK refuses to start
+on mixed versions — which kills the server on launch.
 
-**Privacy:** Users can opt-in/out via IDE settings.
+**Error Reporting (`SentryReportSubmitter.kt`):**
+- Registered as the plugin's `errorHandler`, so it appears in the IDE's error dialog
+- Nothing is sent unless the user presses the report button; the dialog shows a privacy notice first
+- Events whose stack traces do not involve the plugin or LSP4IJ are dropped, the machine hostname is
+  not attached, and home directories are scrubbed from paths
+
+See [PRIVACY_POLICY.md](../PRIVACY_POLICY.md) for the full statement.
 
 [← Previous: Testing Strategy](05-testing.md)

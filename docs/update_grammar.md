@@ -11,21 +11,21 @@ The grammar is **not vendored**: it is extracted at build time from the publishe
 
 ## Step 1: Bump the Rell version
 
-Update the `rell` version in `gradle/libs.versions.toml`, then refresh the bundled language server:
-
-```bash
-./get-lsp.sh   # downloads language-server/rell-toolbox-language-server-<version>.jar
-```
-
-That's it for the grammar — `extractRellGrammar` pulls `Rell.g4` from the matching `frontend` sources
-jar into `build/rell-grammar/`, and `generateGrammarSource` (wired before `compileKotlin`) emits
+Update the `rell` version in `gradle/libs.versions.toml`. That's it for the grammar —
+`extractRellGrammar` pulls `Rell.g4` from the matching `frontend` sources jar into
+`build/rell-grammar/`, and `generateGrammarSource` (wired before `compileKotlin`) emits
 `RellParser`/`RellLexer` into `build/generated-src/antlr/main/...` (generated, not committed). The
 ANTLR tool/runtime version is pinned together in `libs.versions.toml` (`antlr`) so the serialized ATN
-always matches the runtime.
+always matches the runtime. The bundled language server tracks the same version and is resolved from
+Maven by the build.
 
 ```bash
 ./gradlew generateGrammarSource   # optional: regenerate on demand
 ```
+
+A version bump is also a compatibility-mode change: the previous newest version stays supported and
+needs its own parser entry, `plugin.xml` server triple and matrix row. Follow the release checklist
+in [COMPATIBILITY.md](COMPATIBILITY.md).
 
 ## Step 2: Reconcile token/rule references (only if the grammar changed shape)
 
