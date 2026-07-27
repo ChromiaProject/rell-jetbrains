@@ -74,10 +74,10 @@ process on your machine and communicates with the IDE over a local connection on
 compilation and analysis happens locally, and the plugin configures the language server so that it
 does not report errors anywhere.
 
-Note for users of plugin versions **0.4.1 and earlier**: those versions shipped a language server
+Note for users of plugin versions **0.4.0 and earlier**: those versions shipped a language server
 that automatically uploaded its own error logs, including absolute file paths, to ChromaWay's
 Sentry organization without asking. This was not intended, was not previously disclosed, and is
-fixed from version 0.4.2 onward. If you are affected and want the historical reports from your
+fixed from version 0.4.1 onward. If you are affected and want the historical reports from your
 machine deleted, contact us at the address below.
 
 ## Network connections

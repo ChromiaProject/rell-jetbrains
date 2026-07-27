@@ -1,20 +1,5 @@
 # Changelog
 
-## [0.4.2]
-### Added
-- `PRIVACY_POLICY.md`, documenting exactly what the plugin sends, when it is sent, and who receives it
-- A notice in the IDE error dialog describing what a crash report contains before you submit it
-### Changed
-- Raised the minimum supported IDE version to 2025.3.6 (build 253.33813)
-- Crash reports submitted from the error dialog no longer carry the machine hostname, and absolute
-  paths in them are rewritten to drop your home directory &mdash; `/Users/jsmith/project` is sent as
-  `~/project`
-### Fixed
-- The bundled Rell language server no longer reports errors on its own. Versions 0.4.1 and earlier
-  shipped a language server that automatically uploaded every error it logged (including
-  absolute file paths) to ChromaWay's error tracker, without asking and with no way to opt
-  out. Crash reporting is now opt-in only, through the IDE's error dialog
-
 ## [0.4.1]
 ### Added
 - Rell Language Server with Rell version 0.16.1
@@ -26,12 +11,21 @@
 - Editor banners for unsupported (below 0.16.0) Rell versions &mdash; with a one-click
   `rellVersion` upgrade fix &mdash; and for versions newer than the plugin knows
 - Support for IntelliJ Platform 2026.2
+- `PRIVACY_POLICY.md`, documenting exactly what the plugin sends, when it is sent, and who receives it
+- A notice in the IDE error dialog describing what a crash report contains before you submit it
 ### Changed
-- Raised the minimum supported IDE version to 2025.2
+- Raised the minimum supported IDE version to 2025.3.6 (build 253.33813)
 - Bumped Kotlin to 2.4.0
 - `chromia.yaml` (with the `.yaml` extension) is no longer treated as a project marker in the
   Chromia tool window &mdash; the Rell toolchain only reads `chromia.yml`
+- Crash reports submitted from the error dialog no longer carry the machine hostname, and absolute
+  paths in them are rewritten to drop your home directory &mdash; `/Users/jsmith/project` is sent as
+  `~/project`
 ### Fixed
+- The bundled Rell language server no longer reports errors on its own. Versions 0.4.0 and earlier
+  shipped a language server that automatically uploaded every error it logged (including
+  absolute file paths) to ChromaWay's error tracker, without asking and with no way to opt
+  out. Crash reporting is now opt-in only, through the IDE's error dialog
 - Suppressed the `sun.misc.Unsafe` deprecation warnings printed by the language server on JDK 23+
 
 ## [0.4.0]
