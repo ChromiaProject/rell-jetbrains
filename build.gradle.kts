@@ -47,7 +47,7 @@ val rellLocal: String? = providers.gradleProperty("rellLocal").orNull
 // the editor parser always tracks the `rell` version in libs.versions.toml — no vendored grammar copy.
 // In dev mode it comes from the clone's source tree instead: a `:sources@jar` request can't be served
 // by the composite build's project substitution.
-val rellGrammar: Configuration by configurations.creating { isTransitive = false }
+val rellGrammar: Configuration = configurations.create("rellGrammar") { isTransitive = false }
 
 dependencies {
     if (rellLocal == null) rellGrammar("net.postchain.rell:frontend:${libs.versions.rell.get()}:sources@jar")
@@ -110,7 +110,7 @@ val antlrPackage = "net.postchain.rellide.jetbrains.language.parser"
 val grammarDir = layout.buildDirectory.dir("rell-grammar")
 
 // Unpack Rell.g4 from the frontend sources jar into a build dir that the antlr source set reads from.
-val extractRellGrammar by tasks.registering(Sync::class) {
+val extractRellGrammar = tasks.register<Sync>("extractRellGrammar") {
     group = "build setup"
     description = "Unpacks Rell.g4 from the Rell frontend sources jar into the ANTLR grammar source dir."
     if (rellLocal == null) {
@@ -129,7 +129,7 @@ sourceSets["main"].extensions.getByName<SourceDirectorySet>("antlr")
 // the generation task fails otherwise, so the two can't drift.
 val supportedRellVersions = listOf("0.16.0", "0.16.1")
 
-val generateRellVersionRegistry by tasks.registering {
+val generateRellVersionRegistry = tasks.register("generateRellVersionRegistry") {
     group = "build setup"
     description = "Writes the supported Rell version list read by RellVersionRegistry at runtime."
     val versions = supportedRellVersions
@@ -354,7 +354,7 @@ val olderRellLspRuntimes = supportedRellVersions.dropLast(1).map { version ->
     }
 }
 
-val generateRellLspLockfiles by tasks.registering {
+val generateRellLspLockfiles = tasks.register("generateRellLspLockfiles") {
     group = "build setup"
     description = "Writes GAV + SHA-256 lockfiles for the downloadable Rell language-server runtimes."
 
