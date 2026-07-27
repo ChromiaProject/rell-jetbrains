@@ -1,12 +1,10 @@
 package net.postchain.rellide.jetbrains.sentry
 
-import com.intellij.ide.plugins.PluginManagerCore
 import com.intellij.openapi.application.ApplicationInfo
 import com.intellij.openapi.diagnostic.ErrorReportSubmitter
 import com.intellij.openapi.diagnostic.IdeaLoggingEvent
 import com.intellij.openapi.diagnostic.SubmittedReportInfo
 import com.intellij.openapi.diagnostic.SubmittedReportInfo.SubmissionStatus.NEW_ISSUE
-import com.intellij.openapi.extensions.PluginId
 import com.intellij.openapi.util.SystemInfo
 import com.intellij.util.Consumer
 import io.sentry.*
@@ -20,8 +18,8 @@ class SentryReportSubmitter : ErrorReportSubmitter() {
         "com.redhat.devtools.lsp4ij",
     )
 
-    private val pluginVersion =
-        PluginManagerCore.getPlugin(PluginId.getId("net.postchain.rellide.jetbrains"))?.version ?: "unknown"
+    // The platform injects the descriptor after construction, so this cannot be read eagerly.
+    private val pluginVersion: String by lazy { pluginDescriptor?.version ?: "unknown" }
 
     private val scopes: Scopes by lazy {
         val options = SentryOptions().apply {

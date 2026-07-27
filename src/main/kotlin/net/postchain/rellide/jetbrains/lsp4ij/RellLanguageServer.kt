@@ -1,9 +1,8 @@
 package net.postchain.rellide.jetbrains.lsp4ij
 
 import com.intellij.execution.configurations.GeneralCommandLine
-import com.intellij.ide.plugins.PluginManagerCore
+import com.intellij.ide.plugins.cl.PluginAwareClassLoader
 import com.intellij.openapi.components.service
-import com.intellij.openapi.extensions.PluginId
 import com.intellij.openapi.project.Project
 import com.intellij.openapi.util.SystemInfo
 import com.intellij.openapi.vfs.VirtualFile
@@ -59,15 +58,17 @@ class RellLanguageServer(
     ).absolutePathString()
 
     companion object {
-        private const val PLUGIN_ID = "net.postchain.rellide.jetbrains"
         private const val DEFAULT_MAX_HEAP_SIZE_IN_MB = 2048
         private const val LSP_MAIN_CLASS = "net.postchain.rell.toolbox.lsp.StdioMainKt"
         private const val LOG4J_OVERRIDE_FILE = "log4j2-override.properties"
 
         /** The language-server runtime bundled with the plugin — always the newest supported Rell. */
         fun bundledLspLibDir(): java.nio.file.Path {
-            val pluginDescriptor = checkNotNull(PluginManagerCore.getPlugin(PluginId.getId(PLUGIN_ID))) {
-                "Cannot find plugin by ID: $PLUGIN_ID"
+            // Our own class loader carries the descriptor. Looking it up by plugin ID instead
+            // would go through PluginManagerCore/PluginManager, both internal API since 2026.2.
+            val classLoader = RellLanguageServer::class.java.classLoader
+            val pluginDescriptor = checkNotNull((classLoader as? PluginAwareClassLoader)?.pluginDescriptor) {
+                "Rell plugin classes were not loaded by a plugin class loader: ${classLoader.javaClass.name}"
             }
             return pluginDescriptor.pluginPath.toAbsolutePath() / "language-server"
         }
