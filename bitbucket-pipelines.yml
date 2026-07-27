@@ -56,6 +56,10 @@ definitions:
           # Per-IDE verifier reports, kept so a passing run can still be
           # inspected for warnings the failure level does not act on.
           - build/reports/pluginVerifier/**
+          # The console prints only the assertion class and line for a failing
+          # test; the stack trace that says why lives in these.
+          - build/reports/tests/**
+          - build/test-results/**
     - step: &publish-step
         name: Publish to JetBrains Marketplace
         size: 2x
