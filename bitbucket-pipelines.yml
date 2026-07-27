@@ -93,9 +93,12 @@ definitions:
               echo "SENTRY_AUTH_TOKEN is empty: set RELL_JETBRAINS_SENTRY_AUTH_TOKEN before releasing." >&2
               exit 1
             fi
+            # Organization tokens only carry org:ci, so org details (org:read)
+            # answers 403 for a perfectly good token. Releases is in scope, and
+            # the org is DE-hosted, so it has to be the regional host.
             code=$(curl -sS -o /dev/null -w '%{http_code}' --max-time 20 --retry 2 \
               -H "Authorization: Bearer $SENTRY_AUTH_TOKEN" \
-              https://sentry.io/api/0/organizations/chromaway-ab-za/)
+              https://de.sentry.io/api/0/organizations/chromaway-ab-za/releases/)
             case "$code" in
               2??) ;;
               *)
