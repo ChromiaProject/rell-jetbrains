@@ -49,3 +49,5 @@ abstract class RellVersionedDocumentMatcher(private val version: RellVersion) : 
 }
 
 class Rell0160DocumentMatcher : RellVersionedDocumentMatcher(RellVersion(0, 16, 0))
+
+class Rell0161DocumentMatcher : RellVersionedDocumentMatcher(RellVersion(0, 16, 1))

@@ -56,9 +56,9 @@ class RellLspRoutingTest : BasePlatformTestCase() {
     fun testNewestMatcherRoutesDefaultsAndNewestButNotOldOrCeased() {
         val matcher = RellNewestVersionDocumentMatcher()
         assertTrue(matcher.match(rellFile("no-config", null), project))
-        assertTrue(matcher.match(rellFile("newest", "0.16.1"), project))
+        assertTrue(matcher.match(rellFile("newest", "0.16.2"), project))
         assertTrue("Clamped versions run the newest toolchain", matcher.match(rellFile("clamped", "0.17.0"), project))
-        assertFalse("Older versions have their own server", matcher.match(rellFile("older", "0.16.0"), project))
+        assertFalse("Older versions have their own server", matcher.match(rellFile("older", "0.16.1"), project))
         assertFalse("Below the floor no server may match", matcher.match(rellFile("ceased", "0.14.5"), project))
     }
 
@@ -78,7 +78,7 @@ class RellLspRoutingTest : BasePlatformTestCase() {
         try {
             RellVersionResolver.getInstance(project).dropCaches()
             assertTrue("Runtime ready: must match", matcher.match(file, project))
-            assertFalse("Wrong version must not match", matcher.match(rellFile("newest2", "0.16.1"), project))
+            assertFalse("Wrong version must not match", matcher.match(rellFile("newest2", "0.16.2"), project))
             assertFalse("Ceased versions must not match", matcher.match(rellFile("ceased2", "0.14.5"), project))
         } finally {
             marker.deleteIfExists()

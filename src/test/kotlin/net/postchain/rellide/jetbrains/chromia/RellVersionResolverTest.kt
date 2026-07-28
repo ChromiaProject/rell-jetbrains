@@ -51,7 +51,7 @@ class RellVersionResolverTest : BasePlatformTestCase() {
     }
 
     fun testDeclaredSupportedVersionsResolveExactly() {
-        for (version in listOf("0.16.0", "0.16.1")) {
+        for (version in listOf("0.16.0", "0.16.1", "0.16.2")) {
             val dir = "proj-$version"
             val config = file("$dir/chromia.yml", yml(version))
             val source = file("$dir/src/main.rell")

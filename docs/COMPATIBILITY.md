@@ -14,6 +14,7 @@ correct diagnostics.
 
 | Plugin version | Supported Rell versions | Bundled (newest) |
 |----------------|-------------------------|------------------|
+| 0.4.2          | 0.16.0, 0.16.1, 0.16.2  | 0.16.2           |
 | 0.4.1          | 0.16.0, 0.16.1          | 0.16.1           |
 
 ## How the version is resolved
@@ -32,8 +33,8 @@ The resolved version maps to behavior as follows:
 
 | `compile.rellVersion`          | Grammar diagnostics      | Language server          | Banner                         |
 |--------------------------------|--------------------------|--------------------------|--------------------------------|
-| newest supported (e.g. 0.16.1) | newest (editor PSI)      | bundled newest           | —                              |
-| older supported (e.g. 0.16.0)  | version-exact annotator  | downloaded version-exact | —                              |
+| newest supported (e.g. 0.16.2) | newest (editor PSI)      | bundled newest           | —                              |
+| older supported (e.g. 0.16.1)  | version-exact annotator  | downloaded version-exact | —                              |
 | absent / no `chromia.yml`      | newest (editor PSI)      | bundled newest           | —                              |
 | newer than the plugin knows    | newest (editor PSI)      | bundled newest           | "update the plugin"            |
 | below 0.16.0                   | newest (editor PSI) only | **none**                 | "upgrade Rell" + one-click fix |

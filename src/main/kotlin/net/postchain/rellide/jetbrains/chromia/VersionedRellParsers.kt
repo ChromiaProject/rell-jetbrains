@@ -28,6 +28,17 @@ object VersionedRellParsers {
                 parser.file()
             }
         },
+        RellVersion(0, 16, 1) to { text ->
+            collectErrors(text) { lexer, listener ->
+                val antlrLexer = net.postchain.rellide.jetbrains.language.parser.v0_16_1.RellLexer(lexer)
+                antlrLexer.removeErrorListeners()
+                antlrLexer.addErrorListener(listener)
+                val parser = net.postchain.rellide.jetbrains.language.parser.v0_16_1.RellParser(CommonTokenStream(antlrLexer))
+                parser.removeErrorListeners()
+                parser.addErrorListener(listener)
+                parser.file()
+            }
+        },
     )
 
     fun supports(version: RellVersion): Boolean = version in parsers

@@ -1,6 +1,10 @@
 # Changelog
 
 ## [0.4.2]
+### Added
+- Rell Language Server with Rell version 0.16.2; 0.16.1 joins the older supported versions with a
+  version-exact grammar and an on-demand downloaded language server (see
+  [docs/COMPATIBILITY.md](docs/COMPATIBILITY.md))
 ### Removed
 - Dependency on the bundled Terminal plugin &mdash; unused since Chromia CLI commands moved from
   the Terminal tool window to Run tool window tabs. The plugin now also loads in IDEs where the
