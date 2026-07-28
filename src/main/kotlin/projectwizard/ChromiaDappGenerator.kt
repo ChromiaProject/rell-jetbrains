@@ -5,13 +5,10 @@ import com.intellij.openapi.diagnostic.Logger
 import com.intellij.openapi.progress.ProgressManager
 import com.intellij.openapi.project.Project
 import com.intellij.openapi.ui.Messages
-import com.intellij.openapi.util.io.NioFiles
 import com.intellij.openapi.vfs.VfsUtil
 import net.postchain.rellide.jetbrains.settings.RellPluginSettingsState
-import java.nio.file.Files
 import java.nio.file.Path
-import kotlin.io.path.listDirectoryEntries
-import kotlin.io.path.name
+import kotlin.io.path.*
 
 /**
  * Generates a dapp for the New Project wizard by running `chr create-rell-dapp`. The CLI refuses
@@ -49,9 +46,10 @@ object ChromiaDappGenerator {
     }
 
     /** Returns an error message, or null on success. */
+    @OptIn(ExperimentalPathApi::class)
     private fun doGenerate(projectRoot: Path, template: ChromiaProjectTemplate, devcontainer: Boolean): String? {
         val dappName = projectRoot.name
-        val tempDir = Files.createTempDirectory(projectRoot, ".chromia-gen")
+        val tempDir = createTempDirectory(projectRoot, ".chromia-gen")
         try {
             val args = buildList {
                 add("create-rell-dapp")
@@ -72,15 +70,15 @@ object ChromiaDappGenerator {
                 }.trim()
             }
             val generated = tempDir.resolve(dappName)
-            if (!Files.isDirectory(generated)) {
+            if (!generated.isDirectory()) {
                 return "Chromia CLI reported success but produced no project directory."
             }
             for (child in generated.listDirectoryEntries()) {
-                Files.move(child, projectRoot.resolve(child.name))
+                child.moveTo(projectRoot / child.name)
             }
             return null
         } finally {
-            NioFiles.deleteRecursively(tempDir)
+            tempDir.deleteRecursively()
         }
     }
 }
