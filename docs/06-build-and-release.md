@@ -61,7 +61,7 @@ download step.
 platformType=IU
 platformVersion=2026.1.1
 platformPlugins=com.redhat.devtools.lsp4ij:0.20.1
-platformBundledPlugins=com.intellij, org.jetbrains.plugins.terminal
+platformBundledPlugins=com.intellij
 ```
 
 **External Maven Repositories:**

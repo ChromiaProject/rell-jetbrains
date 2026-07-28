@@ -1,5 +1,11 @@
 # Changelog
 
+## [0.4.2]
+### Removed
+- Dependency on the bundled Terminal plugin &mdash; unused since Chromia CLI commands moved from
+  the Terminal tool window to Run tool window tabs. The plugin now also loads in IDEs where the
+  Terminal plugin is disabled
+
 ## [0.4.1]
 ### Added
 - Rell Language Server with Rell version 0.16.1
