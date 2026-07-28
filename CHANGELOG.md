@@ -2,6 +2,9 @@
 
 ## [0.4.2]
 ### Added
+- Chromia project generator in File | New | Project &mdash; pick a `chr create-rell-dapp`
+  template (minimal, plain, plain-multi, plain-library, asset-management), optionally with a
+  dev container, and the wizard generates the dapp via the configured Chromia CLI
 - Rell Language Server with Rell version 0.16.2; 0.16.1 joins the older supported versions with a
   version-exact grammar and an on-demand downloaded language server (see
   [docs/COMPATIBILITY.md](docs/COMPATIBILITY.md))

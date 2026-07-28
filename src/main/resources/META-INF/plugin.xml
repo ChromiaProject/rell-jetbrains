@@ -100,6 +100,9 @@
                     factoryClass="net.postchain.rellide.jetbrains.toolwindow.ChromiaToolWindowFactory"
                     icon="/icons/chromia-big.png"/>
 
+        <!-- Chromia project generator in File | New | Project -->
+        <moduleBuilder builderClass="net.postchain.rellide.jetbrains.projectwizard.ChromiaModuleBuilder"/>
+
         <!-- Run Configuration Types -->
         <configurationType implementation="net.postchain.rellide.jetbrains.testing.RellTestConfigurationType"/>
 
