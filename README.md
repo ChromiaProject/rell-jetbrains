@@ -8,12 +8,12 @@
 
 <!-- Plugin description -->
 
-# Rell Language Plugin for JetBrains IDEs
+# Rell Language Plugin for IntelliJ
 
 The official JetBrains plugin for the **Rell programming language**, designed for the [Chromia blockchain platform](https://chromia.com).
 Rell enables developers to build decentralized applications (dapps) in a safe, concise, and intuitive way, leveraging relational blockchain technology.
 
-This plugin integrates Rell into JetBrains IDEs providing a complete development experience with full language support.
+This plugin integrates Rell into IntelliJ-based IDEs providing a complete development experience with full language support.
 
 ---
 
@@ -132,7 +132,7 @@ tab_size=4
 
 The plugin collects no analytics or telemetry. Crash reports are sent to ChromaWay's error tracker
 (Sentry, hosted in the EU) only when you explicitly submit one from the IDE's error dialog. The
-`PRIVACY_POLICY.md` file in the plugin repository describes exactly what a report contains.
+[`PRIVACY_POLICY.md`](https://bitbucket.org/chromawallet/rell-jetbrains/src/main/PRIVACY_POLICY.md) file in the plugin repository describes exactly what a report contains.
 
 ---
 
