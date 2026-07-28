@@ -5,7 +5,7 @@
 ---
 
 Tests split in two: plain JUnit tests over pure logic, and `BasePlatformTestCase` tests that need a
-headless IDE (PSI, VFS, editor notifications, LSP4IJ extension points). `./gradlew test` runs both.
+headless IDE (PSI, VFS, editor notifications, platform LSP extension points). `./gradlew test` runs both.
 
 ---
 

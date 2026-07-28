@@ -10,7 +10,6 @@ import org.junit.Ignore
 @Ignore
 @TestDataPath($$"$CONTENT_ROOT/src/test/testData")
 class RellPluginTest : BasePlatformTestCase() {
-
     fun testXMLFile() {
         val psiFile = myFixture.configureByText(XmlFileType.INSTANCE, "<foo>bar</foo>")
         val xmlFile = assertInstanceOf(psiFile, XmlFile::class.java)

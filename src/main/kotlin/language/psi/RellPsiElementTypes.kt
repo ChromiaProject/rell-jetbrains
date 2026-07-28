@@ -29,6 +29,15 @@ object RellPsiElementTypes {
     private val ruleTypes: List<RuleIElementType> =
         PSIElementTypeFactory.getRuleIElementTypes(RellLanguage.INSTANCE)
 
+    /**
+     * [RellLanguage.INSTANCE], guaranteed to have its ANTLR element types registered. Lexer and
+     * parser adaptors capture [PSIElementTypeFactory]'s per-language registry in their
+     * constructors, so they must obtain the language through this accessor — passing
+     * [RellLanguage.INSTANCE] directly works only if something else initialized this object first
+     * (the editor highlighter does; a cold batch-inspection run does not).
+     */
+    fun registeredLanguage(): RellLanguage = RellLanguage.INSTANCE
+
     /** Element type for the given ANTLR token type (e.g. [RellLexer.RULE_STRING]). */
     fun token(antlrTokenType: Int): TokenIElementType = tokenTypes[antlrTokenType]
 

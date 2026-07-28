@@ -5,7 +5,7 @@ This document provides essential resources and guidelines for developing Rell pl
 ## 📌 Useful Links & Resources
 
 - [IntelliJ Platform SDK](https://plugins.jetbrains.com/docs/intellij/welcome.html)
-- [LSP4IJ](https://github.com/redhat-developer/lsp4ij)
+- [IntelliJ Platform LSP API](https://plugins.jetbrains.com/docs/intellij/language-server-protocol.html)
 - [IntelliJ Platform Explorer](https://plugins.jetbrains.com/intellij-platform-explorer/extensions)
 - [Gradle IntelliJ Plugin ](https://github.com/JetBrains/intellij-platform-gradle-plugin)
 - [Grammar Kit](https://github.com/JetBrains/Grammar-Kit)

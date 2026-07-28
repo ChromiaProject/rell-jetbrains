@@ -72,8 +72,9 @@ dependencies {
     testImplementation(libs.opentest4j)
 
     intellijPlatform {
-        plugins(providers.gradleProperty("platformPlugins").map { it.split(',') })
         bundledPlugins(providers.gradleProperty("platformBundledPlugins").map { it.split(',') })
+        bundledModule("intellij.platform.lsp")
+        bundledModule("intellij.platform.lsp.impl")
         create(properties("platformType"), properties("platformVersion"))
         pluginVerifier()
         zipSigner()
@@ -232,6 +233,11 @@ kotlin.compilerOptions.jvmDefault = JvmDefaultMode.NO_COMPATIBILITY
 java.toolchain.languageVersion = JavaLanguageVersion.of(21)
 
 intellijPlatform {
+    // Indexing the plugin's single settings page isn't worth booting a headless IDE per build:
+    // with the configuration cache on, Gradle runs this task concurrently with :test, and two
+    // IDE instances starve the 4 GB CI step until buildSearchableOptions hangs indefinitely.
+    buildSearchableOptions = false
+
     pluginConfiguration {
         version = properties("pluginVersion")
 

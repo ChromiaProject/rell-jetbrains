@@ -15,7 +15,7 @@ import java.awt.Component
 class SentryReportSubmitter : ErrorReportSubmitter() {
     private val rellRelevantPackages = setOf(
         "net.postchain.rellide.jetbrains",
-        "com.redhat.devtools.lsp4ij",
+        "com.intellij.platform.lsp",
     )
 
     // The platform injects the descriptor after construction, so this cannot be read eagerly.

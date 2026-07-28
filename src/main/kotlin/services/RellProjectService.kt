@@ -5,10 +5,9 @@ import com.intellij.openapi.progress.runBlockingCancellable
 import com.intellij.openapi.project.Project
 import com.intellij.openapi.vfs.VirtualFile
 import com.intellij.psi.PsiElement
-import kotlinx.coroutines.future.await
-import net.postchain.rellide.jetbrains.lsp4ij.RellServerApi
-import net.postchain.rellide.jetbrains.lsp4ij.RellTestFile
-import net.postchain.rellide.jetbrains.lsp4ij.getRellLanguageServerItem
+import net.postchain.rellide.jetbrains.lsp.RellTestFile
+import net.postchain.rellide.jetbrains.lsp.getRellLspClient
+import net.postchain.rellide.jetbrains.lsp.rellRequest
 import net.postchain.rellide.jetbrains.util.normalizedUri
 
 @Service(Service.Level.PROJECT)
@@ -22,10 +21,7 @@ class RellProjectService(val project: Project) {
     fun getTestFile(fileUri: String): RellTestFile? {
         testFilesCache.get(fileUri)?.let { return it }
         val result = runBlockingCancellable {
-            getRellLanguageServerItem(project)?.let { lsItem ->
-                val rellServer = lsItem.server as RellServerApi
-                rellServer.getTestFile(fileUri).await()
-            }
+            getRellLspClient(project)?.rellRequest { it.getTestFile(fileUri) }
         }
         if (result != null) testFilesCache.put(fileUri, result)
         return result

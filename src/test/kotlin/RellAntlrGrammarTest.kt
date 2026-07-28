@@ -13,6 +13,7 @@ import org.junit.Test
 class RellAntlrGrammarTest {
     private class CollectingErrorListener : BaseErrorListener() {
         val errors = mutableListOf<String>()
+
         override fun syntaxError(
             recognizer: Recognizer<*, *>?, offendingSymbol: Any?, line: Int,
             charPositionInLine: Int, msg: String?, e: RecognitionException?
@@ -23,12 +24,17 @@ class RellAntlrGrammarTest {
 
     private fun parseErrors(source: String): List<String> {
         val listener = CollectingErrorListener()
+
         val lexer = RellLexer(CharStreams.fromString(source)).apply {
-            removeErrorListeners(); addErrorListener(listener)
+            removeErrorListeners()
+            addErrorListener(listener)
         }
+
         val parser = RellParser(CommonTokenStream(lexer)).apply {
-            removeErrorListeners(); addErrorListener(listener)
+            removeErrorListeners()
+            addErrorListener(listener)
         }
+
         parser.file()
         return listener.errors
     }

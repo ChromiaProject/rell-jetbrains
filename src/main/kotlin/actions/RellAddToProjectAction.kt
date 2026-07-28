@@ -12,9 +12,7 @@ import com.intellij.openapi.roots.ProjectRootManager
 import com.intellij.openapi.ui.popup.JBPopupFactory
 import com.intellij.openapi.ui.popup.PopupStep
 import com.intellij.openapi.ui.popup.util.BaseListPopupStep
-import com.redhat.devtools.lsp4ij.ServerStatus
-import kotlinx.coroutines.future.await
-import net.postchain.rellide.jetbrains.lsp4ij.*
+import net.postchain.rellide.jetbrains.lsp.*
 import net.postchain.rellide.jetbrains.util.normalizedUri
 
 private data class FeatureOption(val id: String, val displayName: String)
@@ -47,17 +45,16 @@ class RellAddToProjectAction : AnAction(
     private fun executeSelectedAction(selectedValue: FeatureOption, project: Project) {
         try {
             runBlockingCancellable {
-                val languageServerItem = getRellLanguageServerItem(project)
+                val client = getRellLspClient(project)
 
-                if (languageServerItem == null) {
+                if (client == null) {
                     project.notifyUser("Rell Language server is not running", "Error", NotificationType.ERROR)
                 } else {
-                    val rellServer = languageServerItem.server as RellServerApi
                     val targetDirUri = project.guessProjectDir()?.normalizedUri() ?: return@runBlockingCancellable
                     val options = TemplateOptions(
                         includeDevContainer = selectedValue.id == "dev_container",
                     )
-                    rellServer.addToProject(AddToProjectParams(targetDirUri, options)).await()
+                    client.rellRequest { it.addToProject(AddToProjectParams(targetDirUri, options)) }
                     project.notifyUser(
                         "${selectedValue.displayName} added to project",
                         "Rell",
@@ -75,7 +72,7 @@ class RellAddToProjectAction : AnAction(
 
     override fun update(e: AnActionEvent) {
         val project = e.project
-        e.presentation.isEnabled = project != null && getRellLanguageServerStatus(project) == ServerStatus.started
+        e.presentation.isEnabled = project != null && rellLanguageServerIsRunning(project)
     }
 
     fun refreshProjectRoot(project: Project) {

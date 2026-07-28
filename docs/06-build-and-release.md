@@ -59,10 +59,12 @@ download step.
 
 ```properties
 platformType=IU
-platformVersion=2026.1.1
-platformPlugins=com.redhat.devtools.lsp4ij:0.20.1
+platformVersion=2026.1.4
 platformBundledPlugins=com.intellij
 ```
+
+The platform's own LSP client modules (`intellij.platform.lsp`, `intellij.platform.lsp.impl`) are
+added as bundled modules in `build.gradle.kts`.
 
 **External Maven Repositories:**
 - **Rell GitLab Registry:** `https://gitlab.com/api/v4/projects/32802097`
@@ -115,7 +117,7 @@ on mixed versions — which kills the server on launch.
 **Error Reporting (`SentryReportSubmitter.kt`):**
 - Registered as the plugin's `errorHandler`, so it appears in the IDE's error dialog
 - Nothing is sent unless the user presses the report button; the dialog shows a privacy notice first
-- Events whose stack traces do not involve the plugin or LSP4IJ are dropped, the machine hostname is
+- Events whose stack traces do not involve the plugin or the platform LSP integration are dropped, the machine hostname is
   not attached, and home directories are scrubbed from paths
 
 See [PRIVACY_POLICY.md](../PRIVACY_POLICY.md) for the full statement.

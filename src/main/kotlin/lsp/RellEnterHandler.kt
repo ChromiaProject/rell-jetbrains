@@ -1,4 +1,4 @@
-package net.postchain.rellide.jetbrains.lsp4ij
+package net.postchain.rellide.jetbrains.lsp
 
 import com.intellij.codeInsight.editorActions.enter.EnterHandlerDelegate
 import com.intellij.codeInsight.editorActions.enter.EnterHandlerDelegateAdapter

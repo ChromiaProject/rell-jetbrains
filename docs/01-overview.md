@@ -11,7 +11,7 @@ a programming language for building decentralized applications on the Chromia bl
 
 - **Plugin ID:** `net.postchain.rellide.jetbrains`
 - **Distribution:** JetBrains Marketplace
-- **Target IDEs:** any IntelliJ-platform IDE (built against IntelliJ IDEA Ultimate; requires the LSP4IJ plugin)
+- **Target IDEs:** any JetBrains IDE shipping the platform LSP module (`com.intellij.modules.lsp`), 2026.1.4+
 - **Language:** Kotlin
 
 ---

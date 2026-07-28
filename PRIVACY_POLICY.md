@@ -26,7 +26,7 @@ plugin adds a submit action to that dialog, along with a notice describing what 
 report leaves your machine only after you activate that action. The plugin additionally filters
 submissions: an event is transmitted only if its stack trace originates in the Rell plugin
 (`net.postchain.rellide.jetbrains`) or in the LSP integration layer it depends on
-(`com.redhat.devtools.lsp4ij`). Errors from the IDE or from unrelated plugins are discarded
+(`com.intellij.platform.lsp`). Errors from the IDE or from unrelated plugins are discarded
 locally and never sent.
 
 ### What a report contains

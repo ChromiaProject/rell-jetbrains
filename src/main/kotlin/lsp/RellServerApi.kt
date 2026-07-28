@@ -1,4 +1,4 @@
-package net.postchain.rellide.jetbrains.lsp4ij
+package net.postchain.rellide.jetbrains.lsp
 
 import org.eclipse.lsp4j.Range
 import org.eclipse.lsp4j.jsonrpc.services.JsonRequest

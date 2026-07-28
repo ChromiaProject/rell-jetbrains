@@ -11,9 +11,8 @@ import com.intellij.openapi.actionSystem.CommonDataKeys
 import com.intellij.openapi.components.service
 import com.intellij.openapi.project.Project
 import com.intellij.openapi.vfs.VirtualFile
-import com.redhat.devtools.lsp4ij.ServerStatus
-import net.postchain.rellide.jetbrains.lsp4ij.RellTestFile
-import net.postchain.rellide.jetbrains.lsp4ij.getRellLanguageServerStatus
+import net.postchain.rellide.jetbrains.lsp.RellTestFile
+import net.postchain.rellide.jetbrains.lsp.rellLanguageServerIsRunning
 import net.postchain.rellide.jetbrains.services.RellProjectService
 import net.postchain.rellide.jetbrains.testing.RellTestConfigurationFactory
 import net.postchain.rellide.jetbrains.testing.RellTestRunConfiguration
@@ -42,7 +41,7 @@ class RunRellTestAction : AnAction("Run Rell Test", "Run the selected Rell test 
 
         val isVisible = project != null &&
                 virtualFile != null &&
-                getRellLanguageServerStatus(project) == ServerStatus.started &&
+                rellLanguageServerIsRunning(project) &&
                 getRellTestFile(project, virtualFile) != null
         e.presentation.isEnabledAndVisible = isVisible
     }

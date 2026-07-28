@@ -12,8 +12,10 @@ import com.intellij.openapi.progress.ProgressIndicator
 import com.intellij.openapi.progress.Task
 import com.intellij.openapi.project.Project
 import com.intellij.openapi.project.ProjectManager
+import com.intellij.platform.lsp.api.LspClientManager
 import com.intellij.util.io.HttpRequests
 import com.intellij.util.io.createDirectories
+import net.postchain.rellide.jetbrains.lsp.RellLspIntegrationProvider
 import java.io.IOException
 import java.nio.file.Path
 import java.security.MessageDigest
@@ -25,7 +27,7 @@ import kotlin.io.path.*
  * the plugin; older supported versions are downloaded on demand into
  * `<system>/rell-lsp/<version>/` from the lockfile artifacts (checksum-verified) and reused across
  * IDE sessions. A wrong-version server is never substituted: until the runtime is ready, the
- * project simply has no LSP (see RellVersionedDocumentMatcher).
+ * project simply has no LSP (see RellLspIntegrationProvider).
  */
 @Service
 class RellLspRuntimeManager {
@@ -63,10 +65,12 @@ class RellLspRuntimeManager {
             override fun run(indicator: ProgressIndicator) = downloadRuntime(version, indicator)
 
             override fun onSuccess() {
-                // Re-run highlighting in every open project so lsp4ij re-evaluates the document
-                // matchers and connects the now-available server.
+                // Route open files through the provider again in every open project so the
+                // now-available server starts, and re-run highlighting against it.
                 for (openProject in ProjectManager.getInstance().openProjects) {
                     if (!openProject.isDisposed) {
+                        LspClientManager.getInstance(openProject)
+                            .startClientsIfNeeded(RellLspIntegrationProvider::class.java)
                         DaemonCodeAnalyzer.getInstance(openProject).restart("Rell $version LSP runtime downloaded")
                     }
                 }

@@ -75,18 +75,18 @@ flowchart TB
         subgraph Plugin["Rell Plugin (This Codebase)"]
             Lang["Language Definition<br/>(ANTLR grammar → PSI)"]
             Route["Version Resolution<br/>(chromia.yml → toolchain)"]
-            LSP4IJ["LSP4IJ Integration<br/>(per-version server factories)"]
+            LSP["Platform LSP Integration<br/>(per-version client descriptors)"]
             Test["Test Runner"]
-            Lang <--> LSP4IJ
+            Lang <--> LSP
             Route --> Lang
-            Route --> LSP4IJ
+            Route --> LSP
         end
     end
     Bundled["Rell Language Server<br/>bundled newest (separate JVM)"]
     Downloaded["Rell Language Server<br/>older version (downloaded)"]
     CLI["Chromia CLI<br/>(chr, external)"]
-    LSP4IJ -->|LSP Protocol| Bundled
-    LSP4IJ -->|LSP Protocol| Downloaded
+    LSP -->|LSP Protocol| Bundled
+    LSP -->|LSP Protocol| Downloaded
     Test -->|Launches| CLI
 ```
 
@@ -95,7 +95,8 @@ flowchart TB
 **1. Plugin Loads (IDE Startup)**
 - IDE reads `src/main/resources/META-INF/plugin.xml`
 - Registers language (`RellLanguage`), file type (`.rell`)
-- Registers one LSP4IJ `<server>` per supported Rell version, each with a document matcher
+- Registers the LSP integration provider (`platform.lsp.integrationProvider`) that starts one
+  language server per supported Rell version on demand
 - Registers test configuration type
 - Registers tool window factory
 
@@ -103,13 +104,12 @@ flowchart TB
 - IDE creates PSI file using `RellParserDefinition`
 - Local parser generates PSI tree from source
 - Basic syntax highlighting applied via `RellSyntaxHighlighter`
-- LSP4IJ asks each registered document matcher whether it claims this file
+- The platform calls `RellLspIntegrationProvider.fileOpened` for the file
 - `RellVersionResolver` walks up to the nearest `chromia.yml` and resolves the file's Rell version;
-  the matching version's matcher accepts, and the others decline (below the 0.16.1 floor, all decline)
-- The accepting server's factory returns `RellLanguageServer` (subprocess mode) or
-  `RellSocketLanguageServer` (socket mode, `-Drell.lsp.useSocket=true`)
-- The server starts on first `.rell` file opening (bundled classpath launched as a subprocess, or a
-  connection to port 5008)
+  the provider starts the client of that version's server, and no other (below the 0.16.1 floor,
+  none at all)
+- The client's `RellLspClientDescriptor` launches the server as a subprocess, or connects to
+  port 5008 in socket mode (`-Drell.lsp.useSocket=true`)
 - Initialization options (index caching, inlay hints) sent to server
 
 **3. Language Intelligence (User Types Code)**

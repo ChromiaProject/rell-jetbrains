@@ -5,9 +5,8 @@ import com.intellij.openapi.actionSystem.ActionUpdateThread
 import com.intellij.openapi.actionSystem.AnAction
 import com.intellij.openapi.actionSystem.AnActionEvent
 import com.intellij.openapi.progress.runBlockingCancellable
-import kotlinx.coroutines.future.await
-import net.postchain.rellide.jetbrains.lsp4ij.RellServerApi
-import net.postchain.rellide.jetbrains.lsp4ij.getRellLanguageServerItem
+import net.postchain.rellide.jetbrains.lsp.getRellLspClient
+import net.postchain.rellide.jetbrains.lsp.rellRequest
 
 class RellInvalidateCacheAction : AnAction(
     "Rell: Invalidate Cache",
@@ -19,13 +18,12 @@ class RellInvalidateCacheAction : AnAction(
 
         try {
             runBlockingCancellable {
-                val languageServerItem = getRellLanguageServerItem(project)
+                val client = getRellLspClient(project)
 
-                if (languageServerItem == null) {
+                if (client == null) {
                     project.notifyUser("Rell Language server is not running", "Error", NotificationType.ERROR)
                 } else {
-                    val rellServer = languageServerItem.server as RellServerApi
-                    val invalidated = rellServer.invalidateCache().await()
+                    val invalidated = client.rellRequest { it.invalidateCache() } == true
 
                     if (invalidated) {
                         project.notifyUser("Cache invalidated", "Rell LSP Info", NotificationType.INFORMATION)

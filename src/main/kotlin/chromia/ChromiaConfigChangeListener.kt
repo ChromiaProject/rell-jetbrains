@@ -8,8 +8,9 @@ import com.intellij.openapi.roots.ProjectFileIndex
 import com.intellij.openapi.vfs.VirtualFile
 import com.intellij.openapi.vfs.newvfs.BulkFileListener
 import com.intellij.openapi.vfs.newvfs.events.*
+import com.intellij.platform.lsp.api.LspClientManager
 import com.intellij.ui.EditorNotifications
-import com.redhat.devtools.lsp4ij.LanguageServerManager
+import net.postchain.rellide.jetbrains.lsp.RellLspIntegrationProvider
 
 /**
  * Reacts to VFS changes affecting `chromia.yml` files in this project's content, at two levels:
@@ -17,7 +18,7 @@ import com.redhat.devtools.lsp4ij.LanguageServerManager
  * - any relevant change refreshes resolver state, notifies [RellVersionResolver.TOPIC], re-runs
  *   version-dependent highlighting, and updates version banners;
  * - only a change to a declared `compile.rellVersion` additionally stops the Rell language
- *   servers so lsp4ij re-routes files to the right toolchain. Non-version config edits (libs,
+ *   servers so the platform re-routes files to the right toolchain. Non-version config edits (libs,
  *   source dir) never restart servers — the server's own file watcher handles those in-process,
  *   and a needless cold restart costs a full reindex.
  *
@@ -59,15 +60,10 @@ internal class ChromiaConfigChangeListener(private val project: Project) : BulkF
         EditorNotifications.getInstance(project).updateAllNotifications()
 
         if (impact == Impact.VERSION_CHANGED) {
-            // A changed compile.rellVersion can move files to a different toolchain: stop the Rell
-            // servers so lsp4ij re-routes through the document matchers on the next request.
-            // willDisable=false is essential — the default StopOptions permanently disables the
-            // server definition for the whole IDE session.
-            val serverManager = LanguageServerManager.getInstance(project)
-            val stopOnly = LanguageServerManager.StopOptions().setWillDisable(false)
-            for (s in RellLspServers.allServerIds()) {
-                serverManager.stop(s, stopOnly)
-            }
+            // A changed compile.rellVersion can move files to a different toolchain: restart the
+            // Rell clients so the provider re-routes every open file to the server of its
+            // re-resolved version.
+            LspClientManager.getInstance(project).stopAndRestartClientsIfNeeded(RellLspIntegrationProvider::class.java)
         }
     }
 

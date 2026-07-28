@@ -1,9 +1,12 @@
 package net.postchain.rellide.jetbrains.chromia
 
 import com.intellij.openapi.vfs.VirtualFile
+import com.intellij.platform.lsp.api.LspClientDescriptor
+import com.intellij.platform.lsp.api.LspIntegrationProvider
 import com.intellij.testFramework.fixtures.BasePlatformTestCase
 import com.intellij.util.io.createDirectories
-import java.nio.file.Files
+import net.postchain.rellide.jetbrains.lsp.RellLspClientDescriptor
+import net.postchain.rellide.jetbrains.lsp.RellLspIntegrationProvider
 import javax.xml.parsers.DocumentBuilderFactory
 import org.w3c.dom.Element
 import kotlin.io.path.deleteIfExists
@@ -16,58 +19,65 @@ class RellLspRoutingTest : BasePlatformTestCase() {
         RellVersionResolver.getInstance(project).dropCaches()
     }
 
-    // Guards plugin.xml against version bumps: every supported version below the newest needs its
-    // own <server> and <languageMapping> with a documentMatcher.
-    fun testPluginXmlDeclaresAServerPerSupportedVersion() {
+    // Guards plugin.xml against losing the LSP integration: the provider that routes every Rell
+    // file to the server of its version must stay registered.
+    fun testPluginXmlRegistersTheLspIntegrationProvider() {
         val pluginXml = javaClass.classLoader.getResourceAsStream("META-INF/plugin.xml")
             ?: error("plugin.xml not on test classpath")
         val document = DocumentBuilderFactory.newInstance().newDocumentBuilder().parse(pluginXml)
 
-        val servers = document.getElementsByTagName("server")
-        val serverIds = (0 until servers.length).map { (servers.item(it) as Element).getAttribute("id") }
-        val mappings = document.getElementsByTagName("languageMapping")
-        val mappingsByServer = (0 until mappings.length).associate {
-            val element = mappings.item(it) as Element
-            element.getAttribute("serverId") to element.getAttribute("documentMatcher")
+        val providers = document.getElementsByTagName("platform.lsp.integrationProvider")
+        val implementations = (0 until providers.length).map {
+            (providers.item(it) as Element).getAttribute("implementation")
         }
-        val semanticTokenProviders = document.getElementsByTagName("semanticTokensColorsProvider")
-        val semanticTokenServerIds = (0 until semanticTokenProviders.length)
-            .map { (semanticTokenProviders.item(it) as Element).getAttribute("serverId") }
 
-        assertTrue(RellLspServers.NEWEST_SERVER_ID in serverIds)
-        assertTrue(
-            "The newest server's mapping needs a documentMatcher (it must not match ceased or older-version files)",
-            mappingsByServer[RellLspServers.NEWEST_SERVER_ID].orEmpty().isNotEmpty(),
-        )
+        assertContainsElements(implementations, RellLspIntegrationProvider::class.java.name)
+    }
+
+    fun testNewestDescriptorServesDefaultsAndNewestButNotOldOrCeased() {
+        val descriptor = RellLspClientDescriptor.newest(project)
+        assertTrue(descriptor.isSupportedFile(rellFile("no-config", null)))
+        assertTrue(descriptor.isSupportedFile(rellFile("newest", "0.16.2")))
+        assertTrue("Clamped versions run the newest toolchain", descriptor.isSupportedFile(rellFile("clamped", "0.17.0")))
+        assertFalse("Older versions have their own server", descriptor.isSupportedFile(rellFile("older", "0.16.1")))
+        assertFalse("Below the floor no server may match", descriptor.isSupportedFile(rellFile("ceased", "0.14.5")))
+    }
+
+    fun testVersionedDescriptorRequiresExactVersion() {
+        val descriptor = RellLspClientDescriptor.versioned(project, RellVersion(0, 16, 1))
+        assertTrue(descriptor.isSupportedFile(rellFile("versioned", "0.16.1")))
+        assertFalse("Wrong version must not match", descriptor.isSupportedFile(rellFile("newest2", "0.16.2")))
+        assertFalse("Ceased versions must not match", descriptor.isSupportedFile(rellFile("ceased2", "0.14.5")))
+    }
+
+    // Distinct presentable names are what keep the per-version clients apart: the platform
+    // identifies a client by descriptor class + presentable name + roots.
+    fun testDescriptorsOfDifferentVersionsHaveDistinctPresentableNames() {
+        val newest = RellLspClientDescriptor.newest(project)
         for (version in RellVersionRegistry.supported.filter { it < RellVersionRegistry.max }) {
-            val id = RellLspServers.versionedServerId(version)
-            assertTrue("plugin.xml has no <server id=\"$id\"> for supported Rell $version", id in serverIds)
-            assertTrue(
-                "plugin.xml has no languageMapping with documentMatcher for $id",
-                mappingsByServer[id].orEmpty().isNotEmpty(),
-            )
-            assertTrue(
-                "plugin.xml has no semanticTokensColorsProvider for $id",
-                id in semanticTokenServerIds,
-            )
+            assertFalse(newest.presentableName == RellLspClientDescriptor.versioned(project, version).presentableName)
         }
     }
 
-    fun testNewestMatcherRoutesDefaultsAndNewestButNotOldOrCeased() {
-        val matcher = RellNewestVersionDocumentMatcher()
-        assertTrue(matcher.match(rellFile("no-config", null), project))
-        assertTrue(matcher.match(rellFile("newest", "0.16.2"), project))
-        assertTrue("Clamped versions run the newest toolchain", matcher.match(rellFile("clamped", "0.17.0"), project))
-        assertFalse("Older versions have their own server", matcher.match(rellFile("older", "0.16.1"), project))
-        assertFalse("Below the floor no server may match", matcher.match(rellFile("ceased", "0.14.5"), project))
+    fun testProviderStartsTheNewestServerForNewestAndDefaultFiles() {
+        assertEquals(RellVersionRegistry.max, startedVersionFor(rellFile("p-newest", "0.16.2")))
+        assertEquals(RellVersionRegistry.max, startedVersionFor(rellFile("p-no-config", null)))
+        assertEquals(RellVersionRegistry.max, startedVersionFor(rellFile("p-clamped", "0.17.0")))
     }
 
-    fun testVersionedMatcherRequiresExactVersionAndReadyRuntime() {
-        val matcher = Rell0161DocumentMatcher()
-        val version = RellVersion(0, 16, 1)
-        val file = rellFile("versioned", "0.16.1")
+    fun testProviderStartsNothingForCeasedVersionsAndForeignFiles() {
+        assertNull("Below the floor no server may start", startedVersionFor(rellFile("p-ceased", "0.14.5")))
+        assertNull(
+            "Non-Rell files get no server",
+            startedVersionFor(myFixture.addFileToProject("p-foreign/readme.md", "hi").virtualFile),
+        )
+    }
 
-        assertFalse("Runtime not downloaded: must not match", matcher.match(file, project))
+    fun testProviderStartsAVersionedServerOnlyWhenItsRuntimeIsReady() {
+        val version = RellVersion(0, 16, 1)
+        val file = rellFile("p-versioned", "0.16.1")
+
+        assertNull("Runtime not downloaded: must not start", startedVersionFor(file))
 
         // isRuntimeReady validates the marker against the current lockfile, so the fake marker
         // must carry the real expected content.
@@ -77,12 +87,22 @@ class RellLspRoutingTest : BasePlatformTestCase() {
 
         try {
             RellVersionResolver.getInstance(project).dropCaches()
-            assertTrue("Runtime ready: must match", matcher.match(file, project))
-            assertFalse("Wrong version must not match", matcher.match(rellFile("newest2", "0.16.2"), project))
-            assertFalse("Ceased versions must not match", matcher.match(rellFile("ceased2", "0.14.5"), project))
+            assertEquals("Runtime ready: must start", version, startedVersionFor(file))
         } finally {
             marker.deleteIfExists()
         }
+    }
+
+    /** Runs the provider's routing for [file] and returns the Rell version it started, if any. */
+    private fun startedVersionFor(file: VirtualFile): RellVersion? {
+        var started: LspClientDescriptor? = null
+        val starter = object : LspIntegrationProvider.LspClientStarter {
+            override fun ensureClientStarted(descriptor: LspClientDescriptor) {
+                started = descriptor
+            }
+        }
+        RellLspIntegrationProvider().route(project, file, starter)
+        return (started as? RellLspClientDescriptor)?.version
     }
 
     private fun rellFile(dir: String, rellVersion: String?): VirtualFile {

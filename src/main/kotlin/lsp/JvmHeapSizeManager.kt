@@ -1,4 +1,4 @@
-package net.postchain.rellide.jetbrains.lsp4ij
+package net.postchain.rellide.jetbrains.lsp
 
 import com.sun.management.OperatingSystemMXBean
 import java.lang.management.ManagementFactory

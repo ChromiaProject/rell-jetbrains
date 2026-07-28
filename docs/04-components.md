@@ -8,46 +8,41 @@ This document provides a detailed breakdown of the plugin's core components, exp
 
 ---
 
-## 1. Language Server Integration (`lsp4ij/`)
+## 1. Language Server Integration (`lsp/`)
 
-LSP4IJ is a LSP and DAP client for JetBrains IDEs.
+Built on the IntelliJ Platform's own LSP client API (`com.intellij.platform.lsp.api`), available to
+all users since the unified 2025.3 distribution and declared via
+`<depends>com.intellij.modules.lsp</depends>`.
 
-LSP4IJ Repository: https://github.com/redhat-developer/lsp4ij
+API documentation: https://plugins.jetbrains.com/docs/intellij/language-server-protocol.html
 
 **Purpose:** Bridge between IDE and Rell LSP server.
 
-### RellLanguageServerFactory.kt
+### RellLspIntegrationProvider.kt
 
-**Role:** Creates the connection provider for the bundled (newest supported) Rell server.
+**Role:** The `platform.lsp.integrationProvider` extension — the platform calls `fileOpened` for
+every file, and the provider routes each `.rell` file to the server of its resolved Rell version:
+the newest supported version starts from the bundled runtime; an older supported version starts from
+its downloaded runtime, triggering the download and starting nothing until it is ready. Files below
+the compatibility floor start nothing — that is the hard cease. `RellLspRoutingTest` guards this
+routing and the plugin.xml registration.
 
-**Logic:**
-```kotlin
-override fun createConnectionProvider(project: Project): StreamConnectionProvider {
-    val useSocket = System.getProperty("rell.lsp.useSocket", "false").toBoolean()
+### RellLspClientDescriptor.kt
 
-    return if (useSocket) {
-        RellSocketLanguageServer(project)
-    } else {
-        RellLanguageServer(project)
-    }
-}
-```
+**Role:** Describes the server of one supported Rell version: how to launch it, which files it
+serves (`isSupportedFile` re-checks the file's resolved version, so per-version clients never
+overlap), its initialization options (the `indexCaching` setting and the IDE's inlay-hint settings),
+the custom server interface (`RellServerApi`), and the feature customization
+(`RellLspCustomization`). The platform identifies a client by descriptor class + presentable name +
+roots, so the version-carrying presentable name is what keeps per-version clients apart.
 
-It also supplies the language client (`RellLanguageClient`), the custom server interface
-(`RellServerApi`), and the client features (`RellLspClientFeatures`).
-
-**Why Two Modes?**
-- **Subprocess mode (`RellLanguageServer`):** Production use. Plugin controls server lifecycle.
-- **Socket mode (`RellSocketLanguageServer`):** Development. External server runs on port 5008, plugin connects to it. Useful for debugging server with IDE. Enabled by `-Drell.lsp.useSocket=true`, which `./gradlew runIde -PuseSocket` passes.
-
-Older supported Rell versions get their own factories — see
-[Version compatibility](#3-version-compatibility-chromia).
-
-### RellLanguageServer.kt
-
-**Role:** Launches an LSP server runtime as a subprocess, with `<lib dir>/*` on the classpath and
-`net.postchain.rell.toolbox.lsp.StdioMainKt` as the main class. The lib dir is a constructor
-parameter: it defaults to the bundled one, and the versioned factories pass a downloaded one.
+**Launch modes** (`lspCommunicationChannel`):
+- **Subprocess mode (StdIO):** Production use. `createCommandLine` launches the runtime with
+  `<lib dir>/*` on the classpath and `net.postchain.rell.toolbox.lsp.StdioMainKt` as the main class;
+  the lib dir is the bundled one for the newest version and a downloaded one for older versions.
+- **Socket mode:** Development. External server runs on port 5008, plugin connects to it. Useful for
+  debugging server with IDE. Enabled by `-Drell.lsp.useSocket=true`, which
+  `./gradlew runIde -PuseSocket` passes.
 
 **Design Decision - JVM Heap Size:**
 - Uses `JvmHeapSizeManager.determineMaxHeapSizeMB()` to calculate heap, defaulting to 2048 MB
@@ -58,13 +53,18 @@ parameter: it defaults to the bundled one, and the versioned factories pass a do
 the root logger, which would upload every logged error without asking. On JDK 23+,
 `--sun-misc-unsafe-memory-access=allow` silences a per-launch deprecation warning.
 
-**Initialization options:** the `indexCaching` setting and the IDE's inlay-hint settings.
-
 **Where Is the LSP Runtime?**
 - The bundled one is resolved by Gradle from the `rell` version in `gradle/libs.versions.toml` and
   copied into `<plugin dir>/language-server/` by `prepareSandbox`. No manual download step.
 - Runtimes for older supported versions live in `<IDE system dir>/rell-lsp/<version>/`, downloaded on
   demand (see `RellLspRuntimeManager`).
+
+### RellLspClients.kt
+
+**Role:** Client lookup for the rest of the plugin: `runningRellLspClients` (all running Rell
+clients), `getRellLspClient` (the newest-version client that serves plugin-level requests — tests,
+templates, cache invalidation), and `rellRequest`, which sends one of the custom `RellServerApi`
+requests through the platform's `LspClient.sendRequest`.
 
 ### RellServerApi.kt
 
@@ -83,21 +83,12 @@ the root logger, which would upload every logged error without asking. On JDK 23
 **Why Custom Methods?**
 Standard LSP doesn't cover IDE-specific features like test discovery or project templates. These extensions allow the plugin to provide richer functionality.
 
-### RellLanguageClient.kt
+### RellLspCustomization.kt
 
-**Role:** Extends `IndexAwareLanguageClient` so LSP work participates in the IDE's indexing/dumb-mode
-machinery rather than running while the index is unavailable.
-
-### RellLspClientFeatures.kt
-
-**Role:** Tunes LSP4IJ's per-feature behavior. It keeps the server alive when no Rell file is open,
-disables the document-color feature (the Rell server never provides colors, and LSP4IJ would
-otherwise queue a `textDocument/documentColor` request on every highlighting pass), and resolves file
-URIs from disk so a rename reports the new URI.
-
-### RellSemanticTokensColorProvider.kt
-
-**Role:** Maps LSP semantic token types — and Rell's custom token modifiers — to IDE color attributes.
+**Role:** Per-feature tuning via the platform's `LspCustomization`: disables the document-color
+feature (the Rell server never provides colors, so nothing should ask for them on every highlighting
+pass) and maps LSP semantic token types — and Rell's custom token modifiers — to IDE color
+attributes.
 
 **Example Mappings:**
 ```kotlin
@@ -109,7 +100,7 @@ SemanticTokenTypes.Function  -> RellColor.QUERY_NAME   // with the "rell-query" 
 
 The `RellTokenModifier` enum lists the server's Rell-specific modifiers (`rell-entity`,
 `rell-object`, `rell-query`, `rell-operation`, `rell-local_val`, …), which is how one LSP token type
-splits into several IDE colors. Unmapped types fall through to LSP4IJ's default provider.
+splits into several IDE colors. Unmapped types fall through to the platform's default mapping.
 
 **Why Needed:** LSP semantic tokens are standardized strings.
 IDE needs to map them to actual TextAttributesKey objects for rendering.
@@ -201,20 +192,6 @@ dropped when the file changes.
 `RellVersionResolution` is the outcome: `Supported` (declared, or defaulted with an `Origin`
 explaining why), `Clamped` (declared newer than this build knows), or `Unsupported` (below the
 floor — no toolchain at all).
-
-### RellLspRouting.kt
-
-**Role:** Document matchers that decide which LSP4IJ `<server>` claims a file.
-`RellNewestVersionDocumentMatcher` takes everything resolving to the newest version;
-`RellVersionedDocumentMatcher` subclasses (e.g. `Rell0161DocumentMatcher`) take one specific older
-version, triggering the runtime download and declining until it is ready. Files below the floor match
-nothing. `RellLspServers` derives the server ids that `plugin.xml` must declare — `RellLspRoutingTest`
-fails if the two drift.
-
-### RellVersionedLanguageServerFactory.kt
-
-**Role:** Same factory as `RellLanguageServerFactory` but pointed at a downloaded runtime directory.
-One concrete subclass per older supported version (`Rell0161LanguageServerFactory`).
 
 ### RellLspRuntimeManager.kt / RellLspLockfile.kt
 
@@ -358,7 +335,7 @@ CLI command configured in settings.
 
 **Purpose:** Make "Reformat Code" work on `.rell` files.
 
-Formatting itself is served by LSP4IJ: its `formattingService` extension turns the action into a
+Formatting itself is served by the platform's LSP integration: it turns the action into a
 `textDocument/formatting` (or `rangeFormatting`) request against whichever Rell server owns the file.
 The plugin contributes no formatting model of its own.
 

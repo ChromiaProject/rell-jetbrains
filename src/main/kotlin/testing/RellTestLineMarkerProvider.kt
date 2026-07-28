@@ -18,9 +18,9 @@ import net.postchain.rellide.jetbrains.language.parser.RellParser
 import net.postchain.rellide.jetbrains.language.psi.RellPsiElementTypes
 import net.postchain.rellide.jetbrains.language.psi.ancestorOfRule
 import net.postchain.rellide.jetbrains.language.psi.isRule
-import net.postchain.rellide.jetbrains.lsp4ij.RellTestCase
-import net.postchain.rellide.jetbrains.lsp4ij.RellTestFile
-import net.postchain.rellide.jetbrains.lsp4ij.rellLanguageServerIsRunning
+import net.postchain.rellide.jetbrains.lsp.RellTestCase
+import net.postchain.rellide.jetbrains.lsp.RellTestFile
+import net.postchain.rellide.jetbrains.lsp.rellLanguageServerIsRunning
 import net.postchain.rellide.jetbrains.services.RellProjectService
 import net.postchain.rellide.jetbrains.testing.actions.createTestConfiguration
 
