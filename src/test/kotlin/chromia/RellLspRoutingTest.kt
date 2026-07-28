@@ -63,9 +63,9 @@ class RellLspRoutingTest : BasePlatformTestCase() {
     }
 
     fun testVersionedMatcherRequiresExactVersionAndReadyRuntime() {
-        val matcher = Rell0160DocumentMatcher()
-        val version = RellVersion(0, 16, 0)
-        val file = rellFile("versioned", "0.16.0")
+        val matcher = Rell0161DocumentMatcher()
+        val version = RellVersion(0, 16, 1)
+        val file = rellFile("versioned", "0.16.1")
 
         assertFalse("Runtime not downloaded: must not match", matcher.match(file, project))
 

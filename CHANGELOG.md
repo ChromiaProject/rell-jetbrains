@@ -9,6 +9,9 @@
   version-exact grammar and an on-demand downloaded language server (see
   [docs/COMPATIBILITY.md](docs/COMPATIBILITY.md))
 ### Removed
+- Support for Rell 0.16.0 &mdash; its language server fails to index a workspace containing any
+  syntax error, and this cannot be fixed retroactively. Projects declaring `rellVersion: 0.16.0`
+  now get the upgrade banner with the one-click `rellVersion` fix
 - Dependency on the bundled Terminal plugin &mdash; unused since Chromia CLI commands moved from
   the Terminal tool window to Run tool window tabs. The plugin now also loads in IDEs where the
   Terminal plugin is disabled

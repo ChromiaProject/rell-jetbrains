@@ -68,7 +68,7 @@
         <!-- Version-exact syntax errors for projects on older supported Rell versions -->
         <externalAnnotator language="Rell" implementationClass="net.postchain.rellide.jetbrains.chromia.RellVersionSyntaxAnnotator"/>
 
-        <!-- Banners for unsupported (below 0.16.0) and newer-than-known Rell versions -->
+        <!-- Banners for unsupported (below the compatibility floor) and newer-than-known Rell versions -->
         <editorNotificationProvider implementation="net.postchain.rellide.jetbrains.chromia.RellVersionEditorNotificationProvider"/>
 
         <!-- Save-and-reload bar on chromia.yml while an edited rellVersion is unsaved -->
@@ -138,15 +138,6 @@
             </description>
         </server>
 
-        <server id="rellLanguageServer_0_16_0"
-                name="Rell Language Server (0.16.0)"
-                factoryClass="net.postchain.rellide.jetbrains.chromia.Rell0160LanguageServerFactory">
-            <description><![CDATA[
-            Rell Language Server for projects declaring compile.rellVersion 0.16.0
-        ]]>
-            </description>
-        </server>
-
         <server id="rellLanguageServer_0_16_1"
                 name="Rell Language Server (0.16.1)"
                 factoryClass="net.postchain.rellide.jetbrains.chromia.Rell0161LanguageServerFactory">
@@ -162,21 +153,12 @@
                          documentMatcher="net.postchain.rellide.jetbrains.chromia.RellNewestVersionDocumentMatcher"/>
 
         <languageMapping language="Rell"
-                         serverId="rellLanguageServer_0_16_0"
-                         languageId="Rell"
-                         documentMatcher="net.postchain.rellide.jetbrains.chromia.Rell0160DocumentMatcher"/>
-
-        <languageMapping language="Rell"
                          serverId="rellLanguageServer_0_16_1"
                          languageId="Rell"
                          documentMatcher="net.postchain.rellide.jetbrains.chromia.Rell0161DocumentMatcher"/>
 
         <semanticTokensColorsProvider
                 serverId="rellLanguageServer"
-                class="net.postchain.rellide.jetbrains.lsp4ij.RellSemanticTokensColorProvider" />
-
-        <semanticTokensColorsProvider
-                serverId="rellLanguageServer_0_16_0"
                 class="net.postchain.rellide.jetbrains.lsp4ij.RellSemanticTokensColorProvider" />
 
         <semanticTokensColorsProvider

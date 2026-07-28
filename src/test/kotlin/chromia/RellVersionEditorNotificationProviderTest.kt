@@ -16,6 +16,10 @@ class RellVersionEditorNotificationProviderTest : BasePlatformTestCase() {
     fun testBannerShownForUnsupportedVersion() {
         val file = rellFile("ceased", "0.14.5")
         assertNotNull("0.14.5 (the chr template default) must show the cease banner", collect(file))
+        assertNotNull(
+            "0.16.0 (dropped in plugin 0.4.2) must show the cease banner",
+            collect(rellFile("dropped", "0.16.0")),
+        )
     }
 
     fun testBannerShownForClampedVersion() {
@@ -24,8 +28,8 @@ class RellVersionEditorNotificationProviderTest : BasePlatformTestCase() {
     }
 
     fun testNoBannerForSupportedOrDefaultVersions() {
-        assertNull(collect(rellFile("newest", "0.16.1")))
-        assertNull(collect(rellFile("older", "0.16.0")))
+        assertNull(collect(rellFile("newest", "0.16.2")))
+        assertNull(collect(rellFile("older", "0.16.1")))
         assertNull(collect(rellFile("no-config", null)))
     }
 

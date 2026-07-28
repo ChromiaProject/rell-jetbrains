@@ -9,7 +9,7 @@ import com.intellij.psi.PsiFile
 
 /**
  * Runs the version-exact ANTLR parser for files governed by an older supported Rell version and
- * reports its syntax errors — e.g. lambdas in a project declaring `compile.rellVersion: 0.16.0`.
+ * reports its syntax errors — syntax that only entered the grammar after the declared version.
  *
  * The editor PSI always uses the newest grammar (a superset), so this annotator is the only place
  * where "valid in the newest Rell but not in the project's Rell" surfaces client-side; the

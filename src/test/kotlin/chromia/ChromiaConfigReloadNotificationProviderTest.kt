@@ -16,16 +16,16 @@ class ChromiaConfigReloadNotificationProviderTest : BasePlatformTestCase() {
     }
 
     fun testNoBarWhileDocumentMatchesDisk() {
-        val config = configFile("clean", "0.16.0")
+        val config = configFile("clean", "0.16.1")
         assertNull(provider.collectNotificationData(project, config))
     }
 
     fun testBarAppearsWhenEditedVersionDiffersAndDisappearsOnSave() {
-        val config = configFile("edited", "0.16.0")
+        val config = configFile("edited", "0.16.1")
         val document = FileDocumentManager.getInstance().getDocument(config)!!
 
         WriteCommandAction.runWriteCommandAction(project) {
-            document.setText("compile:\n  rellVersion: \"0.16.1\"\n")
+            document.setText("compile:\n  rellVersion: \"0.16.2\"\n")
         }
         assertNotNull("Unsaved version change must show the reload bar", provider.collectNotificationData(project, config))
 
@@ -34,11 +34,11 @@ class ChromiaConfigReloadNotificationProviderTest : BasePlatformTestCase() {
     }
 
     fun testNoBarForNonVersionEdits() {
-        val config = configFile("other-edit", "0.16.0")
+        val config = configFile("other-edit", "0.16.1")
         val document = FileDocumentManager.getInstance().getDocument(config)!!
 
         WriteCommandAction.runWriteCommandAction(project) {
-            document.setText("compile:\n  rellVersion: \"0.16.0\"\n  source: rell/src\n")
+            document.setText("compile:\n  rellVersion: \"0.16.1\"\n  source: rell/src\n")
         }
         assertNull(
             "Edits that keep rellVersion unchanged must not show the bar",
@@ -47,11 +47,11 @@ class ChromiaConfigReloadNotificationProviderTest : BasePlatformTestCase() {
     }
 
     fun testNoBarOnOtherFiles() {
-        val other = myFixture.addFileToProject("misc/config.yml", "compile:\n  rellVersion: \"0.16.0\"\n").virtualFile
+        val other = myFixture.addFileToProject("misc/config.yml", "compile:\n  rellVersion: \"0.16.1\"\n").virtualFile
         myFixture.openFileInEditor(other)
         val document = FileDocumentManager.getInstance().getDocument(other)!!
         WriteCommandAction.runWriteCommandAction(project) {
-            document.setText("compile:\n  rellVersion: \"0.16.1\"\n")
+            document.setText("compile:\n  rellVersion: \"0.16.2\"\n")
         }
         assertNull(provider.collectNotificationData(project, other))
     }

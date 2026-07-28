@@ -8,7 +8,7 @@ class RellVersionRegistryTest {
 
     @Test
     fun registryMatchesCompatibilityPolicy() {
-        assertEquals(RellVersion(0, 16, 0), RellVersionRegistry.floor)
+        assertEquals(RellVersion(0, 16, 1), RellVersionRegistry.floor)
         assertTrue(RellVersionRegistry.max >= RellVersionRegistry.floor)
         assertTrue(RellVersionRegistry.isSupported(RellVersionRegistry.floor))
         assertTrue(RellVersionRegistry.isSupported(RellVersionRegistry.max))

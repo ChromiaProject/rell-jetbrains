@@ -51,7 +51,7 @@ class RellVersionResolverTest : BasePlatformTestCase() {
     }
 
     fun testDeclaredSupportedVersionsResolveExactly() {
-        for (version in listOf("0.16.0", "0.16.1", "0.16.2")) {
+        for (version in listOf("0.16.1", "0.16.2")) {
             val dir = "proj-$version"
             val config = file("$dir/chromia.yml", yml(version))
             val source = file("$dir/src/main.rell")
@@ -63,7 +63,7 @@ class RellVersionResolverTest : BasePlatformTestCase() {
     }
 
     fun testBelowFloorIsUnsupported() {
-        for (version in listOf("0.15.4", "0.14.5", "0.13.0")) {
+        for (version in listOf("0.16.0", "0.15.4", "0.14.5", "0.13.0")) {
             val dir = "proj-$version"
             val config = file("$dir/chromia.yml", yml(version))
             val source = file("$dir/src/main.rell")
@@ -143,7 +143,7 @@ class RellVersionResolverTest : BasePlatformTestCase() {
             "with-libs/chromia.yml",
             """
             compile:
-              rellVersion: "0.16.0"
+              rellVersion: "0.16.1"
               source: src
             libs:
               ft4:
@@ -156,32 +156,32 @@ class RellVersionResolverTest : BasePlatformTestCase() {
         )
         val source = file("with-libs/src/main.rell")
         assertEquals(
-            RellVersionResolution.Supported(RellVersion(0, 16, 0), Origin.DECLARED, config),
+            RellVersionResolution.Supported(RellVersion(0, 16, 1), Origin.DECLARED, config),
             resolver.resolve(source),
         )
     }
 
     fun testNearestEnclosingConfigWins() {
-        val outer = file("nested/chromia.yml", yml("0.16.1"))
-        val inner = file("nested/sub/chromia.yml", yml("0.16.0"))
+        val outer = file("nested/chromia.yml", yml("0.16.2"))
+        val inner = file("nested/sub/chromia.yml", yml("0.16.1"))
         val innerSource = file("nested/sub/src/main.rell")
         val outerSource = file("nested/src/main.rell")
 
         assertEquals(
-            RellVersionResolution.Supported(RellVersion(0, 16, 0), Origin.DECLARED, inner),
+            RellVersionResolution.Supported(RellVersion(0, 16, 1), Origin.DECLARED, inner),
             resolver.resolve(innerSource),
         )
         assertEquals(
-            RellVersionResolution.Supported(RellVersion(0, 16, 1), Origin.DECLARED, outer),
+            RellVersionResolution.Supported(RellVersion(0, 16, 2), Origin.DECLARED, outer),
             resolver.resolve(outerSource),
         )
     }
 
     fun testRellSubdirLayoutResolvesFromItsOwnConfig() {
-        val config = file("layout/rell/chromia.yml", yml("0.16.0"))
+        val config = file("layout/rell/chromia.yml", yml("0.16.1"))
         val source = file("layout/rell/src/main.rell")
         assertEquals(
-            RellVersionResolution.Supported(RellVersion(0, 16, 0), Origin.DECLARED, config),
+            RellVersionResolution.Supported(RellVersion(0, 16, 1), Origin.DECLARED, config),
             resolver.resolve(source),
         )
     }
@@ -205,40 +205,40 @@ class RellVersionResolverTest : BasePlatformTestCase() {
     }
 
     fun testConfigEditInvalidatesCacheViaVfsListener() {
-        val config = file("edited/chromia.yml", yml("0.16.0"))
+        val config = file("edited/chromia.yml", yml("0.16.1"))
         val source = file("edited/src/main.rell")
-        assertEquals(RellVersion(0, 16, 0), resolver.resolve(source).effectiveVersion)
+        assertEquals(RellVersion(0, 16, 1), resolver.resolve(source).effectiveVersion)
 
-        runWriteAction { VfsUtil.saveText(config, yml("0.16.1")) }
+        runWriteAction { VfsUtil.saveText(config, yml("0.16.2")) }
+
+        assertEquals(RellVersion(0, 16, 2), resolver.resolve(source).effectiveVersion)
+    }
+
+    fun testNonVersionConfigEditKeepsCacheFresh() {
+        val config = file("libs-edit/chromia.yml", yml("0.16.1"))
+        val source = file("libs-edit/src/main.rell")
+        assertEquals(RellVersion(0, 16, 1), resolver.resolve(source).effectiveVersion)
+
+        runWriteAction {
+            VfsUtil.saveText(config, yml("0.16.1") + "libs:\n  ft4:\n    version: \"1.1\"\n")
+        }
 
         assertEquals(RellVersion(0, 16, 1), resolver.resolve(source).effectiveVersion)
     }
 
-    fun testNonVersionConfigEditKeepsCacheFresh() {
-        val config = file("libs-edit/chromia.yml", yml("0.16.0"))
-        val source = file("libs-edit/src/main.rell")
-        assertEquals(RellVersion(0, 16, 0), resolver.resolve(source).effectiveVersion)
-
-        runWriteAction {
-            VfsUtil.saveText(config, yml("0.16.0") + "libs:\n  ft4:\n    version: \"1.1\"\n")
-        }
-
-        assertEquals(RellVersion(0, 16, 0), resolver.resolve(source).effectiveVersion)
-    }
-
     fun testRefreshConfigReportsOnlyRealVersionDeltas() {
-        val config = file("refresh/chromia.yml", yml("0.16.0"))
+        val config = file("refresh/chromia.yml", yml("0.16.1"))
         val source = file("refresh/src/main.rell")
 
         assertFalse("Uncached config has no dependents", resolver.refreshConfig(config))
 
         resolver.resolve(source)
-        File(contentRoot, "refresh/chromia.yml").writeText(yml("0.16.0") + "libs:\n  ft4:\n    version: \"1.1\"\n")
+        File(contentRoot, "refresh/chromia.yml").writeText(yml("0.16.1") + "libs:\n  ft4:\n    version: \"1.1\"\n")
         assertFalse("Same declared version is not a delta", resolver.refreshConfig(config))
 
-        File(contentRoot, "refresh/chromia.yml").writeText(yml("0.16.1"))
+        File(contentRoot, "refresh/chromia.yml").writeText(yml("0.16.2"))
         assertTrue("Declared version change is a delta", resolver.refreshConfig(config))
-        assertEquals(RellVersion(0, 16, 1), resolver.resolve(source).effectiveVersion)
+        assertEquals(RellVersion(0, 16, 2), resolver.resolve(source).effectiveVersion)
     }
 
     // Directory renames fire a single VFS event for the directory only; the cache must not keep

@@ -38,7 +38,7 @@ Most of the suite covers the compatibility machinery described in [COMPATIBILITY
 | `RellVersionResolverTest`                    | `chromia.yml` lookup and `compile.rellVersion` semantics, on real temp directories    |
 | `RellLspRoutingTest`                         | Document matchers agree with the `<server>` entries declared in `plugin.xml`          |
 | `RellLspLockfileTest`                        | Lockfile parsing, and that each one pins its own language-server version              |
-| `RellVersionSyntaxAnnotatorTest`             | Version-true syntax errors (e.g. lambdas flagged in a 0.16.0 project)                 |
+| `RellVersionSyntaxAnnotatorTest`             | Version-true syntax errors from the declared version's own parser                     |
 | `RellVersionEditorNotificationProviderTest`  | Unsupported / clamped banners and the `rellVersion` quick-fix                         |
 | `ChromiaConfigReloadNotificationProviderTest`| The save-and-reload bar shown while an edited `rellVersion` is unsaved                |
 

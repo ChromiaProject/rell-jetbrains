@@ -16,14 +16,28 @@ class RellVersionSyntaxAnnotatorTest : BasePlatformTestCase() {
         RellVersionResolver.getInstance(project).dropCaches()
     }
 
-    fun testLambdaFlaggedAsErrorInDeclared0160Project() {
-        myFixture.addFileToProject("chromia.yml", "compile:\n  rellVersion: \"0.16.0\"\n")
-        myFixture.configureByText("main.rell", lambdaDapp)
-        val versionErrors = myFixture.doHighlighting(HighlightSeverity.ERROR)
-            .filter { it.description?.contains("Not valid in Rell 0.16.0") == true }
-        assertTrue(
-            "Expected a version-syntax error on the lambda in a 0.16.0 project",
-            versionErrors.isNotEmpty(),
+    // The daemon only runs external annotators on files without PSI syntax errors, and with the
+    // 0.16.1 and 0.16.2 grammars identical no input can be version-broken yet PSI-clean — so the
+    // collect-and-parse pipeline is exercised directly instead of through doHighlighting.
+    fun testAnnotatorParsesOlderSupportedVersionWithItsOwnGrammar() {
+        myFixture.addFileToProject("chromia.yml", "compile:\n  rellVersion: \"0.16.1\"\n")
+        val psi = myFixture.configureByText("main.rell", "module;\nfunction broken( { }\n")
+        val annotator = RellVersionSyntaxAnnotator()
+
+        val info = annotator.collectInformation(psi)
+        assertNotNull("Files of an older supported version must be collected", info)
+        assertEquals(RellVersion(0, 16, 1), info!!.version)
+
+        val result = annotator.doAnnotate(info)!!
+        assertTrue("Expected the 0.16.1 parser to report syntax errors, got none", result.errors.isNotEmpty())
+    }
+
+    fun testAnnotatorSkipsNewestVersionFiles() {
+        myFixture.addFileToProject("chromia.yml", "compile:\n  rellVersion: \"0.16.2\"\n")
+        val psi = myFixture.configureByText("main.rell", lambdaDapp)
+        assertNull(
+            "Newest-version files are covered by the editor PSI; the annotator must not collect them",
+            RellVersionSyntaxAnnotator().collectInformation(psi),
         )
     }
 
@@ -41,13 +55,17 @@ class RellVersionSyntaxAnnotatorTest : BasePlatformTestCase() {
     }
 
     fun testNoVersionAnnotationsForUnsupportedVersion() {
-        myFixture.addFileToProject("chromia.yml", "compile:\n  rellVersion: \"0.14.5\"\n")
-        myFixture.configureByText("main.rell", lambdaDapp)
-        val versionErrors = myFixture.doHighlighting(HighlightSeverity.ERROR)
-            .filter { it.description?.contains("Not valid in Rell") == true }
-        assertTrue(
-            "Unsupported versions cease all version diagnostics, got: $versionErrors",
-            versionErrors.isEmpty(),
-        )
+        for ((dir, version) in mapOf("legacy" to "0.14.5", "dropped" to "0.16.0")) {
+            myFixture.addFileToProject("$dir/chromia.yml", "compile:\n  rellVersion: \"$version\"\n")
+            myFixture.configureFromExistingVirtualFile(
+                myFixture.addFileToProject("$dir/main.rell", lambdaDapp).virtualFile,
+            )
+            val versionErrors = myFixture.doHighlighting(HighlightSeverity.ERROR)
+                .filter { it.description?.contains("Not valid in Rell") == true }
+            assertTrue(
+                "Unsupported version $version ceases all version diagnostics, got: $versionErrors",
+                versionErrors.isEmpty(),
+            )
+        }
     }
 }

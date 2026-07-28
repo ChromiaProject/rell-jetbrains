@@ -206,7 +206,7 @@ floor — no toolchain at all).
 
 **Role:** Document matchers that decide which LSP4IJ `<server>` claims a file.
 `RellNewestVersionDocumentMatcher` takes everything resolving to the newest version;
-`RellVersionedDocumentMatcher` subclasses (e.g. `Rell0160DocumentMatcher`) take one specific older
+`RellVersionedDocumentMatcher` subclasses (e.g. `Rell0161DocumentMatcher`) take one specific older
 version, triggering the runtime download and declining until it is ready. Files below the floor match
 nothing. `RellLspServers` derives the server ids that `plugin.xml` must declare — `RellLspRoutingTest`
 fails if the two drift.
@@ -214,7 +214,7 @@ fails if the two drift.
 ### RellVersionedLanguageServerFactory.kt
 
 **Role:** Same factory as `RellLanguageServerFactory` but pointed at a downloaded runtime directory.
-One concrete subclass per older supported version (`Rell0160LanguageServerFactory`).
+One concrete subclass per older supported version (`Rell0161LanguageServerFactory`).
 
 ### RellLspRuntimeManager.kt / RellLspLockfile.kt
 

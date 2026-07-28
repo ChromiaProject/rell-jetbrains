@@ -1,21 +1,24 @@
 # Rell version compatibility
 
-Each plugin release supports **every Rell release from 0.16.0 up to the plugin's newest supported
+Each plugin release supports **every Rell release from 0.16.1 up to the plugin's newest supported
 version** with a version-exact grammar and a version-exact language server per project. Versions
-below 0.16.0 are unsupported: no language server starts, and the editor recommends upgrading.
+below 0.16.1 are unsupported: no language server starts, and the editor recommends upgrading.
 
 Compatibility is tracked per exact version because even patch releases change the language — for
-example, lambda expressions entered the grammar in Rell 0.16.1, so a project declaring 0.16.0 must
-see them flagged as errors. The Rell compiler itself cannot do this: its `compatibility` option
-gates library members and behavior switches, never syntax, so only the matching toolchain produces
-correct diagnostics.
+example, lambda expressions entered the grammar in Rell 0.16.1, so a project declaring an older
+version must see them flagged as errors. The Rell compiler itself cannot do this: its
+`compatibility` option gates library members and behavior switches, never syntax, so only the
+matching toolchain produces correct diagnostics.
 
 ## Version matrix
 
 | Plugin version | Supported Rell versions | Bundled (newest) |
 |----------------|-------------------------|------------------|
-| 0.4.2          | 0.16.0, 0.16.1, 0.16.2  | 0.16.2           |
+| 0.4.2          | 0.16.1, 0.16.2          | 0.16.2           |
 | 0.4.1          | 0.16.0, 0.16.1          | 0.16.1           |
+
+Rell 0.16.0 was dropped in plugin 0.4.2: its language server fails to index a workspace containing
+any syntax error, and no fixed 0.16.0 server can be published retroactively.
 
 ## How the version is resolved
 
@@ -37,7 +40,7 @@ The resolved version maps to behavior as follows:
 | older supported (e.g. 0.16.1)  | version-exact annotator  | downloaded version-exact | —                              |
 | absent / no `chromia.yml`      | newest (editor PSI)      | bundled newest           | —                              |
 | newer than the plugin knows    | newest (editor PSI)      | bundled newest           | "update the plugin"            |
-| below 0.16.0                   | newest (editor PSI) only | **none**                 | "upgrade Rell" + one-click fix |
+| below 0.16.1                   | newest (editor PSI) only | **none**                 | "upgrade Rell" + one-click fix |
 
 Editing `chromia.yml` re-resolves immediately: caches drop, highlighting re-runs, banners update,
 and the Rell language servers restart so files re-route to the right toolchain.

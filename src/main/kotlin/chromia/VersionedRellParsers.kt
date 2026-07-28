@@ -11,18 +11,6 @@ object VersionedRellParsers {
     data class SyntaxError(val line: Int, val column: Int, val length: Int, val message: String)
 
     private val parsers: Map<RellVersion, (String) -> List<SyntaxError>> = mapOf(
-        RellVersion(0, 16, 0) to { text ->
-            collectErrors(text) { lexer, listener ->
-                val antlrLexer = net.postchain.rellide.jetbrains.language.parser.v0_16_0.RellLexer(lexer)
-                antlrLexer.removeErrorListeners()
-                antlrLexer.addErrorListener(listener)
-                val parser =
-                    net.postchain.rellide.jetbrains.language.parser.v0_16_0.RellParser(CommonTokenStream(antlrLexer))
-                parser.removeErrorListeners()
-                parser.addErrorListener(listener)
-                parser.file()
-            }
-        },
         RellVersion(0, 16, 1) to { text ->
             collectErrors(text) { lexer, listener ->
                 val antlrLexer = net.postchain.rellide.jetbrains.language.parser.v0_16_1.RellLexer(lexer)

@@ -47,7 +47,7 @@ to the grammar and the language server matching the `compile.rellVersion` declar
 toolchain produces correct diagnostics, so the plugin ships one per supported version rather than
 approximating with the newest.
 
-The full rules — resolution, clamping, the 0.16.0 floor, downloaded runtimes — are in
+The full rules — resolution, clamping, the 0.16.1 floor, downloaded runtimes — are in
 [COMPATIBILITY.md](COMPATIBILITY.md).
 
 
@@ -105,7 +105,7 @@ flowchart TB
 - Basic syntax highlighting applied via `RellSyntaxHighlighter`
 - LSP4IJ asks each registered document matcher whether it claims this file
 - `RellVersionResolver` walks up to the nearest `chromia.yml` and resolves the file's Rell version;
-  the matching version's matcher accepts, and the others decline (below the 0.16.0 floor, all decline)
+  the matching version's matcher accepts, and the others decline (below the 0.16.1 floor, all decline)
 - The accepting server's factory returns `RellLanguageServer` (subprocess mode) or
   `RellSocketLanguageServer` (socket mode, `-Drell.lsp.useSocket=true`)
 - The server starts on first `.rell` file opening (bundled classpath launched as a subprocess, or a
