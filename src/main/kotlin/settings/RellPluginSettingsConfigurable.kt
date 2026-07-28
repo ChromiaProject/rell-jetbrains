@@ -27,7 +27,7 @@ class RellPluginSettingsConfigurable : Configurable {
         val settings = RellPluginSettingsState.instance
         val component = settingsComponent ?: return false
         return settings.indexCaching != component.indexCachingState ||
-            settings.chromiaCliCommand != component.chromiaCliCommandState
+                settings.chromiaCliCommand != component.chromiaCliCommandState
     }
 
     override fun apply() {

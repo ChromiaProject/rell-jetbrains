@@ -29,5 +29,4 @@ abstract class RellVersionedLanguageServerFactory(private val version: RellVersi
 }
 
 class Rell0160LanguageServerFactory : RellVersionedLanguageServerFactory(RellVersion(0, 16, 0))
-
 class Rell0161LanguageServerFactory : RellVersionedLanguageServerFactory(RellVersion(0, 16, 1))

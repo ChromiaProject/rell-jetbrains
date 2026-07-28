@@ -19,7 +19,7 @@ class ChromiaToolWindow(private val project: Project) {
         tree = Tree(treeModel)
         setupTree()
     }
-    
+
     private fun setupTree() {
         tree.isRootVisible = false
         tree.showsRootHandles = true
@@ -30,13 +30,13 @@ class ChromiaToolWindow(private val project: Project) {
         tree.addMouseListener(ChromiaTreeMouseListener(project, treeModel))
 
         tree.componentPopupMenu = ChromiaTreePopupMenu(project, treeModel, tree)
-        
+
         // Expand root by default
         tree.expandRow(0)
     }
-    
+
     fun getContent(): JComponent = JBScrollPane(tree)
-    
+
     fun refreshTree() {
         treeModel.reload()
         tree.expandRow(0) // Keep root expanded after refresh

@@ -9,7 +9,7 @@ import javax.swing.JTree
  * Displays custom icons and formatting for different node types.
  */
 class ChromiaTreeCellRenderer : ColoredTreeCellRenderer() {
-    
+
     override fun customizeCellRenderer(
         tree: JTree,
         value: Any?,
@@ -17,7 +17,7 @@ class ChromiaTreeCellRenderer : ColoredTreeCellRenderer() {
         expanded: Boolean,
         leaf: Boolean,
         row: Int,
-        hasFocus: Boolean
+        hasFocus: Boolean,
     ) {
         if (value is ChromiaTreeNode) {
             icon = value.icon
@@ -27,25 +27,28 @@ class ChromiaTreeCellRenderer : ColoredTreeCellRenderer() {
                 ChromiaNodeType.ROOT -> {
                     append(value.displayName, SimpleTextAttributes.REGULAR_BOLD_ATTRIBUTES)
                 }
+
                 ChromiaNodeType.PROJECT -> {
                     append(value.displayName, SimpleTextAttributes.REGULAR_BOLD_ATTRIBUTES)
-                    
+
                     // Show project path on tooltip
                     toolTipText = value.description
                 }
+
                 ChromiaNodeType.CATEGORY -> {
                     append(value.displayName, SimpleTextAttributes.REGULAR_ATTRIBUTES)
                 }
+
                 ChromiaNodeType.COMMAND -> {
                     append(value.displayName, SimpleTextAttributes.REGULAR_ATTRIBUTES)
-                    
+
                     // Show parameters if any
                     if (value.parameters.isNotBlank()) {
                         append(" (", SimpleTextAttributes.GRAYED_ATTRIBUTES)
                         append(value.parameters, SimpleTextAttributes.GRAYED_SMALL_ATTRIBUTES)
                         append(")", SimpleTextAttributes.GRAYED_ATTRIBUTES)
                     }
-                    
+
                     // Show description on tooltip
                     toolTipText = value.description ?: value.getFullCommand()
                 }

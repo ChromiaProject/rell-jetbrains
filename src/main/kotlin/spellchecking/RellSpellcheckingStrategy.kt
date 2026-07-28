@@ -39,4 +39,3 @@ object StringExpressionTokenizer : EscapeSequenceTokenizer<LeafPsiElement>() {
         processTextWithOffsets(element, consumer, unescapedText, offsets, 1)
     }
 }
-

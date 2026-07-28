@@ -48,7 +48,7 @@ class RellPluginSettingsComponent {
                 .resizableColumn()
                 .comment(
                     "Path to the Chromia CLI or a shell command. Leave blank to use the " +
-                        "auto-detected path. Executed via the system shell."
+                            "auto-detected path. Executed via the system shell."
                 )
             button("Test") { executeTest() }
         }
@@ -106,10 +106,12 @@ class RellPluginSettingsComponent {
                                 "Process did not respond within ${TEST_TIMEOUT_MS / 1000} seconds.",
                                 "Test Chromia CLI"
                             )
+
                             output.exitCode == 0 -> Messages.showInfoMessage(
                                 output.stdout.trim().ifBlank { "Executable responded successfully." },
                                 "Test Chromia CLI"
                             )
+
                             else -> {
                                 val message = buildString {
                                     appendLine("Exit code: ${output.exitCode}")

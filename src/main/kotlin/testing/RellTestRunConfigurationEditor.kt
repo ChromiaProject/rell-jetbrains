@@ -35,10 +35,10 @@ class RellTestRunConfigurationEditor(private val project: Project) : SettingsEdi
 
     private fun setupUI() {
         workingDirectoryField.addBrowseFolderListener(
-                project,
-                FileChooserDescriptorFactory.createSingleFolderDescriptor()
-                        .withTitle("Select Working Directory")
-                        .withDescription("Choose the working directory for test execution")
+            project,
+            FileChooserDescriptorFactory.createSingleFolderDescriptor()
+                .withTitle("Select Working Directory")
+                .withDescription("Choose the working directory for test execution")
         )
 
         testScopeComboBox.addActionListener {
@@ -63,16 +63,16 @@ class RellTestRunConfigurationEditor(private val project: Project) : SettingsEdi
 
     override fun createEditor(): JComponent {
         return FormBuilder.createFormBuilder()
-                .addLabeledComponent("Test scope:", testScopeComboBox)
-                .addLabeledComponent(testModuleLabel, testModuleField)
-                .addLabeledComponent(testBlockchainLabel, testBlockchainField)
-                .addLabeledComponent(testPatternLabel, testPatternField)
-                .addSeparator()
-                .addLabeledComponent("Working directory:", workingDirectoryField)
-                .addLabeledComponent("Chromia CLI executable:", chrExecutableField)
-                .addLabeledComponent("Additional arguments:", additionalArgumentsField)
-                .addComponentFillVertically(JPanel(), 0)
-                .panel
+            .addLabeledComponent("Test scope:", testScopeComboBox)
+            .addLabeledComponent(testModuleLabel, testModuleField)
+            .addLabeledComponent(testBlockchainLabel, testBlockchainField)
+            .addLabeledComponent(testPatternLabel, testPatternField)
+            .addSeparator()
+            .addLabeledComponent("Working directory:", workingDirectoryField)
+            .addLabeledComponent("Chromia CLI executable:", chrExecutableField)
+            .addLabeledComponent("Additional arguments:", additionalArgumentsField)
+            .addComponentFillVertically(JPanel(), 0)
+            .panel
     }
 
     override fun resetEditorFrom(configuration: RellTestRunConfiguration) {
@@ -100,4 +100,4 @@ class RellTestRunConfigurationEditor(private val project: Project) : SettingsEdi
         options.setChrExecutable(chrExecutableField.text.takeIf { it.isNotBlank() })
         options.setAdditionalArguments(additionalArgumentsField.text.takeIf { it.isNotBlank() })
     }
-} 
+}

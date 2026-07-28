@@ -22,7 +22,7 @@ class RellFormattingBlock(
     private val indent: Indent,
     private val wrap: Wrap?,
     private val codeStyleSettings: CodeStyleSettings,
-    private val spacingBuilder: SpacingBuilder
+    private val spacingBuilder: SpacingBuilder,
 ) : ASTBlock {
     private val nodeSubBlocks: List<Block> by lazy { buildSubBlocks() }
     private val isNodeIncomplete: Boolean by lazy { FormatterUtil.isIncomplete(node) }

@@ -19,14 +19,19 @@ class RellTestLocator : SMTestLocator {
         val INSTANCE = RellTestLocator()
         const val PROTOCOL = "rell_test"
     }
-    
-    override fun getLocation(protocol: String, path: String, project: Project, globalSearchScope: GlobalSearchScope): List<Location<*>> {
+
+    override fun getLocation(
+        protocol: String,
+        path: String,
+        project: Project,
+        globalSearchScope: GlobalSearchScope,
+    ): List<Location<*>> {
         if (protocol != PROTOCOL) {
             return emptyList()
         }
-        
+
         val locations = mutableListOf<Location<*>>()
-        
+
         // Parse the path which should be in format: file_path:line_number:function_name
         val parts = path.split(":")
         if (parts.isNotEmpty()) {
@@ -53,4 +58,4 @@ class RellTestLocator : SMTestLocator {
 
         return locations
     }
-} 
+}

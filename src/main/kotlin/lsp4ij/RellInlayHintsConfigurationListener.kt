@@ -16,7 +16,7 @@ import org.eclipse.lsp4j.DidChangeConfigurationParams
 @Service(Service.Level.PROJECT)
 @Suppress("UnstableApiUsage")
 class RellInlayHintsConfigurationListener : Disposable {
-    
+
     private var connection: MessageBusConnection? = null
 
     fun startListening() {
@@ -24,12 +24,12 @@ class RellInlayHintsConfigurationListener : Disposable {
 
         connection = ApplicationManager.getApplication().messageBus.connect()
         connection?.subscribe(
-                InlayHintsSettings.INLAY_SETTINGS_CHANGED,
-                handler = object: SettingsListener {
-                    override fun settingsChanged() {
-                        onInlayHintsSettingsChanged()
-                    }
+            InlayHintsSettings.INLAY_SETTINGS_CHANGED,
+            handler = object : SettingsListener {
+                override fun settingsChanged() {
+                    onInlayHintsSettingsChanged()
                 }
+            }
         )
     }
 
@@ -43,7 +43,7 @@ class RellInlayHintsConfigurationListener : Disposable {
             sendConfigurationToLsp(project)
         }
     }
-    
+
     private fun sendConfigurationToLsp(project: Project) {
         val inlayHintsEnabled = isRellInlayHintsEnabled()
 
@@ -54,7 +54,7 @@ class RellInlayHintsConfigurationListener : Disposable {
                 "returnTypeHints" to inlayHintsEnabled
             )
         )
-        
+
         try {
             getRellLanguageServerItem(project)
                 ?.let { server ->
@@ -70,9 +70,9 @@ class RellInlayHintsConfigurationListener : Disposable {
         return try {
             val isEnabled = isRellInlayHintsEnabled()
             mapOf(
-                    "parameterHints" to isEnabled,
-                    "variableTypeHints" to isEnabled,
-                    "returnTypeHints" to isEnabled
+                "parameterHints" to isEnabled,
+                "variableTypeHints" to isEnabled,
+                "returnTypeHints" to isEnabled
             )
         } catch (e: Exception) {
             logger.warn("Error getting inlay hints settings: ${e.message}")
@@ -96,4 +96,4 @@ class RellInlayHintsStartupActivity : ProjectActivity {
     override suspend fun execute(project: Project) {
         project.service<RellInlayHintsConfigurationListener>().startListening()
     }
-} 
+}

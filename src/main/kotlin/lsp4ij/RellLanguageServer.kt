@@ -8,11 +8,7 @@ import com.intellij.openapi.vfs.VirtualFile
 import com.redhat.devtools.lsp4ij.server.OSProcessStreamConnectionProvider
 import com.redhat.devtools.lsp4ij.server.definition.extension.ServerExtensionPointBean
 import net.postchain.rellide.jetbrains.settings.RellPluginSettingsState
-import kotlin.io.path.Path
-import kotlin.io.path.absolutePathString
-import kotlin.io.path.div
-import kotlin.io.path.exists
-import kotlin.io.path.pathString
+import kotlin.io.path.*
 
 class RellLanguageServer(
     val project: Project,
@@ -72,10 +68,11 @@ class RellLanguageServer(
             // bean rather than our own class loader also keeps this working under the test runner,
             // where plugin classes come from the test classpath and carry no plugin descriptor.
             val serverBean = checkNotNull(
-                ServerExtensionPointBean.EP_NAME.extensionList.firstOrNull { it.id == SERVER_ID }
+                ServerExtensionPointBean.EP_NAME.extensionList.find { it.id == SERVER_ID }
             ) {
                 "No lsp4ij server extension registered with id $SERVER_ID"
             }
+
             return serverBean.pluginDescriptor.pluginPath.toAbsolutePath() / "language-server"
         }
     }

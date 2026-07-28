@@ -21,7 +21,7 @@ import java.io.File
  */
 class RellTestRunProfileState(
     environment: ExecutionEnvironment,
-    private val configuration: RellTestRunConfiguration
+    private val configuration: RellTestRunConfiguration,
 ) : CommandLineState(environment) {
 
     override fun startProcess(): ProcessHandler {
@@ -83,7 +83,7 @@ class RellTestRunProfileState(
  */
 private class RellTestConsoleProperties(
     configuration: RellTestRunConfiguration,
-    executor: Executor
+    executor: Executor,
 ) : SMTRunnerConsoleProperties(configuration, "Rell Test", executor) {
 
     init {
@@ -105,7 +105,7 @@ private class RellTestConsoleProperties(
  */
 class RellTestResultsListener(
     private val consoleProperties: SMTRunnerConsoleProperties,
-    private val processHandler: ProcessHandler
+    private val processHandler: ProcessHandler,
 ) : ProcessListener {
 
     override fun startNotified(event: ProcessEvent) {
@@ -115,12 +115,16 @@ class RellTestResultsListener(
 
     override fun processTerminated(event: ProcessEvent) {
         if (event.exitCode != 0) {
-            sendMessage(ServiceMessageBuilder.testFailed(consoleProperties.configuration.name)
+            sendMessage(
+                ServiceMessageBuilder.testFailed(consoleProperties.configuration.name)
                     .addAttribute(ServiceMessageTypes.MESSAGE, "")
-                    .toString(), event.processHandler)
+                    .toString(), event.processHandler
+            )
         } else {
-            sendMessage(ServiceMessageBuilder.testFinished(consoleProperties.configuration.name)
-                    .toString(), event.processHandler)
+            sendMessage(
+                ServiceMessageBuilder.testFinished(consoleProperties.configuration.name)
+                    .toString(), event.processHandler
+            )
         }
     }
 

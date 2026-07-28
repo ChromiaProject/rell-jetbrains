@@ -10,9 +10,9 @@ import com.intellij.openapi.project.Project
  * Factory for creating Rell test run configurations.
  */
 class RellTestConfigurationFactory(type: RellTestConfigurationType) : ConfigurationFactory(type) {
-    
+
     override fun getId(): String = "RellTestConfigurationFactory"
-    
+
     override fun createTemplateConfiguration(project: Project): RunConfiguration =
         RellTestRunConfiguration(project, this, "Rell Test")
 

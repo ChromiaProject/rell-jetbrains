@@ -11,22 +11,15 @@ import javax.swing.Icon
  * a dedicated test runner for Rell test files.
  */
 class RellTestConfigurationType : ConfigurationType {
-    
     companion object {
         const val ID = "RellTestConfiguration"
         const val DISPLAY_NAME = "Rell Test"
         const val DESCRIPTION = "Run Rell tests"
     }
-    
+
     override fun getDisplayName(): String = DISPLAY_NAME
-    
     override fun getConfigurationTypeDescription(): String = DESCRIPTION
-    
     override fun getIcon(): Icon = IconLoader.getIcon("/icons/rell.png", javaClass)
-    
     override fun getId(): String = ID
-    
-    override fun getConfigurationFactories(): Array<ConfigurationFactory> {
-        return arrayOf(RellTestConfigurationFactory(this))
-    }
-} 
+    override fun getConfigurationFactories(): Array<ConfigurationFactory> = arrayOf(RellTestConfigurationFactory(this))
+}

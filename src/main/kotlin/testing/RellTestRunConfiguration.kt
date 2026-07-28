@@ -12,9 +12,9 @@ import com.intellij.openapi.project.Project
  * Jetbrains's run configuration system.
  */
 class RellTestRunConfiguration(
-        project: Project,
-        factory: ConfigurationFactory,
-        name: String
+    project: Project,
+    factory: ConfigurationFactory,
+    name: String,
 ) : RunConfigurationBase<RellTestRunConfigurationOptions>(project, factory, name) {
 
     public override fun getOptions(): RellTestRunConfigurationOptions {

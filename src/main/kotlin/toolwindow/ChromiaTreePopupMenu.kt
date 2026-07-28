@@ -22,51 +22,54 @@ import javax.swing.tree.TreePath
  * Provides options to configure command parameters, execute commands, and clear settings.
  */
 class ChromiaTreePopupMenu(
-        private val project: Project,
-        private val treeModel: ChromiaTreeModel,
-        private val tree: JTree
+    private val project: Project,
+    private val treeModel: ChromiaTreeModel,
+    private val tree: JTree,
 ) : JBPopupMenu() {
 
     companion object {
         val logger = Logger.getInstance(ChromiaTreePopupMenu::class.java)
     }
-    
+
     private val settings = ChromiaToolWindowSettings.getInstance(project)
     private val commandExecutor = ChromiaCommandExecutor(project)
-    
+
     init {
         setupMenu()
     }
-    
+
     private fun setupMenu() {
         // This will be called when the popup is about to be shown
         // We'll update the menu items based on the selected node
     }
-    
+
     override fun show(invoker: java.awt.Component?, x: Int, y: Int) {
         removeAll() // Clear existing items
-        
+
         val selectedPath = tree.selectionPath
         val selectedNode = selectedPath?.lastPathComponent as? ChromiaTreeNode
-        
+
         if (selectedNode != null) {
             buildMenuForNode(selectedNode)
         }
-        
+
         super.show(invoker, x, y)
     }
-    
+
     private fun buildMenuForNode(node: ChromiaTreeNode) {
         when (node.nodeType) {
             ChromiaNodeType.COMMAND -> {
                 buildCommandMenu(node)
             }
+
             ChromiaNodeType.CATEGORY -> {
                 buildCategoryMenu(node)
             }
+
             ChromiaNodeType.PROJECT -> {
                 buildProjectMenu(node)
             }
+
             ChromiaNodeType.ROOT -> {
                 buildRootMenu()
             }
@@ -81,7 +84,7 @@ class ChromiaTreePopupMenu(
             border = JBUI.Borders.empty(3, 5)
         }
     }
-    
+
     private fun buildCommandMenu(node: ChromiaTreeNode) {
         val executeItem = createMenuItem("Execute", AllIcons.Actions.Execute)
         executeItem.addActionListener {
@@ -93,7 +96,7 @@ class ChromiaTreePopupMenu(
             }
         }
         add(executeItem)
-        
+
         addSeparator()
 
         val configureItem = createMenuItem("Configure Parameters...", AllIcons.Actions.Properties)
@@ -144,7 +147,7 @@ class ChromiaTreePopupMenu(
                 add(expandItem)
             }
         }
-        
+
         addSeparator()
 
         val clearAllItem = createMenuItem("Clear All Parameters in Category", AllIcons.Actions.GC)
@@ -153,7 +156,7 @@ class ChromiaTreePopupMenu(
         }
         add(clearAllItem)
     }
-    
+
     private fun buildProjectMenu(node: ChromiaTreeNode) {
         val path = getTreePath(node)
         if (path != null) {
@@ -171,7 +174,7 @@ class ChromiaTreePopupMenu(
                 add(expandItem)
             }
         }
-        
+
         addSeparator()
 
         val openDirItem = createMenuItem("Open in File Manager", AllIcons.Actions.MenuOpen)
@@ -193,7 +196,7 @@ class ChromiaTreePopupMenu(
         }
         add(clearProjectParams)
     }
-    
+
     private fun buildRootMenu() {
         val refreshItem = createMenuItem("Refresh", AllIcons.Actions.Refresh)
         refreshItem.addActionListener {
@@ -201,7 +204,7 @@ class ChromiaTreePopupMenu(
             tree.expandRow(0) // Expand root
         }
         add(refreshItem)
-        
+
         addSeparator()
 
         val clearAllItem = createMenuItem("Clear All Parameters", AllIcons.Actions.GC)
@@ -210,7 +213,7 @@ class ChromiaTreePopupMenu(
         }
         add(clearAllItem)
     }
-    
+
     private fun showParametersDialog(node: ChromiaTreeNode) {
         val currentParameters = node.parameters
         val newParameters = Messages.showInputDialog(
@@ -221,10 +224,10 @@ class ChromiaTreePopupMenu(
             currentParameters,
             null
         )
-        
+
         if (newParameters != null) {
             node.parameters = newParameters
-            
+
             // Save to settings
             if (node.command != null) {
                 settings.setParameters(node.command, newParameters)
@@ -234,19 +237,19 @@ class ChromiaTreePopupMenu(
             treeModel.nodeChanged(node)
         }
     }
-    
+
     private fun clearNodeParameters(node: ChromiaTreeNode) {
         node.parameters = ""
-        
+
         // Remove from settings
         if (node.command != null) {
             settings.clearParameters(node.command)
         }
-        
+
         // Refresh tree display
         treeModel.nodeChanged(node)
     }
-    
+
     private fun clearCategoryParameters(categoryNode: ChromiaTreeNode) {
         val result = Messages.showYesNoDialog(
             project,
@@ -254,13 +257,13 @@ class ChromiaTreePopupMenu(
             "Clear Category Parameters",
             Messages.getQuestionIcon()
         )
-        
+
         if (result == Messages.YES) {
             clearParametersRecursively(categoryNode)
             treeModel.nodeStructureChanged(categoryNode)
         }
     }
-    
+
     private fun clearProjectParameters(projectNode: ChromiaTreeNode) {
         val result = Messages.showYesNoDialog(
             project,
@@ -268,13 +271,13 @@ class ChromiaTreePopupMenu(
             "Clear Project Parameters",
             Messages.getQuestionIcon()
         )
-        
+
         if (result == Messages.YES) {
             clearParametersRecursively(projectNode)
             treeModel.nodeStructureChanged(projectNode)
         }
     }
-    
+
     private fun clearAllParameters() {
         val result = Messages.showYesNoDialog(
             project,
@@ -282,34 +285,34 @@ class ChromiaTreePopupMenu(
             "Clear All Parameters",
             Messages.getQuestionIcon()
         )
-        
+
         if (result == Messages.YES) {
             settings.clearAllParameters()
             clearParametersRecursively(treeModel.root as ChromiaTreeNode)
             treeModel.reload()
         }
     }
-    
+
     private fun clearParametersRecursively(node: ChromiaTreeNode) {
         if (node.nodeType == ChromiaNodeType.COMMAND) {
             node.parameters = ""
         }
-        
+
         for (i in 0 until node.childCount) {
             val child = node.getChildAt(i) as ChromiaTreeNode
             clearParametersRecursively(child)
         }
     }
-    
+
     private fun getTreePath(node: ChromiaTreeNode): TreePath? {
         val path = mutableListOf<ChromiaTreeNode>()
         var current: ChromiaTreeNode? = node
-        
+
         while (current != null) {
             path.add(0, current)
             current = current.parent as? ChromiaTreeNode
         }
-        
+
         return if (path.isNotEmpty()) TreePath(path.toTypedArray()) else null
     }
 }

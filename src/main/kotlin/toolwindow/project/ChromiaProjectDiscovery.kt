@@ -15,7 +15,7 @@ object ChromiaProjectDiscovery {
         val name: String,
         val path: String,
         val configFile: String? = null,
-        val isMainProject: Boolean = false
+        val isMainProject: Boolean = false,
     )
 
     fun discoverProjects(project: Project): List<ChromiaProject> {
@@ -23,7 +23,7 @@ object ChromiaProjectDiscovery {
         val basePath = project.basePath ?: return projects
 
         projects.addAll(discoverSubprojects(basePath))
-        
+
         return projects.sortedBy { it.name }
     }
 
@@ -40,15 +40,17 @@ object ChromiaProjectDiscovery {
         if (currentDepth >= maxDepth || !dir.isDirectory) return
 
         findConfigFile(dir)?.let { configFile ->
-            projects.add(ChromiaProject(
+            projects.add(
+                ChromiaProject(
                     name = dir.name,
                     path = dir.absolutePath,
                     configFile = configFile,
                     isMainProject = false
-            ))
+                )
+            )
         }
 
-        val subdirs = dir.listFiles { file -> 
+        val subdirs = dir.listFiles { file ->
             file.isDirectory && !file.name.startsWith(".") && !isIgnoredDirectory(file.name)
         } ?: return
 

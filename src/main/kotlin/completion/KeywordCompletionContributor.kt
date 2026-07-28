@@ -12,7 +12,8 @@ class KeywordCompletionContributor : CompletionContributor() {
     init {
         extend(
             CompletionType.BASIC,
-            PlatformPatterns.psiElement(RellPsiElementTypes.token(RellLexer.RULE_ID)).withLanguage(RellLanguage.INSTANCE),
+            PlatformPatterns.psiElement(RellPsiElementTypes.token(RellLexer.RULE_ID))
+                .withLanguage(RellLanguage.INSTANCE),
             KeywordCompletionProvider()
         )
     }
@@ -70,7 +71,7 @@ class KeywordCompletionProvider : CompletionProvider<CompletionParameters>() {
     override fun addCompletions(
         parameters: CompletionParameters,
         context: ProcessingContext,
-        result: CompletionResultSet
+        result: CompletionResultSet,
     ) {
         for (keyword in keywords) {
             result.addElement(LookupElementBuilder.create(keyword).withBoldness(true))

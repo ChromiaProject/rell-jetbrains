@@ -30,6 +30,6 @@ enum class ChromiaProjectTemplate(
         "asset-management",
         "Asset management dapp",
         "A dapp focused on asset management on the Chromia blockchain, including " +
-            "blockchain operations and a frontend for user interaction.",
+                "blockchain operations and a frontend for user interaction.",
     ),
 }

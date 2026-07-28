@@ -14,9 +14,9 @@ class RellSocketLanguageServer(private val project: Project) : StreamConnectionP
     private var socket: Socket? = null
     private var inputStream: InputStream? = null
     private var outputStream: OutputStream? = null
-    
+
     // These could come from settings/configuration
-    private val host = "localhost" 
+    private val host = "localhost"
     private val port = 5008
 
     override fun start() {
@@ -36,13 +36,13 @@ class RellSocketLanguageServer(private val project: Project) : StreamConnectionP
     override fun getInitializationOptions(rootUri: VirtualFile?): Any {
         val pluginSettings = RellPluginSettingsState.instance
         val inlayHintsSettings = project.service<RellInlayHintsConfigurationListener>().getInlayHintsSettings()
-        
+
         return mapOf(
             "indexCaching" to pluginSettings.indexCaching,
             "inlayHints" to inlayHintsSettings
         )
     }
-    
+
     override fun stop() {
         runCatching {
             inputStream?.close()
@@ -54,4 +54,4 @@ class RellSocketLanguageServer(private val project: Project) : StreamConnectionP
     }
 
     override fun toString(): String = "Rell Language Server (Socket: $host:$port)"
-} 
+}

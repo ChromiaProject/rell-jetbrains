@@ -8,7 +8,7 @@ import org.eclipse.lsp4j.SemanticTokenTypes
 
 
 enum class RellTokenModifier(
-    val modifierStringId: String
+    val modifierStringId: String,
 ) {
     GLOBAL_CONSTANT("rell-global_constant"),
     LOCAL_VAL("rell-local_val"),
@@ -27,9 +27,9 @@ class RellSemanticTokensColorProvider : DefaultSemanticTokensColorsProvider() {
     override fun getTextAttributesKey(
         tokenType: String,
         tokenModifiers: List<String>,
-        file: PsiFile
+        file: PsiFile,
     ): TextAttributesKey? {
-        val textAttributes =  when (tokenType) {
+        val textAttributes = when (tokenType) {
             SemanticTokenTypes.Keyword -> RellColor.KEYWORD.textAttributesKey
             SemanticTokenTypes.Namespace -> RellColor.NAMESPACE_NAME.textAttributesKey
             SemanticTokenTypes.Type -> RellColor.TYPE_REFERENCE.textAttributesKey
@@ -45,6 +45,7 @@ class RellSemanticTokensColorProvider : DefaultSemanticTokensColorsProvider() {
                     else -> null
                 }
             }
+
             SemanticTokenTypes.Class -> {
                 when {
                     tokenModifiers.contains(RellTokenModifier.ENTITY.modifierStringId) -> RellColor.ENTITY_NAME.textAttributesKey
@@ -52,6 +53,7 @@ class RellSemanticTokensColorProvider : DefaultSemanticTokensColorsProvider() {
                     else -> null
                 }
             }
+
             SemanticTokenTypes.Property -> RellColor.STATE_VARIABLE.textAttributesKey
             SemanticTokenTypes.Struct -> RellColor.STRUCT_NAME.textAttributesKey
             SemanticTokenTypes.Function -> {
@@ -63,6 +65,7 @@ class RellSemanticTokensColorProvider : DefaultSemanticTokensColorsProvider() {
                 }
 
             }
+
             SemanticTokenTypes.Parameter -> RellColor.PARAMETER.textAttributesKey
             else -> null
         }

@@ -25,28 +25,33 @@ import kotlin.io.path.deleteIfExists
  */
 @Service(Service.Level.PROJECT)
 class RellVersionResolver(private val project: Project) {
-
     private val configCache = ConcurrentHashMap<String, ParsedConfig>()
 
     fun resolve(file: VirtualFile): RellVersionResolution {
         val configFile = findNearestConfig(file)
             ?: return RellVersionResolution.Supported(RellVersionRegistry.max, Origin.NO_CONFIG, null)
+
         val parsed = configCache.computeIfAbsent(configFile.path) { readConfig(configFile) }
 
         if (!parsed.readable) {
             return RellVersionResolution.Supported(RellVersionRegistry.max, Origin.UNREADABLE_CONFIG, configFile)
         }
+
         val declared = parsed.declaredVersion
             ?: return RellVersionResolution.Supported(RellVersionRegistry.max, Origin.NO_VERSION_KEY, configFile)
+
         val version = RellVersion.parse(declared)
+
         if (version == null) {
             LOG.warn("Malformed compile.rellVersion '$declared' in ${configFile.path}; using ${RellVersionRegistry.max}")
             return RellVersionResolution.Supported(RellVersionRegistry.max, Origin.MALFORMED_VERSION, configFile)
         }
+
         return when {
             version < RellVersionRegistry.floor -> RellVersionResolution.Unsupported(version, configFile)
             RellVersionRegistry.isSupported(version) ->
                 RellVersionResolution.Supported(version, Origin.DECLARED, configFile)
+
             else -> RellVersionResolution.Clamped(version, RellVersionRegistry.max, configFile)
         }
     }
@@ -105,6 +110,7 @@ class RellVersionResolver(private val project: Project) {
                 }
             } ?: unreadable(configFile)
         }
+
         return parseWithToolchain(path, configFile)
     }
 

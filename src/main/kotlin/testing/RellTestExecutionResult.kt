@@ -13,5 +13,5 @@ import com.intellij.openapi.actionSystem.AnAction
 class RellTestExecutionResult(
     console: ConsoleView,
     processHandler: ProcessHandler,
-    actions: Array<AnAction>
+    actions: Array<AnAction>,
 ) : DefaultExecutionResult(console, processHandler, *actions), ExecutionResult

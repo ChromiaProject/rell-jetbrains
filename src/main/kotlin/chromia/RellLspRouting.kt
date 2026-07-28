@@ -16,7 +16,7 @@ object RellLspServers {
         "rellLanguageServer_" + version.toString().replace('.', '_')
 
     fun allServerIds(): List<String> = listOf(NEWEST_SERVER_ID) +
-        RellVersionRegistry.supported.filter { it < RellVersionRegistry.max }.map(::versionedServerId)
+            RellVersionRegistry.supported.filter { it < RellVersionRegistry.max }.map(::versionedServerId)
 }
 
 /**
@@ -28,7 +28,7 @@ class RellNewestVersionDocumentMatcher : AbstractDocumentMatcher() {
     override fun match(file: VirtualFile, project: Project): Boolean {
         val resolution = RellVersionResolver.getInstance(project).resolve(file)
         return resolution !is RellVersionResolution.Unsupported &&
-            resolution.effectiveVersion == RellVersionRegistry.max
+                resolution.effectiveVersion == RellVersionRegistry.max
     }
 }
 

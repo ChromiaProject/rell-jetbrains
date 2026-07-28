@@ -19,7 +19,7 @@ class RellCreateFileAction : CreateFileFromTemplateAction(CAPTION, "", RellIcons
     override fun buildDialog(
         project: Project,
         directory: PsiDirectory,
-        builder: CreateFileFromTemplateDialog.Builder
+        builder: CreateFileFromTemplateDialog.Builder,
     ) {
         builder.setTitle(CAPTION)
             .addKind("Rell File", RellIcons.FILE, "Rell File")

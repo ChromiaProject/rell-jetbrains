@@ -3,14 +3,9 @@
 package net.postchain.rellide.jetbrains.projectwizard
 
 import com.intellij.ide.util.projectWizard.WizardContext
-import com.intellij.ide.wizard.AbstractNewProjectWizardStep
-import com.intellij.ide.wizard.GeneratorNewProjectWizard
-import com.intellij.ide.wizard.GitNewProjectWizardStep
+import com.intellij.ide.wizard.*
 import com.intellij.ide.wizard.NewProjectWizardBaseData.Companion.baseData
-import com.intellij.ide.wizard.NewProjectWizardBaseStep
 import com.intellij.ide.wizard.NewProjectWizardChainStep.Companion.nextStep
-import com.intellij.ide.wizard.NewProjectWizardStep
-import com.intellij.ide.wizard.RootNewProjectWizardStep
 import com.intellij.openapi.project.Project
 import com.intellij.ui.SimpleListCellRenderer
 import com.intellij.ui.dsl.builder.Panel
@@ -55,11 +50,13 @@ private class ChromiaTemplateStep(parent: NewProjectWizardStep) : AbstractNewPro
                     when {
                         baseData?.name.orEmpty().contains(' ') ->
                             error("Chromia project names cannot contain spaces")
+
                         RellPluginSettingsState.instance.buildChromiaCliCommandLine(emptyList()) == null ->
                             error(
                                 "Chromia CLI is not configured and none of the standard locations " +
-                                    "were found. Set it in Settings | Tools | Rell."
+                                        "were found. Set it in Settings | Tools | Rell."
                             )
+
                         else -> null
                     }
                 }

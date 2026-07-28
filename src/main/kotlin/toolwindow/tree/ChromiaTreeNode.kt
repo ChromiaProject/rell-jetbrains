@@ -8,15 +8,15 @@ import javax.swing.tree.DefaultMutableTreeNode
  * Each node can represent either a category or a command.
  */
 data class ChromiaTreeNode(
-        val displayName: String,
-        val nodeType: ChromiaNodeType,
-        val command: String? = null,
-        var parameters: String = "",
-        val description: String? = null,
-        val icon: Icon? = null,
-        val projectPath: String? = null // Path to the project directory for PROJECT nodes
+    val displayName: String,
+    val nodeType: ChromiaNodeType,
+    val command: String? = null,
+    var parameters: String = "",
+    val description: String? = null,
+    val icon: Icon? = null,
+    val projectPath: String? = null, // Path to the project directory for PROJECT nodes
 ) : DefaultMutableTreeNode(displayName) {
-    
+
     /**
      * Returns the full command to execute including parameters
      */
@@ -29,7 +29,7 @@ data class ChromiaTreeNode(
             }
         }
     }
-    
+
     /**
      * Returns display text with parameters if any
      */
@@ -40,7 +40,7 @@ data class ChromiaTreeNode(
             displayName
         }
     }
-    
+
     override fun toString(): String = getDisplayText()
 }
 

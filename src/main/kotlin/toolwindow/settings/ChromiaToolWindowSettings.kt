@@ -9,8 +9,8 @@ import com.intellij.util.xmlb.XmlSerializerUtil
  * Stores CLI command parameters per project.
  */
 @State(
-        name = "ChromiaToolWindowSettings",
-        storages = [Storage(StoragePathMacros.WORKSPACE_FILE)]
+    name = "ChromiaToolWindowSettings",
+    storages = [Storage(StoragePathMacros.WORKSPACE_FILE)]
 )
 @Service(Service.Level.PROJECT)
 class ChromiaToolWindowSettings : PersistentStateComponent<ChromiaToolWindowSettings> {
@@ -27,9 +27,7 @@ class ChromiaToolWindowSettings : PersistentStateComponent<ChromiaToolWindowSett
         XmlSerializerUtil.copyBean(state, this)
     }
 
-    fun getParameters(command: String): String {
-        return commandParameters[command] ?: ""
-    }
+    fun getParameters(command: String): String = commandParameters[command] ?: ""
 
     fun setParameters(command: String, parameters: String) {
         commandParameters[command] = parameters

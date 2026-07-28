@@ -15,16 +15,10 @@ import com.intellij.openapi.project.ProjectManager
 import com.intellij.util.io.HttpRequests
 import com.intellij.util.io.createDirectories
 import java.io.IOException
-import java.nio.file.Files
 import java.nio.file.Path
 import java.security.MessageDigest
 import java.util.concurrent.ConcurrentHashMap
-import kotlin.io.path.deleteIfExists
-import kotlin.io.path.div
-import kotlin.io.path.inputStream
-import kotlin.io.path.isRegularFile
-import kotlin.io.path.readText
-import kotlin.io.path.writeText
+import kotlin.io.path.*
 
 /**
  * Provides version-exact language-server runtimes. The newest supported version is bundled with
@@ -155,7 +149,7 @@ class RellLspRuntimeManager {
             .createNotification(
                 "Rell $version language server unavailable",
                 "The one-time download of the Rell $version tooling failed: ${error.message} " +
-                    "Language features stay off for projects on Rell $version until it succeeds.",
+                        "Language features stay off for projects on Rell $version until it succeeds.",
                 NotificationType.ERROR,
             )
             .addAction(NotificationAction.createSimpleExpiring("Retry") { retryDownload(version, project) })

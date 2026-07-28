@@ -16,15 +16,15 @@ import javax.swing.tree.TreePath
  */
 class ChromiaTreeMouseListener(
     private val project: Project,
-    private val treeModel: ChromiaTreeModel
+    private val treeModel: ChromiaTreeModel,
 ) : MouseAdapter() {
     private val commandExecutor = ChromiaCommandExecutor(project)
-    
+
     override fun mouseClicked(e: MouseEvent) {
         if (e.clickCount == 2) { // Double-click
             val tree = e.source as JTree
             val row = tree.getRowForLocation(e.x, e.y)
-            
+
             if (row != -1) {
                 val path = tree.ui.getPathForRow(tree, row)
                 if (path != null) {
@@ -34,28 +34,31 @@ class ChromiaTreeMouseListener(
             }
         }
     }
-    
+
     private fun handleDoubleClick(path: TreePath) {
         val node = path.lastPathComponent as? ChromiaTreeNode ?: return
-        
+
         when (node.nodeType) {
             ChromiaNodeType.COMMAND -> {
                 executeCommand(node)
             }
+
             ChromiaNodeType.CATEGORY -> {
                 // Categories don't execute commands, but could expand/collapse
                 // This is handled by the tree automatically
             }
+
             ChromiaNodeType.ROOT -> {
                 // Root node doesn't execute commands
             }
+
             ChromiaNodeType.PROJECT -> {
                 // Projects don't execute commands directly, but could be expanded to show commands
                 // This is handled by the tree automatically
             }
         }
     }
-    
+
     private fun executeCommand(node: ChromiaTreeNode) {
         val fullCommand = node.getFullCommand()
         if (fullCommand != null) {

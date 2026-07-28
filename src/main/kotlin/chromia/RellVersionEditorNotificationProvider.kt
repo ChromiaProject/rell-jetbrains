@@ -23,7 +23,6 @@ import javax.swing.JComponent
  *   a warning banner suggests updating the plugin.
  */
 class RellVersionEditorNotificationProvider : EditorNotificationProvider {
-
     override fun collectNotificationData(
         project: Project,
         file: VirtualFile,
@@ -39,7 +38,7 @@ class RellVersionEditorNotificationProvider : EditorNotificationProvider {
     private fun unsupportedPanel(project: Project, resolution: RellVersionResolution.Unsupported): JComponent {
         val panel = EditorNotificationPanel(EditorNotificationPanel.Status.Error)
         panel.text = "Rell ${resolution.declared} is not supported by this plugin " +
-            "(minimum ${RellVersionRegistry.floor}). Completion, navigation, and diagnostics are disabled."
+                "(minimum ${RellVersionRegistry.floor}). Completion, navigation, and diagnostics are disabled."
         panel.createActionLabel("Set rellVersion to ${RellVersionRegistry.max} in chromia.yml") {
             ChromiaConfigQuickFix.setDeclaredRellVersion(project, resolution.configFile, RellVersionRegistry.max)
             EditorNotifications.getInstance(project).updateAllNotifications()
@@ -51,7 +50,7 @@ class RellVersionEditorNotificationProvider : EditorNotificationProvider {
     private fun clampedPanel(resolution: RellVersionResolution.Clamped): JComponent {
         val panel = EditorNotificationPanel(EditorNotificationPanel.Status.Warning)
         panel.text = "chromia.yml declares Rell ${resolution.declared}, which this plugin version does not " +
-            "know: using ${resolution.effective}. Update the plugin for exact support."
+                "know: using ${resolution.effective}. Update the plugin for exact support."
         panel.createActionLabel("About Rell compatibility") { BrowserUtil.browse(COMPATIBILITY_DOC_URL) }
         return panel
     }

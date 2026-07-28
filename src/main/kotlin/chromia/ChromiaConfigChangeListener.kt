@@ -7,11 +7,7 @@ import com.intellij.openapi.project.Project
 import com.intellij.openapi.roots.ProjectFileIndex
 import com.intellij.openapi.vfs.VirtualFile
 import com.intellij.openapi.vfs.newvfs.BulkFileListener
-import com.intellij.openapi.vfs.newvfs.events.VFileCreateEvent
-import com.intellij.openapi.vfs.newvfs.events.VFileDeleteEvent
-import com.intellij.openapi.vfs.newvfs.events.VFileEvent
-import com.intellij.openapi.vfs.newvfs.events.VFileMoveEvent
-import com.intellij.openapi.vfs.newvfs.events.VFilePropertyChangeEvent
+import com.intellij.openapi.vfs.newvfs.events.*
 import com.intellij.ui.EditorNotifications
 import com.redhat.devtools.lsp4ij.LanguageServerManager
 
@@ -80,13 +76,16 @@ internal class ChromiaConfigChangeListener(private val project: Project) : BulkF
         // holding one) that anything depended on is necessarily in the resolver cache.
         is VFileDeleteEvent ->
             if (affectsCachedConfig(resolver, event.path)) Impact.VERSION_CHANGED else Impact.NONE
+
         is VFilePropertyChangeEvent -> when {
             event.propertyName != VirtualFile.PROP_NAME -> Impact.NONE
             (isConfigName(event.newValue) || isConfigName(event.oldValue)) && isInProjectContent(event.file) ->
                 Impact.VERSION_CHANGED
+
             affectsCachedConfig(resolver, event.oldPath, event.path) -> Impact.VERSION_CHANGED
             else -> Impact.NONE
         }
+
         is VFileMoveEvent -> when {
             isConfigName(event.file.name) && isInProjectContent(event.file) -> Impact.VERSION_CHANGED
             affectsCachedConfig(resolver, event.oldPath, event.path) -> Impact.VERSION_CHANGED
@@ -98,6 +97,7 @@ internal class ChromiaConfigChangeListener(private val project: Project) : BulkF
         is VFileCreateEvent -> when {
             event.isDirectory ->
                 if (createdDirectoryHasConfig(event.file)) Impact.VERSION_CHANGED else Impact.NONE
+
             isConfigName(event.childName) && isInProjectContent(event.file) -> Impact.VERSION_CHANGED
             else -> Impact.NONE
         }

@@ -11,7 +11,11 @@ import net.postchain.rellide.jetbrains.language.RellFileType
 class RellEnterHandler : EnterHandlerDelegateAdapter() {
     private val indentAfterEnterChars = setOf('{', '(', '[')
 
-    override fun postProcessEnter(file: PsiFile, editor: Editor, dataContext: DataContext): EnterHandlerDelegate.Result {
+    override fun postProcessEnter(
+        file: PsiFile,
+        editor: Editor,
+        dataContext: DataContext,
+    ): EnterHandlerDelegate.Result {
         if (file.fileType != RellFileType.INSTANCE) {
             return EnterHandlerDelegate.Result.Continue
         }
@@ -36,7 +40,7 @@ class RellEnterHandler : EnterHandlerDelegateAdapter() {
         val (prevLineStartOffset, prevLineEndOffset) = getPrevLineOffsets(editor, caretOffset)
         // Scan backwards to find the last non-whitespace char
         val lastNonWhitespace = (prevLineEndOffset - 1 downTo prevLineStartOffset)
-                .firstOrNull { it < text.length && !text[it].isWhitespace() }
+            .find { it < text.length && !text[it].isWhitespace() }
 
         return lastNonWhitespace != null && text[lastNonWhitespace] in indentAfterEnterChars
     }

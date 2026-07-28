@@ -6,19 +6,18 @@ import com.intellij.openapi.vfs.VirtualFile
  * Outcome of resolving the Rell version for a file from its nearest `chromia.yml`
  * (see docs/COMPATIBILITY.md for the full rules).
  */
-sealed class RellVersionResolution {
-
+sealed interface RellVersionResolution {
     /** The `chromia.yml` that determined the outcome, null when none was found. */
-    abstract val configFile: VirtualFile?
+    val configFile: VirtualFile?
 
     /** The toolchain version consumers (grammar, LSP) must use; null means hard cease. */
-    abstract val effectiveVersion: RellVersion?
+    val effectiveVersion: RellVersion?
 
     data class Supported(
         val version: RellVersion,
         val origin: Origin,
         override val configFile: VirtualFile?,
-    ) : RellVersionResolution() {
+    ) : RellVersionResolution {
         override val effectiveVersion: RellVersion
             get() = version
     }
@@ -28,7 +27,7 @@ sealed class RellVersionResolution {
         val declared: RellVersion,
         val effective: RellVersion,
         override val configFile: VirtualFile,
-    ) : RellVersionResolution() {
+    ) : RellVersionResolution {
         override val effectiveVersion: RellVersion
             get() = effective
     }
@@ -37,7 +36,7 @@ sealed class RellVersionResolution {
     data class Unsupported(
         val declared: RellVersion,
         override val configFile: VirtualFile,
-    ) : RellVersionResolution() {
+    ) : RellVersionResolution {
         override val effectiveVersion: RellVersion?
             get() = null
     }

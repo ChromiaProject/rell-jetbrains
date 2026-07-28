@@ -95,11 +95,13 @@ class RellPluginSettingsState : PersistentStateComponent<RellPluginSettingsState
                 "/opt/homebrew/bin/chr",
                 "/usr/local/bin/chr",
             )
+
             SystemInfo.isWindows -> {
                 val userProfile = System.getenv("USERPROFILE")
                 if (userProfile.isNullOrBlank()) emptyList()
                 else listOf("""$userProfile\scoop\apps\chr\current\chr.exe""")
             }
+
             else -> listOfNotNull(
                 "/usr/local/bin/chr",
                 "/usr/bin/chr",
@@ -108,7 +110,7 @@ class RellPluginSettingsState : PersistentStateComponent<RellPluginSettingsState
         }
 
         fun detectChromiaCliPath(): String? {
-            autoDetectCandidates().firstOrNull { File(it).canExecute() }?.let { return it }
+            autoDetectCandidates().find { File(it).canExecute() }?.let { return it }
             return findOnPath(if (SystemInfo.isWindows) "chr.exe" else "chr")
         }
 
@@ -118,10 +120,10 @@ class RellPluginSettingsState : PersistentStateComponent<RellPluginSettingsState
         /** Suggested `docker run` command line for the currently running OS. */
         fun dockerCliCommand(): String = if (SystemInfo.isWindows) {
             """docker run --rm -v "%cd%:%cd%" -w "%cd%" """ +
-                "registry.gitlab.com/chromaway/core-tools/chromia-cli/chr:latest chr"
+                    "registry.gitlab.com/chromaway/core-tools/chromia-cli/chr:latest chr"
         } else {
             """docker run --rm -v "$(pwd):$(pwd)" -w "$(pwd)" """ +
-                "registry.gitlab.com/chromaway/core-tools/chromia-cli/chr:latest chr"
+                    "registry.gitlab.com/chromaway/core-tools/chromia-cli/chr:latest chr"
         }
 
         private fun wrapInShell(fullCmd: String): GeneralCommandLine =

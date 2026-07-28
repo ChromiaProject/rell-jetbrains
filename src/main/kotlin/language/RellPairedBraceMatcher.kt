@@ -16,7 +16,19 @@ class RellPairedBraceMatcher : PairedBraceMatcher {
 }
 
 private val PAIRS = arrayOf(
-    BracePair(RellPsiElementTypes.token(RellPsiElementTypes.LPAR), RellPsiElementTypes.token(RellPsiElementTypes.RPAR), false),
-    BracePair(RellPsiElementTypes.token(RellPsiElementTypes.LBRACK), RellPsiElementTypes.token(RellPsiElementTypes.RBRACK), false),
-    BracePair(RellPsiElementTypes.token(RellPsiElementTypes.LCURL), RellPsiElementTypes.token(RellPsiElementTypes.RCURL), false),
+    BracePair(
+        RellPsiElementTypes.token(RellPsiElementTypes.LPAR),
+        RellPsiElementTypes.token(RellPsiElementTypes.RPAR),
+        false
+    ),
+    BracePair(
+        RellPsiElementTypes.token(RellPsiElementTypes.LBRACK),
+        RellPsiElementTypes.token(RellPsiElementTypes.RBRACK),
+        false
+    ),
+    BracePair(
+        RellPsiElementTypes.token(RellPsiElementTypes.LCURL),
+        RellPsiElementTypes.token(RellPsiElementTypes.RCURL),
+        false
+    ),
 )

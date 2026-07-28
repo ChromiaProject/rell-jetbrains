@@ -30,15 +30,10 @@ class RellParserDefinition : ParserDefinition {
         }
 
     override fun getFileNodeType(): IFileElementType = FILE
-
     override fun getCommentTokens(): TokenSet = RellPsiElementTypes.COMMENTS
-
     override fun getWhitespaceTokens(): TokenSet = RellPsiElementTypes.WHITESPACE
-
     override fun getStringLiteralElements(): TokenSet = RellPsiElementTypes.STRINGS
-
     override fun createElement(node: ASTNode): PsiElement = ASTWrapperPsiElement(node)
-
     override fun createFile(viewProvider: FileViewProvider): PsiFile = RellFile(viewProvider)
 
 }

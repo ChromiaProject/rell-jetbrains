@@ -61,10 +61,10 @@ class RunRellTestAction : AnAction("Run Rell Test", "Run the selected Rell test 
 }
 
 fun createTestConfiguration(
-        project: Project,
-        testFile: VirtualFile,
-        runManager: RunManager,
-        rellTestFile: RellTestFile
+    project: Project,
+    testFile: VirtualFile,
+    runManager: RunManager,
+    rellTestFile: RellTestFile,
 ): RunnerAndConfigurationSettings {
     val factory = RellTestConfigurationFactory.getInstance()
     val configurationName = testFile.nameWithoutExtension

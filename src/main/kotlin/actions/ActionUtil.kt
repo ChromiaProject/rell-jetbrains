@@ -8,8 +8,8 @@ import com.intellij.openapi.project.Project
 fun Project.notifyUser(title: String, message: String, type: NotificationType) {
     ApplicationManager.getApplication().invokeLater {
         NotificationGroupManager.getInstance()
-                .getNotificationGroup("Rell")
-                .createNotification(title, message, type)
-                .notify(this)
+            .getNotificationGroup("Rell")
+            .createNotification(title, message, type)
+            .notify(this)
     }
 }

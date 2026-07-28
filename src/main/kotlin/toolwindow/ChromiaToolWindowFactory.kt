@@ -14,9 +14,9 @@ class ChromiaToolWindowFactory : ToolWindowFactory, DumbAware {
     override fun createToolWindowContent(project: Project, toolWindow: ToolWindow) {
         val chromiaToolWindow = ChromiaToolWindow(project)
         val content = ContentFactory.getInstance().createContent(
-                chromiaToolWindow.getContent(),
-                "",
-                false
+            chromiaToolWindow.getContent(),
+            "",
+            false
         )
         toolWindow.contentManager.addContent(content)
     }

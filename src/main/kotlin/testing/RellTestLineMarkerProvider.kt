@@ -40,7 +40,7 @@ class RellTestLineMarkerProvider : LineMarkerProvider {
         return when {
             isModuleHeader -> createTestModuleLineMarker(element, testFile, virtualFile)
             else -> {
-                val testCase = testFile.testCases.firstOrNull { it.name == element.text } ?: return null
+                val testCase = testFile.testCases.find { it.name == element.text } ?: return null
                 createTestCaseLineMarker(element, testCase)
             }
         }
@@ -48,7 +48,7 @@ class RellTestLineMarkerProvider : LineMarkerProvider {
 
     private fun createTestCaseLineMarker(
         element: LeafPsiElement,
-        testCase: RellTestCase
+        testCase: RellTestCase,
     ): LineMarkerInfo<LeafPsiElement> = LineMarkerInfo(
         element,
         element.textRange,
@@ -62,7 +62,7 @@ class RellTestLineMarkerProvider : LineMarkerProvider {
     private fun createTestModuleLineMarker(
         element: LeafPsiElement,
         testFile: RellTestFile,
-        virtualFile: VirtualFile
+        virtualFile: VirtualFile,
     ): LineMarkerInfo<LeafPsiElement> = LineMarkerInfo(
         element,
         element.textRange,
@@ -110,15 +110,15 @@ class RellTestLineMarkerProvider : LineMarkerProvider {
     }
 
     private fun createOrFindRunConfiguration(
-            element: PsiElement,
-            runManager: RunManager,
-            testCase: RellTestCase
+        element: PsiElement,
+        runManager: RunManager,
+        testCase: RellTestCase,
     ): RunnerAndConfigurationSettings {
         val factory = RellTestConfigurationFactory.getInstance()
 
         val settings = runManager.createConfiguration(
-                getTestName(element),
-                factory
+            getTestName(element),
+            factory
         )
 
         val configuration = settings.configuration as RellTestRunConfiguration

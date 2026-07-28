@@ -1,11 +1,6 @@
 package net.postchain.rellide.jetbrains.chromia
 
-import org.antlr.v4.runtime.BaseErrorListener
-import org.antlr.v4.runtime.CharStreams
-import org.antlr.v4.runtime.CommonTokenStream
-import org.antlr.v4.runtime.RecognitionException
-import org.antlr.v4.runtime.Recognizer
-import org.antlr.v4.runtime.Token
+import org.antlr.v4.runtime.*
 
 /**
  * Version-exact ANTLR parsers, generated at build time from each supported Rell release's own
@@ -13,7 +8,6 @@ import org.antlr.v4.runtime.Token
  * here: its grammar drives the editor PSI, so its syntax errors already surface as PsiErrorElements.
  */
 object VersionedRellParsers {
-
     data class SyntaxError(val line: Int, val column: Int, val length: Int, val message: String)
 
     private val parsers: Map<RellVersion, (String) -> List<SyntaxError>> = mapOf(
@@ -22,7 +16,8 @@ object VersionedRellParsers {
                 val antlrLexer = net.postchain.rellide.jetbrains.language.parser.v0_16_0.RellLexer(lexer)
                 antlrLexer.removeErrorListeners()
                 antlrLexer.addErrorListener(listener)
-                val parser = net.postchain.rellide.jetbrains.language.parser.v0_16_0.RellParser(CommonTokenStream(antlrLexer))
+                val parser =
+                    net.postchain.rellide.jetbrains.language.parser.v0_16_0.RellParser(CommonTokenStream(antlrLexer))
                 parser.removeErrorListeners()
                 parser.addErrorListener(listener)
                 parser.file()
@@ -33,7 +28,8 @@ object VersionedRellParsers {
                 val antlrLexer = net.postchain.rellide.jetbrains.language.parser.v0_16_1.RellLexer(lexer)
                 antlrLexer.removeErrorListeners()
                 antlrLexer.addErrorListener(listener)
-                val parser = net.postchain.rellide.jetbrains.language.parser.v0_16_1.RellParser(CommonTokenStream(antlrLexer))
+                val parser =
+                    net.postchain.rellide.jetbrains.language.parser.v0_16_1.RellParser(CommonTokenStream(antlrLexer))
                 parser.removeErrorListeners()
                 parser.addErrorListener(listener)
                 parser.file()
@@ -47,9 +43,10 @@ object VersionedRellParsers {
 
     private inline fun collectErrors(
         text: String,
-        parse: (org.antlr.v4.runtime.CharStream, BaseErrorListener) -> Unit,
+        parse: (CharStream, BaseErrorListener) -> Unit,
     ): List<SyntaxError> {
         val errors = mutableListOf<SyntaxError>()
+
         val listener = object : BaseErrorListener() {
             override fun syntaxError(
                 recognizer: Recognizer<*, *>?,
@@ -63,9 +60,11 @@ object VersionedRellParsers {
                     ?.let { it.stopIndex - it.startIndex + 1 }
                     ?.coerceAtLeast(1)
                     ?: 1
+
                 errors += SyntaxError(line, charPositionInLine, length, msg ?: "syntax error")
             }
         }
+
         parse(CharStreams.fromString(text), listener)
         return errors
     }
