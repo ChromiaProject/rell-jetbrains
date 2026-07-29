@@ -1,16 +1,76 @@
 package net.postchain.rellide.jetbrains.lsp
 
 import com.intellij.openapi.editor.colors.TextAttributesKey
+import com.intellij.openapi.vfs.LocalFileSystem
+import com.intellij.openapi.vfs.VirtualFile
+import com.intellij.platform.lsp.api.LspClient
 import com.intellij.platform.lsp.api.customization.*
+import com.intellij.util.concurrency.AppExecutorUtil
 import net.postchain.rellide.jetbrains.colors.RellColor
+import org.eclipse.lsp4j.CodeAction
+import org.eclipse.lsp4j.CodeActionKind
+import org.eclipse.lsp4j.Command
 import org.eclipse.lsp4j.SemanticTokenTypes
+import java.util.concurrent.TimeUnit
 
 object RellLspCustomization : LspCustomization() {
     override val semanticTokensCustomizer: LspSemanticTokensCustomizer = RellSemanticTokensSupport
 
+    override val codeActionsCustomizer: LspCodeActionsCustomizer = RellCodeActionsSupport
+
+    override val commandsCustomizer: LspCommandsCustomizer = RellCommandsSupport
+
     // The Rell language server never provides document colors, so keep the feature permanently
     // disabled instead of asking on every highlighting pass.
     override val documentColorCustomizer: LspDocumentColorCustomizer = LspDocumentColorDisabled
+}
+
+
+/**
+ * `rell.disableRule` makes the server write `.rell_lint` on disk behind the VFS's back, so the
+ * created or updated config would surface in the project view and editor only on the next
+ * external-change sync. Refresh the file's ancestor directories shortly after sending the command
+ * (it is fire-and-forget, so the write is awaited by delay, not by response) to make it appear
+ * promptly.
+ */
+object RellCommandsSupport : LspCommandsSupport() {
+
+    private const val DISABLE_RULE_COMMAND = "rell.disableRule"
+
+    override fun executeCommand(lspClient: LspClient, contextFile: VirtualFile, command: Command) {
+        super.executeCommand(lspClient, contextFile, command)
+        if (command.command != DISABLE_RULE_COMMAND) return
+
+        // The server puts the config at its workspace root or up to two parents — all of them
+        // ancestors of the file the action was invoked in.
+        val ancestors = generateSequence(contextFile.parent) { it.parent }.toList()
+        val scheduler = AppExecutorUtil.getAppScheduledExecutorService()
+        for (delayMillis in longArrayOf(500, 3000)) {
+            scheduler.schedule(
+                { LocalFileSystem.getInstance().refreshFiles(ancestors, true, false, null) },
+                delayMillis,
+                TimeUnit.MILLISECONDS,
+            )
+        }
+    }
+}
+
+
+/**
+ * Rell language servers up to and including 0.16.2 ignore `CodeActionContext.only` and answer a
+ * quickfix-only request with their `source` actions too. The platform trusts the server and would
+ * attach those to the diagnostic as quick fixes, listing "Disable linter for this line" twice in
+ * the popup (once as a quick fix, once as a caret intention). Dropping non-quickfix kinds from the
+ * quick-fix channel restores the intended partition for every server version, including the
+ * already-published runtimes downloaded for older Rell versions.
+ */
+object RellCodeActionsSupport : LspCodeActionsSupport() {
+    override fun createQuickFix(lspClient: LspClient, codeAction: CodeAction): LspIntentionAction? =
+        if (codeAction.kind?.startsWith(CodeActionKind.QuickFix) == true) {
+            super.createQuickFix(lspClient, codeAction)
+        } else {
+            null
+        }
 }
 
 

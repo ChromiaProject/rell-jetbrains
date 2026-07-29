@@ -8,6 +8,11 @@
 - Rell Language Server with Rell version 0.16.2; 0.16.1 joins the older supported versions with a
   version-exact grammar and an on-demand downloaded language server (see
   [docs/COMPATIBILITY.md](docs/COMPATIBILITY.md))
+- `.rell_lint` and `.rell_format` open with EditorConfig syntax highlighting (they use EditorConfig
+  syntax) when the bundled EditorConfig plugin is enabled
+- Reload bar on edited `.rell_lint` and `.rell_format` editors, like the `chromia.yml` one &mdash;
+  the linter reads these files from disk, so the bar offers a one-click save that applies the
+  change immediately
 ### Changed
 - The language server integration now runs on the IntelliJ Platform's built-in LSP client instead
   of the LSP4IJ plugin &mdash; installing LSP4IJ is no longer required, and signature help,
@@ -15,6 +20,10 @@
   platform. Batch inspection runs (Code | Inspect Code) report server diagnostics through the new
   Rell | Language server diagnostics inspection, replacing LSP4IJ's Language Servers | Diagnostics
 - Minimum supported IDE version raised to 2026.1.4
+### Fixed
+- "Disable linter for this line" no longer appears twice in the quick-fix popup &mdash; the
+  language server answers quickfix-only code-action requests with its `source` actions too, so the
+  plugin now keeps them out of the diagnostic's quick-fix group and shows them only as intentions
 ### Removed
 - Support for Rell 0.16.0 &mdash; its language server fails to index a workspace containing any
   syntax error, and this cannot be fixed retroactively. Projects declaring `rellVersion: 0.16.0`

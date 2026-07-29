@@ -1,0 +1,13 @@
+<idea-plugin>
+    <extensions defaultExtensionNs="com.intellij">
+        <!-- No implementationClass: adds file-name associations to the EditorConfig plugin's
+             existing file type. -->
+        <fileType name="EditorConfig" fileNames=".rell_lint;.rell_format"/>
+
+        <!-- The keys in these files are Rell's, so EditorConfig's key-correctness inspection
+             would flag every property as unsupported. -->
+        <lang.inspectionSuppressor
+                language="EditorConfig"
+                implementationClass="net.postchain.rellide.jetbrains.editorconfig.RellConfigInspectionSuppressor"/>
+    </extensions>
+</idea-plugin>

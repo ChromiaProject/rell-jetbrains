@@ -7,6 +7,9 @@
 
     <depends>com.intellij.modules.platform</depends>
     <depends>com.intellij.modules.lsp</depends>
+    <!-- .rell_lint and .rell_format use EditorConfig syntax; associating them with the bundled
+         EditorConfig plugin's file type gives them highlighting and structure support. -->
+    <depends optional="true" config-file="rell-withEditorConfig.xml">org.editorconfig.editorconfigjetbrains</depends>
 
     <resource-bundle>messages.RellBundle</resource-bundle>
 
@@ -80,6 +83,8 @@
         <!-- Save-and-reload bar on chromia.yml while an edited rellVersion is unsaved -->
         <editorNotificationProvider implementation="net.postchain.rellide.jetbrains.chromia.ChromiaConfigReloadNotificationProvider"/>
         <postStartupActivity implementation="net.postchain.rellide.jetbrains.chromia.ChromiaConfigDocumentTracker"/>
+        <editorNotificationProvider implementation="net.postchain.rellide.jetbrains.editorconfig.RellConfigReloadNotificationProvider"/>
+        <postStartupActivity implementation="net.postchain.rellide.jetbrains.editorconfig.RellConfigDocumentTracker"/>
 
         <!-- Custom icons -->
         <iconProvider implementation="net.postchain.rellide.jetbrains.icons.ChromiaYmlIconProvider" />
