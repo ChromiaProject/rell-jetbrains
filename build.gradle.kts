@@ -40,17 +40,12 @@ sentry {
     authToken = System.getenv("SENTRY_AUTH_TOKEN") ?: ""
 }
 
-// Path of the local Rell clone in dev mode (work/local-lsp.sh); null for a regular build.
-val rellLocal: String? = providers.gradleProperty("rellLocal").orNull
-
 // Rell's ANTLR grammar (Rell.g4) ships in the `frontend` sources jar; we extract it at build time so
 // the editor parser always tracks the `rell` version in libs.versions.toml — no vendored grammar copy.
-// In dev mode it comes from the clone's source tree instead: a `:sources@jar` request can't be served
-// by the composite build's project substitution.
 val rellGrammar: Configuration = configurations.create("rellGrammar") { isTransitive = false }
 
 dependencies {
-    if (rellLocal == null) rellGrammar("net.postchain.rell:frontend:${libs.versions.rell.get()}:sources@jar")
+    rellGrammar("net.postchain.rell:frontend:${libs.versions.rell.get()}:sources@jar")
     antlr(libs.antlr)
     implementation(libs.antlr.runtime)
 
@@ -114,11 +109,7 @@ val grammarDir = layout.buildDirectory.dir("rell-grammar")
 val extractRellGrammar = tasks.register<Sync>("extractRellGrammar") {
     group = "build setup"
     description = "Unpacks Rell.g4 from the Rell frontend sources jar into the ANTLR grammar source dir."
-    if (rellLocal == null) {
-        from({ zipTree(rellGrammar.singleFile) }) { include("Rell.g4") }
-    } else {
-        from("$rellLocal/rell-base/frontend/src/main/antlr") { include("Rell.g4") }
-    }
+    from({ zipTree(rellGrammar.singleFile) }) { include("Rell.g4") }
     into(grammarDir)
 }
 
@@ -327,10 +318,17 @@ kover.reports {
     }
 }
 
+// Language-server version for the sandbox runtime; work/snapshot-lsp.sh overrides it with a
+// published -SNAPSHOT build. Everything else — the editor grammar, the chromia.yml parser and the
+// compatibility-mode lockfiles — stays at the pinned release.
+val rellLspVersion: String = providers.gradleProperty("rellLspVersion").getOrElse(libs.versions.rell.get())
+
 val rellLanguageServerRuntime: Configuration = configurations.detachedConfiguration(
-    dependencies.create("net.postchain.rell:rell-toolbox-language-server:${libs.versions.rell.get()}")
+    dependencies.create("net.postchain.rell:rell-toolbox-language-server:$rellLspVersion")
 ).apply {
     isTransitive = true
+    // Re-resolve -SNAPSHOT modules on every build instead of Gradle's default 24-hour cache.
+    resolutionStrategy.cacheChangingModulesFor(0, "seconds")
     attributes {
         attribute(Usage.USAGE_ATTRIBUTE, objects.named(Usage::class, Usage.JAVA_RUNTIME))
         attribute(Category.CATEGORY_ATTRIBUTE, objects.named(Category::class, Category.LIBRARY))

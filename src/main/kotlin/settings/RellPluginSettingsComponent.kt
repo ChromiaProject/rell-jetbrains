@@ -115,8 +115,10 @@ class RellPluginSettingsComponent {
                             else -> {
                                 val message = buildString {
                                     appendLine("Exit code: ${output.exitCode}")
-                                    if (output.stderr.isNotBlank()) append(output.stderr.trim())
-                                    else if (output.stdout.isNotBlank()) append(output.stdout.trim())
+                                    when {
+                                        output.stderr.isNotBlank() -> append(output.stderr.trim())
+                                        output.stdout.isNotBlank() -> append(output.stdout.trim())
+                                    }
                                 }
                                 Messages.showErrorDialog(message, "Test Chromia CLI")
                             }
