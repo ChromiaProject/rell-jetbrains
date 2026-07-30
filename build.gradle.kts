@@ -174,8 +174,9 @@ val versionedGrammarRoots = supportedRellVersions.dropLast(1).map { version ->
         dependsOn(extract)
         setSource(versionedGrammarDir)
         maxHeapSize = "1g"
-        arguments = arguments + listOf("-package", "$antlrPackage.$suffix", "-no-listener", "-no-visitor")
-        outputDirectory = outputRoot.get().dir("${antlrPackage.replace('.', '/')}/$suffix").asFile
+        packageName = "$antlrPackage.$suffix"
+        arguments = arguments + listOf("-no-listener", "-no-visitor")
+        outputDirectory = outputRoot.get().asFile
     }
 
     sourceSets["main"].java.srcDir(outputRoot)
@@ -185,11 +186,10 @@ val versionedGrammarRoots = supportedRellVersions.dropLast(1).map { version ->
 tasks.generateGrammarSource {
     dependsOn(extractRellGrammar)
     maxHeapSize = "1g"
-    arguments = arguments + listOf("-package", antlrPackage, "-no-listener", "-no-visitor")
+    packageName = antlrPackage
+    arguments = arguments + listOf("-no-listener", "-no-visitor")
 
-    outputDirectory = layout.buildDirectory
-        .dir("generated-src/antlr/main/${antlrPackage.replace('.', '/')}")
-        .get().asFile
+    outputDirectory = layout.buildDirectory.dir("generated-src/antlr/main").get().asFile
 }
 
 // The ANTLR Gradle plugin only wires generation ahead of compileJava by default.
