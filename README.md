@@ -1,6 +1,5 @@
 # Rell JetBrains
 
-
 [![Version](https://img.shields.io/jetbrains/plugin/v/net.postchain.rellide.jetbrains.svg)](https://plugins.jetbrains.com/plugin/22585-rell)
 [![Downloads](https://img.shields.io/jetbrains/plugin/d/net.postchain.rellide.jetbrains.svg)](https://plugins.jetbrains.com/plugin/22585-rell)
 
@@ -36,8 +35,7 @@ The plugin supports following features:
 
 ## 🔀 Rell Version Compatibility
 
-Each project gets the toolchain matching `compile.rellVersion` in its settings file — matching
-grammar and language server — for every Rell release from **0.16.1** up.
+Each project gets the language server matching `compile.rellVersion` in its settings file for every Rell release from 0.16.1 up.
 
 [docs/COMPATIBILITY.md](https://bitbucket.org/chromawallet/rell-jetbrains/src/main/docs/COMPATIBILITY.md)
 lists the supported versions and where settings files go.
@@ -49,7 +47,7 @@ lists the supported versions and where settings files go.
 Run and debug Rell tests directly from your JetBrains IDE:
 
 * Powered by the [Chromia CLI](https://docs.chromia.com/intro/getting-started/installation/cli-installation).
-* Supports both **local CLI** execution and **Docker-based** execution.
+* Supports both local CLI execution and Docker-based execution.
 * Provides detailed runtime error reporting and status feedback.
 * Allows running individual tests, test suites, or all tests within a Rell module.
 
@@ -66,10 +64,7 @@ Run and debug Rell tests directly from your JetBrains IDE:
 
 ## 🔍 Linter
 
-A built-in linter enforces best practices and detects potential issues early.
-
-Every rule is on by default. `.rell_lint` in the project root is where you turn rules off, or
-opt into the two that are off:
+Every rule is on by default; `.rell_lint` in the project root turns them off or opts into the two that are off:
 
 ```ini
 [*.rell]
@@ -87,10 +82,7 @@ rule_naming_convention=false
 
 ## 🖊 Code Formatter
 
-Ensures consistent styling across your workspace.
-
-Configurable via `.rell_format` in the root directory (`.rellformat` still works, but is
-deprecated). Example:
+Configured by `.rell_format` in the project root (deprecated `.rellformat` also works):
 
 ```ini
 [*.rell]
