@@ -1,5 +1,21 @@
 # Changelog
 
+## [0.4.3]
+### Added
+- Support for alternate Chromia settings files, mirroring `chr -s/--settings`: any `*.yml` with a
+  top-level `blockchains` section counts alongside `chromia.yml`, and a file is governed by the
+  settings file whose `compile.source` tree contains it
+- Status-bar widget naming the settings file that governs the current file and switching it in one
+  click. The choice is per directory, persisted, also selectable from the tool window, and passed
+  as `--settings` to Chromia commands that accept it
+- Settings files declaring an unsupported Rell version are flagged on their own editor, with the
+  one-click `rellVersion` fix
+- The active settings files are sent to the language server (`chromiaConfigFiles`), so servers
+  supporting the option index from the chosen file; released servers ignore it
+### Fixed
+- Refresh in the Chromia tool window re-runs project discovery, so added or removed Chromia
+  projects appear and disappear
+
 ## [0.4.2]
 ### Added
 - Chromia project generator in File | New | Project &mdash; pick a `chr create-rell-dapp`

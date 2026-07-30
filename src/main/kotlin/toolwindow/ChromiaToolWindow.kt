@@ -1,8 +1,11 @@
 package net.postchain.rellide.jetbrains.toolwindow
 
+import com.intellij.openapi.Disposable
+import com.intellij.openapi.application.ApplicationManager
 import com.intellij.openapi.project.Project
 import com.intellij.ui.components.JBScrollPane
 import com.intellij.ui.treeStructure.Tree
+import net.postchain.rellide.jetbrains.chromia.RellVersionResolver
 import net.postchain.rellide.jetbrains.toolwindow.tree.ChromiaTreeCellRenderer
 import net.postchain.rellide.jetbrains.toolwindow.tree.ChromiaTreeModel
 import javax.swing.JComponent
@@ -18,6 +21,22 @@ class ChromiaToolWindow(private val project: Project) {
     init {
         tree = Tree(treeModel)
         setupTree()
+    }
+
+    /**
+     * Rebuilds the tree whenever Chromia settings state changes, so switching the active settings
+     * file from a version banner is reflected here too — the active marker and the `--settings`
+     * argument of every command depend on it.
+     */
+    fun subscribeToSettingsChanges(parent: Disposable) {
+        project.messageBus.connect(parent).subscribe(
+            RellVersionResolver.TOPIC,
+            net.postchain.rellide.jetbrains.chromia.ChromiaConfigListener {
+                ApplicationManager.getApplication().invokeLater({
+                    if (!project.isDisposed) refreshTree()
+                }, project.disposed)
+            },
+        )
     }
 
     private fun setupTree() {
@@ -38,7 +57,7 @@ class ChromiaToolWindow(private val project: Project) {
     fun getContent(): JComponent = JBScrollPane(tree)
 
     fun refreshTree() {
-        treeModel.reload()
+        treeModel.rebuild()
         tree.expandRow(0) // Keep root expanded after refresh
     }
 }

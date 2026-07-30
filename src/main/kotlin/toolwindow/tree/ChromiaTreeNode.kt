@@ -15,17 +15,23 @@ data class ChromiaTreeNode(
     val description: String? = null,
     val icon: Icon? = null,
     val projectPath: String? = null, // Path to the project directory for PROJECT nodes
+    // Settings file name: on COMMAND nodes the non-default active file passed as --settings, on
+    // SETTINGS_FILE nodes the file itself, on PROJECT nodes the non-default active file to display
+    var settingsFile: String? = null,
+    var isActiveSettingsFile: Boolean = false,
 ) : DefaultMutableTreeNode(displayName) {
 
     /**
-     * Returns the full command to execute including parameters
+     * Returns the full command to execute including the settings file and parameters
      */
     fun getFullCommand(): String? {
         return command?.let { cmd ->
-            if (parameters.isNotBlank()) {
-                "$cmd $parameters"
-            } else {
-                cmd
+            buildString {
+                append(cmd)
+                settingsFile?.let { append(" --settings ").append(it) }
+                if (parameters.isNotBlank()) {
+                    append(' ').append(parameters)
+                }
             }
         }
     }
@@ -48,5 +54,6 @@ enum class ChromiaNodeType {
     ROOT,
     PROJECT,
     CATEGORY,
-    COMMAND
+    COMMAND,
+    SETTINGS_FILE,
 }

@@ -38,13 +38,16 @@
         <lang.commenter language="Rell" implementationClass="net.postchain.rellide.jetbrains.language.RellCommenter"/>
 
         <!-- Brace Matcher -->
-        <lang.braceMatcher language="Rell" implementationClass="net.postchain.rellide.jetbrains.language.RellPairedBraceMatcher"/>
+        <lang.braceMatcher language="Rell"
+                           implementationClass="net.postchain.rellide.jetbrains.language.RellPairedBraceMatcher"/>
 
         <!-- Quote Handlers -->
-        <lang.quoteHandler language="Rell" implementationClass="net.postchain.rellide.jetbrains.language.RellQuoteTokenHandler"/>
+        <lang.quoteHandler language="Rell"
+                           implementationClass="net.postchain.rellide.jetbrains.language.RellQuoteTokenHandler"/>
 
         <!-- Folding -->
-        <lang.foldingBuilder language="Rell" implementationClass="net.postchain.rellide.jetbrains.language.RellFoldingBuilder"/>
+        <lang.foldingBuilder language="Rell"
+                             implementationClass="net.postchain.rellide.jetbrains.language.RellFoldingBuilder"/>
 
         <!-- Per-version Rell language servers (docs/COMPATIBILITY.md): the provider routes each
              file to the server of its chromia.yml-declared version — and to none below the
@@ -64,30 +67,43 @@
                          implementationClass="net.postchain.rellide.jetbrains.lsp.RellLspDiagnosticsInspection"/>
 
         <!-- Code style -->
-        <codeStyleSettingsProvider implementation="net.postchain.rellide.jetbrains.formatting.RellCodeStyleSettingsProvider"/>
+        <codeStyleSettingsProvider
+                implementation="net.postchain.rellide.jetbrains.formatting.RellCodeStyleSettingsProvider"/>
         <langCodeStyleSettingsProvider
                 implementation="net.postchain.rellide.jetbrains.formatting.RellLanguageCodeStyleSettingsProvider"/>
 
         <!-- Enter handler  -->
-        <enterHandlerDelegate implementation="net.postchain.rellide.jetbrains.lsp.RellEnterHandler" />
+        <enterHandlerDelegate implementation="net.postchain.rellide.jetbrains.lsp.RellEnterHandler"/>
 
         <!-- Spellchecking -->
-        <spellchecker.support language="Rell" implementationClass="net.postchain.rellide.jetbrains.spellchecking.RellSpellcheckingStrategy"/>
+        <spellchecker.support language="Rell"
+                              implementationClass="net.postchain.rellide.jetbrains.spellchecking.RellSpellcheckingStrategy"/>
 
         <!-- Version-exact syntax errors for projects on older supported Rell versions -->
-        <externalAnnotator language="Rell" implementationClass="net.postchain.rellide.jetbrains.chromia.RellVersionSyntaxAnnotator"/>
+        <externalAnnotator language="Rell"
+                           implementationClass="net.postchain.rellide.jetbrains.chromia.RellVersionSyntaxAnnotator"/>
 
         <!-- Banners for unsupported (below the compatibility floor) and newer-than-known Rell versions -->
-        <editorNotificationProvider implementation="net.postchain.rellide.jetbrains.chromia.RellVersionEditorNotificationProvider"/>
+        <editorNotificationProvider
+                implementation="net.postchain.rellide.jetbrains.chromia.RellVersionEditorNotificationProvider"/>
 
         <!-- Save-and-reload bar on chromia.yml while an edited rellVersion is unsaved -->
-        <editorNotificationProvider implementation="net.postchain.rellide.jetbrains.chromia.ChromiaConfigReloadNotificationProvider"/>
+        <editorNotificationProvider
+                implementation="net.postchain.rellide.jetbrains.chromia.ChromiaConfigReloadNotificationProvider"/>
         <postStartupActivity implementation="net.postchain.rellide.jetbrains.chromia.ChromiaConfigDocumentTracker"/>
-        <editorNotificationProvider implementation="net.postchain.rellide.jetbrains.editorconfig.RellConfigReloadNotificationProvider"/>
+        <editorNotificationProvider
+                implementation="net.postchain.rellide.jetbrains.editorconfig.RellConfigReloadNotificationProvider"/>
         <postStartupActivity implementation="net.postchain.rellide.jetbrains.editorconfig.RellConfigDocumentTracker"/>
 
+        <!-- Active Chromia settings file of the current file, switchable in one click -->
+        <!-- Sits with the other per-file property widgets; "LineSeparator" is the platform's own
+             extension id (the widget showing LF/CRLF), not a made-up name. -->
+        <statusBarWidgetFactory id="RellChromiaSettingsFile"
+                                implementation="net.postchain.rellide.jetbrains.chromia.ChromiaSettingsStatusBarWidgetFactory"
+                                order="before LineSeparator"/>
+
         <!-- Custom icons -->
-        <iconProvider implementation="net.postchain.rellide.jetbrains.icons.ChromiaYmlIconProvider" />
+        <iconProvider implementation="net.postchain.rellide.jetbrains.icons.ChromiaYmlIconProvider"/>
 
         <!-- File templates -->
         <internalFileTemplate name="Rell File"/>
@@ -97,17 +113,18 @@
         <internalFileTemplate name="Rell Enum"/>
 
         <!-- Rell plugin settings -->
-        <applicationConfigurable parentId="tools" instance="net.postchain.rellide.jetbrains.settings.RellPluginSettingsConfigurable"
+        <applicationConfigurable parentId="tools"
+                                 instance="net.postchain.rellide.jetbrains.settings.RellPluginSettingsConfigurable"
                                  id="net.postchain.rellide.jetbrains.settings.RellPluginSettingsConfigurable"
                                  displayName="Rell"/>
         <applicationService serviceImplementation="net.postchain.rellide.jetbrains.settings.RellPluginSettingsState"/>
 
         <!-- Plugin replacement -->
-        <pluginReplacement implementation="net.postchain.rellide.jetbrains.replacement.RellPluginReplacement" />
+        <pluginReplacement implementation="net.postchain.rellide.jetbrains.replacement.RellPluginReplacement"/>
 
         <!-- Chromia Tool Window -->
         <toolWindow id="Chromia"
-                    anchor="right" 
+                    anchor="right"
                     factoryClass="net.postchain.rellide.jetbrains.toolwindow.ChromiaToolWindowFactory"
                     icon="/icons/chromia-big.png"/>
 

@@ -2,11 +2,7 @@ package net.postchain.rellide.jetbrains.lsp
 
 import com.intellij.codeInspection.InspectionManager
 import com.intellij.testFramework.fixtures.BasePlatformTestCase
-import org.eclipse.lsp4j.Diagnostic
-import org.eclipse.lsp4j.DiagnosticSeverity
-import org.eclipse.lsp4j.Position
-import org.eclipse.lsp4j.PublishDiagnosticsParams
-import org.eclipse.lsp4j.Range
+import org.eclipse.lsp4j.*
 
 class RellLspDiagnosticsInspectionTest : BasePlatformTestCase() {
     fun testBatchModeReportsCachedServerDiagnostics() {
@@ -25,7 +21,13 @@ class RellLspDiagnosticsInspectionTest : BasePlatformTestCase() {
 
         assertEquals(1, problems!!.size)
         assertEquals("cannot resolve", problems[0].descriptionTemplate)
-        assertEquals("broken", problems[0].psiElement.text.substring(problems[0].textRangeInElement!!.startOffset, problems[0].textRangeInElement!!.endOffset))
+        assertEquals(
+            "broken",
+            problems[0].psiElement.text.substring(
+                problems[0].textRangeInElement!!.startOffset,
+                problems[0].textRangeInElement!!.endOffset
+            )
+        )
     }
 
     fun testOnTheFlyModeReportsNothingToAvoidDuplicatingEditorHighlighting() {
@@ -44,7 +46,12 @@ class RellLspDiagnosticsInspectionTest : BasePlatformTestCase() {
         val psiFile = myFixture.addFileToProject("src/fixed.rell", "module;\n")
         val uri = "file://${psiFile.virtualFile.path}"
         val cache = RellLspDiagnosticsCache.getInstance(project)
-        cache.record(PublishDiagnosticsParams(uri, listOf(diagnostic("stale", line = 0, start = 0, end = 6, DiagnosticSeverity.Error))))
+        cache.record(
+            PublishDiagnosticsParams(
+                uri,
+                listOf(diagnostic("stale", line = 0, start = 0, end = 6, DiagnosticSeverity.Error))
+            )
+        )
         cache.record(PublishDiagnosticsParams(uri, emptyList()))
 
         assertNull(RellLspDiagnosticsInspection().checkFile(psiFile, InspectionManager.getInstance(project), false))

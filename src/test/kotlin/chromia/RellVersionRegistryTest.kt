@@ -1,17 +1,20 @@
 package net.postchain.rellide.jetbrains.chromia
 
-import org.junit.Assert.assertEquals
-import org.junit.Assert.assertTrue
-import org.junit.Test
+import kotlin.test.Test
+import kotlin.test.assertEquals
+import kotlin.test.assertTrue
 
 class RellVersionRegistryTest {
 
     @Test
     fun registryMatchesCompatibilityPolicy() {
-        assertEquals(RellVersion(0, 16, 1), RellVersionRegistry.floor)
+        assertEquals(expected = RellVersion(0, 16, 1), actual = RellVersionRegistry.floor)
         assertTrue(RellVersionRegistry.max >= RellVersionRegistry.floor)
         assertTrue(RellVersionRegistry.isSupported(RellVersionRegistry.floor))
         assertTrue(RellVersionRegistry.isSupported(RellVersionRegistry.max))
-        assertEquals(RellVersionRegistry.supported, RellVersionRegistry.supported.sorted().distinct())
+        assertEquals(
+            expected = RellVersionRegistry.supported,
+            actual = RellVersionRegistry.supported.sorted().distinct(),
+        )
     }
 }

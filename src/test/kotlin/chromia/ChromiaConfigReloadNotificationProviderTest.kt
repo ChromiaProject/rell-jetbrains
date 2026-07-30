@@ -27,7 +27,10 @@ class ChromiaConfigReloadNotificationProviderTest : BasePlatformTestCase() {
         WriteCommandAction.runWriteCommandAction(project) {
             document.setText("compile:\n  rellVersion: \"0.16.2\"\n")
         }
-        assertNotNull("Unsaved version change must show the reload bar", provider.collectNotificationData(project, config))
+        assertNotNull(
+            "Unsaved version change must show the reload bar",
+            provider.collectNotificationData(project, config)
+        )
 
         runWriteAction { FileDocumentManager.getInstance().saveDocument(document) }
         assertNull("Saving applies the change; the bar must go away", provider.collectNotificationData(project, config))
@@ -42,6 +45,23 @@ class ChromiaConfigReloadNotificationProviderTest : BasePlatformTestCase() {
         }
         assertNull(
             "Edits that keep rellVersion unchanged must not show the bar",
+            provider.collectNotificationData(project, config),
+        )
+    }
+
+    fun testBarAppearsOnAlternateSettingsFile() {
+        val config = myFixture.addFileToProject(
+            "alternate/atbash.yml",
+            "blockchains:\n  my_chain:\n    module: main\ncompile:\n  rellVersion: \"0.16.1\"\n",
+        ).virtualFile
+        myFixture.openFileInEditor(config)
+        val document = FileDocumentManager.getInstance().getDocument(config)!!
+
+        WriteCommandAction.runWriteCommandAction(project) {
+            document.setText("blockchains:\n  my_chain:\n    module: main\ncompile:\n  rellVersion: \"0.16.2\"\n")
+        }
+        assertNotNull(
+            "A qualifying alternate settings file must get the reload bar",
             provider.collectNotificationData(project, config),
         )
     }

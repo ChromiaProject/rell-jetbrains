@@ -1,12 +1,15 @@
 package net.postchain.rellide.jetbrains.toolwindow
 
+import com.intellij.openapi.fileEditor.FileEditorManager
 import com.intellij.openapi.project.Project
+import com.intellij.openapi.vfs.LocalFileSystem
 import net.postchain.rellide.jetbrains.toolwindow.execution.ChromiaCommandExecutor
 import net.postchain.rellide.jetbrains.toolwindow.tree.ChromiaNodeType
 import net.postchain.rellide.jetbrains.toolwindow.tree.ChromiaTreeModel
 import net.postchain.rellide.jetbrains.toolwindow.tree.ChromiaTreeNode
 import java.awt.event.MouseAdapter
 import java.awt.event.MouseEvent
+import java.io.File
 import javax.swing.JTree
 import javax.swing.tree.TreePath
 
@@ -56,6 +59,10 @@ class ChromiaTreeMouseListener(
                 // Projects don't execute commands directly, but could be expanded to show commands
                 // This is handled by the tree automatically
             }
+
+            ChromiaNodeType.SETTINGS_FILE -> {
+                openSettingsFile(project, node)
+            }
         }
     }
 
@@ -64,6 +71,15 @@ class ChromiaTreeMouseListener(
         if (fullCommand != null) {
             val workingDirectory = node.projectPath ?: project.basePath
             commandExecutor.executeCommand(fullCommand, workingDirectory)
+        }
+    }
+
+    companion object {
+        fun openSettingsFile(project: Project, node: ChromiaTreeNode) {
+            val directory = node.projectPath ?: return
+            val name = node.settingsFile ?: return
+            val file = LocalFileSystem.getInstance().findFileByIoFile(File(directory, name)) ?: return
+            FileEditorManager.getInstance(project).openFile(file, true)
         }
     }
 }

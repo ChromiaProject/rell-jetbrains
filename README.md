@@ -36,12 +36,11 @@ The plugin supports following features:
 
 ## 🔀 Rell Version Compatibility
 
-The plugin reads `compile.rellVersion` from your project's `chromia.yml` and applies a
-version-exact toolchain per project: every Rell release from **0.16.1** up to the plugin's newest
-supported version gets its own grammar diagnostics and its own language server (older versions are
-downloaded on demand). Projects declaring a version below 0.16.1 get no language features and a
-one-click upgrade hint. Full details in
-[docs/COMPATIBILITY.md](https://bitbucket.org/chromawallet/rell-jetbrains/src/main/docs/COMPATIBILITY.md).
+Each project gets the toolchain matching `compile.rellVersion` in its settings file — matching
+grammar and language server — for every Rell release from **0.16.1** up.
+
+[docs/COMPATIBILITY.md](https://bitbucket.org/chromawallet/rell-jetbrains/src/main/docs/COMPATIBILITY.md)
+lists the supported versions and where settings files go.
 
 ---
 
@@ -59,7 +58,7 @@ Run and debug Rell tests directly from your JetBrains IDE:
 ## ⚡ Workspace & Index Caching
 
 * Index caching improves performance when navigating large projects.
-* Can be enabled/disabled via the **Settings -> Tools -> Rell** in your IDE.
+* Can be enabled/disabled in [**Settings | Tools | Rell**](jetbrains://idea/settings?name=Tools--Rell).
 * Includes an **"Rell: Invalidate Cache"** action for refreshing caches.
 
 ---
@@ -69,32 +68,25 @@ Run and debug Rell tests directly from your JetBrains IDE:
 
 A built-in linter enforces best practices and detects potential issues early.
 
-Configuration file: `.rell_lint` (must be placed in the project root).
-Example:
+Every rule is on by default. `.rell_lint` in the project root is where you turn rules off, or
+opt into the two that are off:
 
 ```ini
 [*.rell]
-# Check Rell naming convention (true | false)
-rule_naming_convention=true
-
-# Warns about imports from non module files (true | false)
-rule_import_from_non_module=true
-
-# Preferred quote format (double | single)
+# Off by default: enforce a quote style (double | single)
 rule_quote_format=double
 
-# Rell formatter integration. Detects violations as you type (true | false)
+# Off by default: report formatter violations as you type (true | false)
 rule_formatter=true
 
-# Detects variables that could be declared as constants (true | false)
-rule_constant_detection=true
-
-# Warns about declared but unused variables (true | false)
-rule_unused_variable=true
-
-# Warns about outer joins without join conditions, which result in a Cartesian product (true | false)
-rule_outer_join_cartesian_product=true
+# On by default: set to false to switch a rule off
+rule_naming_convention=false
 ```
+
+On by default: `rule_naming_convention`, `rule_import_from_non_module`, `rule_constant_detection`,
+`rule_unused_variable`, `rule_outer_join_cartesian_product`, `rule_replace_if_with_when`,
+`rule_simplify_boolean_return`, `rule_redundant_boolean_comparison`, `rule_simplify_nullable_if`,
+`rule_prefer_empty`, `rule_at_cardinality_misuse`.
 
 ---
 
@@ -102,7 +94,8 @@ rule_outer_join_cartesian_product=true
 
 Ensures consistent styling across your workspace.
 
-Configurable via `.rellformat` in the root directory. Example:
+Configurable via `.rell_format` in the root directory (`.rellformat` still works, but is
+deprecated). Example:
 
 ```ini
 [*.rell]
@@ -121,7 +114,7 @@ tab_size=4
 ## 📦 Installation
 
 1. Install your preferred JetBrains IDE (IntelliJ IDEA, PyCharm, WebStorm, etc.).
-2. Open **Settings -> Plugins -> Marketplace**.
+2. Open [**Settings | Plugins**](jetbrains://idea/settings?name=Plugins) and switch to **Marketplace**.
 3. Search for **Rell** and click **Install**.
 4. Restart your IDE.
 5. (Optional) Install the [Chromia CLI](https://docs.chromia.com/intro/getting-started/installation/cli-installation) to enable the test runner.
@@ -132,7 +125,7 @@ tab_size=4
 
 The plugin collects no analytics or telemetry. Crash reports are sent to ChromaWay's error tracker
 (Sentry, hosted in the EU) only when you explicitly submit one from the IDE's error dialog. The
-[`PRIVACY_POLICY.md`](https://bitbucket.org/chromawallet/rell-jetbrains/src/main/PRIVACY_POLICY.md) file in the plugin repository describes exactly what a report contains.
+[PRIVACY_POLICY.md](https://bitbucket.org/chromawallet/rell-jetbrains/src/main/PRIVACY_POLICY.md) file in the plugin repository describes exactly what a report contains.
 
 ---
 

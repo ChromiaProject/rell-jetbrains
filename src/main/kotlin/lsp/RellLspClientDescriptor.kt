@@ -12,11 +12,13 @@ import com.intellij.platform.lsp.api.LspCommunicationChannel
 import com.intellij.platform.lsp.api.LspServerNotificationsHandler
 import com.intellij.platform.lsp.api.ProjectWideLspClientDescriptor
 import com.intellij.platform.lsp.api.customization.LspCustomization
+import net.postchain.rellide.jetbrains.chromia.ChromiaSettingsFiles
 import net.postchain.rellide.jetbrains.chromia.RellLspRuntimeManager
 import net.postchain.rellide.jetbrains.chromia.RellVersion
 import net.postchain.rellide.jetbrains.chromia.RellVersionRegistry
 import net.postchain.rellide.jetbrains.sentry.SentryReportSubmitter
 import net.postchain.rellide.jetbrains.settings.RellPluginSettingsState
+import net.postchain.rellide.jetbrains.toolwindow.project.ChromiaProjectDiscovery
 import org.eclipse.lsp4j.services.LanguageServer
 import kotlin.io.path.*
 
@@ -78,7 +80,16 @@ class RellLspClientDescriptor(
         val pluginSettings = RellPluginSettingsState.instance
         val inlayHintsSettings = project.service<RellInlayHintsConfigurationListener>().getInlayHintsSettings()
 
-        return mapOf("indexCaching" to pluginSettings.indexCaching, "inlayHints" to inlayHintsSettings)
+        return buildMap {
+            put("indexCaching", pluginSettings.indexCaching)
+            put("inlayHints", inlayHintsSettings)
+            // Sent only when some project uses a non-default settings file: servers that
+            // understand the option anchor an index root at each of these files and let them
+            // shadow the chromia.yml of their own directory, while still discovering every other
+            // project by name. Released servers ignore the unknown key. When every project uses
+            // chromia.yml the key is omitted and the server's own discovery already matches.
+            chromiaConfigFileUris(project)?.let { put("chromiaConfigFiles", it) }
+        }
     }
 
     override val lsp4jServerClass: Class<out LanguageServer> = RellServerApi::class.java
@@ -124,6 +135,21 @@ class RellLspClientDescriptor(
         // plugin lookup (PluginManagerCore.getPlugin, PluginManager.findEnabledPlugin/
         // getPluginByClass); the EP itself and this constructor are not.
         private val ERROR_HANDLER_EP = ExtensionPointName<ErrorReportSubmitter>("com.intellij.errorHandler")
+
+        /**
+         * The active settings file of every discovered Chromia project whose active file is not
+         * the default `chromia.yml`, as `file:` URIs — null when there is none, since the server
+         * discovers `chromia.yml` itself. Only the alternates are sent: the server merges them
+         * with its own discovery, so listing the defaults would add nothing while making the list
+         * look like a complete set of roots (project discovery is bounded to the project base
+         * path, and the server's scan is not).
+         */
+        private fun chromiaConfigFileUris(project: Project): List<String>? =
+            ChromiaProjectDiscovery.discoverProjects(project)
+                .filter { it.activeSettingsFile?.let { name -> !ChromiaSettingsFiles.isDefaultName(name) } == true }
+                .mapNotNull { it.configFile }
+                .map { java.io.File(it).toURI().toString() }
+                .takeIf { it.isNotEmpty() }
 
         /** The language-server runtime bundled with the plugin — always the newest supported Rell. */
         fun bundledLspLibDir(): java.nio.file.Path {

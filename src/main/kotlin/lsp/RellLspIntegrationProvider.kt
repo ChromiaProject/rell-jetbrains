@@ -6,11 +6,7 @@ import com.intellij.openapi.vfs.VirtualFile
 import com.intellij.platform.lsp.api.LspClient
 import com.intellij.platform.lsp.api.LspIntegrationProvider
 import com.intellij.platform.lsp.api.lsWidget.LspClientWidgetItem
-import net.postchain.rellide.jetbrains.chromia.RellLspRuntimeManager
-import net.postchain.rellide.jetbrains.chromia.RellVersion
-import net.postchain.rellide.jetbrains.chromia.RellVersionRegistry
-import net.postchain.rellide.jetbrains.chromia.RellVersionResolution
-import net.postchain.rellide.jetbrains.chromia.RellVersionResolver
+import net.postchain.rellide.jetbrains.chromia.*
 import net.postchain.rellide.jetbrains.language.RellIcons
 import net.postchain.rellide.jetbrains.lsp.RellLspClientDescriptor.Companion.RELL_EXTENSION
 import net.postchain.rellide.jetbrains.settings.RellPluginSettingsConfigurable
@@ -22,7 +18,11 @@ import net.postchain.rellide.jetbrains.settings.RellPluginSettingsConfigurable
  * below the compatibility floor never get one — that is the hard cease.
  */
 class RellLspIntegrationProvider : LspIntegrationProvider {
-    override fun fileOpened(project: Project, file: VirtualFile, clientStarter: LspIntegrationProvider.LspClientStarter) {
+    override fun fileOpened(
+        project: Project,
+        file: VirtualFile,
+        clientStarter: LspIntegrationProvider.LspClientStarter,
+    ) {
         // The platform enumerates providers under the test runner too (cf. the Vue exclusion in
         // gradle.properties), and a client started there spawns a real server process and restarts
         // the daemon mid-highlighting. Routing stays directly testable via [route].

@@ -63,7 +63,10 @@ dependencies {
     }
 
     implementation(libs.sentry)
+    // JUnit 4 itself is still needed: the platform's BasePlatformTestCase is JUnit 3/4, and
+    // kotlin-test-junit is the flavour whose @Test/@Ignore alias to org.junit's.
     testImplementation(libs.junit)
+    testImplementation(kotlin("test-junit"))
     testImplementation(libs.opentest4j)
 
     intellijPlatform {

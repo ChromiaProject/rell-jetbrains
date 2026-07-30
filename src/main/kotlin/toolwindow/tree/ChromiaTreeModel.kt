@@ -2,6 +2,7 @@ package net.postchain.rellide.jetbrains.toolwindow.tree
 
 import com.intellij.icons.AllIcons
 import com.intellij.openapi.project.Project
+import net.postchain.rellide.jetbrains.chromia.ChromiaSettingsFiles
 import net.postchain.rellide.jetbrains.language.RellIcons
 import net.postchain.rellide.jetbrains.toolwindow.project.ChromiaProjectDiscovery
 import net.postchain.rellide.jetbrains.toolwindow.settings.ChromiaToolWindowSettings
@@ -22,13 +23,23 @@ class ChromiaTreeModel(private val project: Project) : DefaultTreeModel(createRo
             nodeType = ChromiaNodeType.ROOT,
             icon = RellIcons.CHROMIA_ICON_FILE
         )
+
+        /** Commands whose `chr` subcommand accepts `-s/--settings` (keygen and some others do not). */
+        private val SETTINGS_AWARE_COMMANDS = setOf(
+            "chr repl", "chr build", "chr install", "chr test",
+            "chr node start", "chr node update",
+            "chr generate client-stubs", "chr generate docs-site", "chr generate graph",
+            "chr seeder init", "chr seeder generate",
+            "chr multi-signature create", "chr multi-signature send",
+        )
     }
 
     init {
-        buildTree()
+        rebuild()
     }
 
-    private fun buildTree() {
+    /** Re-runs project discovery and rebuilds the whole tree. */
+    fun rebuild() {
         val root = root as ChromiaTreeNode
         root.removeAllChildren()
 
@@ -53,16 +64,47 @@ class ChromiaTreeModel(private val project: Project) : DefaultTreeModel(createRo
     }
 
     /**
-     * Create a project node with its command categories
+     * Create a project node with its settings files and command categories
      */
     private fun createProjectNode(chromiaProject: ChromiaProjectDiscovery.ChromiaProject): ChromiaTreeNode {
+        // Only a non-default active file needs surfacing and a --settings argument; chr reads
+        // chromia.yml on its own.
+        val alternateSettings = chromiaProject.activeSettingsFile
+            ?.takeUnless { ChromiaSettingsFiles.isDefaultName(it) }
+
         val projectNode = ChromiaTreeNode(
             displayName = chromiaProject.name,
             nodeType = ChromiaNodeType.PROJECT,
             icon = AllIcons.Nodes.Module,
             projectPath = chromiaProject.path,
-            description = "Chromia project at ${chromiaProject.path}"
+            description = "Chromia project at ${chromiaProject.path}" +
+                    (chromiaProject.activeSettingsFile?.let { ", active settings file: $it" } ?: "")
         )
+        projectNode.settingsFile = alternateSettings
+
+        if (chromiaProject.settingsFiles.size > 1) {
+            val settingsCategory = ChromiaTreeNode(
+                displayName = "Settings Files",
+                nodeType = ChromiaNodeType.CATEGORY,
+                icon = AllIcons.Nodes.ConfigFolder
+            )
+            for (name in chromiaProject.settingsFiles) {
+                settingsCategory.add(
+                    ChromiaTreeNode(
+                        displayName = name,
+                        nodeType = ChromiaNodeType.SETTINGS_FILE,
+                        description = "Chromia settings file — the active one decides the Rell version " +
+                                "and the --settings argument of project commands",
+                        icon = RellIcons.CHROMIA_ICON_FILE,
+                        projectPath = chromiaProject.path,
+                    ).apply {
+                        settingsFile = name
+                        isActiveSettingsFile = name == chromiaProject.activeSettingsFile
+                    }
+                )
+            }
+            projectNode.add(settingsCategory)
+        }
 
         val replCommand = createCommandNode(
             "REPL",
@@ -242,7 +284,21 @@ class ChromiaTreeModel(private val project: Project) : DefaultTreeModel(createRo
 
         projectNode.add(multiSignatureCategory)
 
+        if (alternateSettings != null) {
+            applySettingsFile(projectNode, alternateSettings)
+        }
+
         return projectNode
+    }
+
+    /** Stamps the active non-default settings file on every command that accepts `--settings`. */
+    private fun applySettingsFile(node: ChromiaTreeNode, settingsFileName: String) {
+        if (node.nodeType == ChromiaNodeType.COMMAND && node.command in SETTINGS_AWARE_COMMANDS) {
+            node.settingsFile = settingsFileName
+        }
+        for (i in 0 until node.childCount) {
+            applySettingsFile(node.getChildAt(i) as ChromiaTreeNode, settingsFileName)
+        }
     }
 
     private fun createCommandNode(

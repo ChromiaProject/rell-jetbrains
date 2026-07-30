@@ -7,6 +7,7 @@ import com.intellij.openapi.ui.JBMenuItem
 import com.intellij.openapi.ui.JBPopupMenu
 import com.intellij.openapi.ui.Messages
 import com.intellij.util.ui.JBUI
+import net.postchain.rellide.jetbrains.chromia.ChromiaActiveSettings
 import net.postchain.rellide.jetbrains.toolwindow.execution.ChromiaCommandExecutor
 import net.postchain.rellide.jetbrains.toolwindow.settings.ChromiaToolWindowSettings
 import net.postchain.rellide.jetbrains.toolwindow.tree.ChromiaNodeType
@@ -73,7 +74,33 @@ class ChromiaTreePopupMenu(
             ChromiaNodeType.ROOT -> {
                 buildRootMenu()
             }
+
+            ChromiaNodeType.SETTINGS_FILE -> {
+                buildSettingsFileMenu(node)
+            }
         }
+    }
+
+    private fun buildSettingsFileMenu(node: ChromiaTreeNode) {
+        val activateItem = createMenuItem("Set as Active Settings File", AllIcons.Actions.SetDefault)
+        activateItem.isEnabled = !node.isActiveSettingsFile
+        activateItem.addActionListener {
+            val directory = node.projectPath
+            val name = node.settingsFile
+            if (directory != null && name != null) {
+                ChromiaActiveSettings.getInstance(project).setActive(directory, name)
+                treeModel.rebuild()
+            }
+        }
+        add(activateItem)
+
+        addSeparator()
+
+        val openItem = createMenuItem("Open", AllIcons.Actions.MenuOpen)
+        openItem.addActionListener {
+            ChromiaTreeMouseListener.openSettingsFile(project, node)
+        }
+        add(openItem)
     }
 
     private fun createMenuItem(
@@ -200,7 +227,7 @@ class ChromiaTreePopupMenu(
     private fun buildRootMenu() {
         val refreshItem = createMenuItem("Refresh", AllIcons.Actions.Refresh)
         refreshItem.addActionListener {
-            treeModel.reload()
+            treeModel.rebuild()
             tree.expandRow(0) // Expand root
         }
         add(refreshItem)

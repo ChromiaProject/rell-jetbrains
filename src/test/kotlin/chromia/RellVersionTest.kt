@@ -1,17 +1,16 @@
 package net.postchain.rellide.jetbrains.chromia
 
-import org.junit.Assert.assertEquals
-import org.junit.Assert.assertNull
-import org.junit.Assert.assertTrue
-import org.junit.Test
+import kotlin.test.Test
+import kotlin.test.assertEquals
+import kotlin.test.assertNull
+import kotlin.test.assertTrue
 
 class RellVersionTest {
-
     @Test
     fun parsesStrictThreeComponentVersions() {
-        assertEquals(RellVersion(0, 16, 1), RellVersion.parse("0.16.1"))
-        assertEquals(RellVersion(1, 0, 0), RellVersion.parse("1.0.0"))
-        assertEquals(RellVersion(0, 0, 0), RellVersion.parse("0.0.0"))
+        assertEquals(expected = RellVersion(0, 16, 1), actual = RellVersion.parse("0.16.1"))
+        assertEquals(expected = RellVersion(1, 0, 0), actual = RellVersion.parse("1.0.0"))
+        assertEquals(expected = RellVersion(0, 0, 0), actual = RellVersion.parse("0.0.0"))
     }
 
     @Test

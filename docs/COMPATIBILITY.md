@@ -1,82 +1,45 @@
 # Rell version compatibility
 
-Each plugin release supports **every Rell release from 0.16.1 up to the plugin's newest supported
-version** with a version-exact grammar and a version-exact language server per project. Versions
-below 0.16.1 are unsupported: no language server starts, and the editor recommends upgrading.
+## Supported Rell versions
 
-Compatibility is tracked per exact version because even patch releases change the language — for
-example, lambda expressions entered the grammar in Rell 0.16.1, so a project declaring an older
-version must see them flagged as errors. The Rell compiler itself cannot do this: its
-`compatibility` option gates library members and behavior switches, never syntax, so only the
-matching toolchain produces correct diagnostics.
+| Plugin version | Supported Rell versions | Bundled |
+|----------------|-------------------------|---------|
+| 0.4.3          | 0.16.1, 0.16.2          | 0.16.2  |
+| 0.4.2          | 0.16.1, 0.16.2          | 0.16.2  |
+| 0.4.1          | 0.16.0, 0.16.1          | 0.16.1  |
 
-## Version matrix
+Your project's version comes from `compile.rellVersion` in its settings file:
 
-| Plugin version | Supported Rell versions | Bundled (newest) |
-|----------------|-------------------------|------------------|
-| 0.4.2          | 0.16.1, 0.16.2          | 0.16.2           |
-| 0.4.1          | 0.16.0, 0.16.1          | 0.16.1           |
+- **a supported version** &mdash; you get that version's grammar and language server. The newest one is
+  bundled; older ones download on first use, and until that finishes those files have no server.
+- **newer than the plugin knows** &mdash; the newest supported version is used, and the editor suggests
+  updating the plugin.
+- **below the oldest supported** &mdash; no language server runs at all. The editor shows an error with
+  a one-click fix that raises `rellVersion`. Fresh `chr create-rell-dapp` projects land here.
+- **absent** &mdash; the newest supported version is used.
 
-Rell 0.16.0 was dropped in plugin 0.4.2: its language server fails to index a workspace containing
-any syntax error, and no fixed 0.16.0 server can be published retroactively.
+Support is tracked per exact version because patch releases change the language: lambdas arrived in
+Rell 0.16.1, so a 0.16.0 project must see them flagged. Rell's own `compatibility` option cannot do
+this &mdash; it gates library members, never syntax.
 
-## How the version is resolved
+## Where settings files go
 
-For every `.rell` file the plugin finds the nearest enclosing `chromia.yml` (walking up from the
-file, never above the project content roots — mirroring how the language server anchors an index
-root at each `chromia.yml` directory) and reads `compile.rellVersion` with the same parser the
-Rell toolchain uses (`rell-toolbox-common`). Consequences of sharing the toolchain parser:
+A settings file is `chromia.yml`, or any `*.yml` with a top-level `blockchains` section &mdash; what `chr`
+reads by default or via `-s/--settings`.
 
-- only `chromia.yml` counts — `chromia.yaml` is ignored, exactly as `chr` ignores it;
-- a blank `rellVersion:` value counts as absent;
-- an unreadable or malformed YAML file counts as absent (with a log warning) — including
-  comment-only files, which the toolchain also fails to parse.
+It governs the sources under its **source root**: `compile.source` if declared, otherwise the first
+of `rell/src`, `rell`, or `src` that exists, otherwise its own directory.
 
-The resolved version maps to behavior as follows:
+```
+contracts/
+  chromia.yml          governs contracts/src/**
+  src/main/main.rell
+```
 
-| `compile.rellVersion`          | Grammar diagnostics      | Language server          | Banner                         |
-|--------------------------------|--------------------------|--------------------------|--------------------------------|
-| newest supported (e.g. 0.16.2) | newest (editor PSI)      | bundled newest           | —                              |
-| older supported (e.g. 0.16.1)  | version-exact annotator  | downloaded version-exact | —                              |
-| absent / no `chromia.yml`      | newest (editor PSI)      | bundled newest           | —                              |
-| newer than the plugin knows    | newest (editor PSI)      | bundled newest           | "update the plugin"            |
-| below 0.16.1                   | newest (editor PSI) only | **none**                 | "upgrade Rell" + one-click fix |
+Nesting works &mdash; the deepest settings file whose source root contains a file wins. A file no source
+root covers falls back to the nearest directory holding settings files.
 
-Editing `chromia.yml` re-resolves immediately: caches drop, highlighting re-runs, banners update,
-and the Rell language servers restart so files re-route to the right toolchain.
-
-Note: fresh `chr create-rell-dapp` projects currently pin `rellVersion: 0.14.5`, which lands in
-the hard-cease row. The banner's quick-fix ("Set rellVersion to …") makes recovery one click.
-
-## Version-exact diagnostics
-
-The editor PSI (highlighting, completion, navigation) always uses the newest supported grammar — a
-superset, so every file parses. On top of that:
-
-- for an **older supported** version, `RellVersionSyntaxAnnotator` runs that version's own ANTLR
-  parser (generated at build time from that release's `Rell.g4`) and reports its syntax errors as
-  "Not valid in Rell X.Y.Z", and the version-matched language server reports the same at compiler
-  level;
-- for the **newest** version, PSI syntax errors and the bundled server already are version-exact;
-- **below the floor**, only the newest grammar's own highlighting and syntax errors remain — code
-  using legacy syntax the newest grammar dropped may show parse errors there.
-
-## Language-server runtimes
-
-The newest supported server ships inside the plugin. Older supported servers are downloaded on
-first use into `<IDE system dir>/rell-lsp/<version>/` — exactly the artifacts pinned by the
-build-generated lockfile (`rell/lsp-lockfiles/<version>.lock`), SHA-256-verified, reused across
-IDE sessions. Until the download completes (or offline), affected projects simply have no language
-server; a wrong-version server is never substituted. A failure shows a notification with Retry.
-
-## Release checklist for a new Rell version
-
-1. Bump `rell` in `gradle/libs.versions.toml`.
-2. Append the new version to `supportedRellVersions` in `build.gradle.kts` (the build fails if the
-   two drift).
-3. Add the previous newest version to `VersionedRellParsers` (its grammar now generates
-   automatically; `VersionedRellParsersTest` fails until the entry exists).
-4. Add a `<server>` + `<languageMapping>` + `<semanticTokensColorsProvider>` triple for the
-   previous newest version in `plugin.xml`, with `Rell<v>DocumentMatcher` /
-   `Rell<v>LanguageServerFactory` subclasses (`RellLspRoutingTest` fails until they exist).
-5. Extend the version matrix in this document and CHANGELOG.md.
+When one directory holds several settings files (typically one per deployment network), the active
+one governs. The status bar names it and switches it in one click, and that choice is passed as
+`--settings` to Chromia tool-window commands. Without an explicit choice `chromia.yml` wins, else
+the newest supported version.

@@ -3,11 +3,11 @@ package net.postchain.rellide.jetbrains.chromia
 import com.intellij.openapi.vfs.VirtualFile
 
 /**
- * Outcome of resolving the Rell version for a file from its nearest `chromia.yml`
+ * Outcome of resolving the Rell version for a file from the Chromia settings files claiming it
  * (see docs/COMPATIBILITY.md for the full rules).
  */
 sealed interface RellVersionResolution {
-    /** The `chromia.yml` that determined the outcome, null when none was found. */
+    /** The settings file that determined the outcome, null when none was found. */
     val configFile: VirtualFile?
 
     /** The toolchain version consumers (grammar, LSP) must use; null means hard cease. */
@@ -41,20 +41,48 @@ sealed interface RellVersionResolution {
             get() = null
     }
 
+    /**
+     * Several settings files claim the file but disagree on the Rell version. The active (or
+     * default-chosen) file's version governs; the banner surfaces the disagreement and offers
+     * switching. [claimants] lists every claiming settings file with its evaluation.
+     */
+    data class Conflicting(
+        val version: RellVersion,
+        override val configFile: VirtualFile,
+        val claimants: List<RellSettingsClaimant>,
+    ) : RellVersionResolution {
+        override val effectiveVersion: RellVersion
+            get() = version
+    }
+
     enum class Origin {
         /** `compile.rellVersion` named a supported version. */
         DECLARED,
 
-        /** No `chromia.yml` above the file — the plugin's newest version applies. */
+        /** No settings file claims the file — the plugin's newest version applies. */
         NO_CONFIG,
 
-        /** `chromia.yml` exists but has no usable `compile.rellVersion` value. */
+        /** The settings file exists but has no usable `compile.rellVersion` value. */
         NO_VERSION_KEY,
 
-        /** `chromia.yml` could not be read or parsed. */
+        /** The settings file could not be read or parsed. */
         UNREADABLE_CONFIG,
 
         /** `compile.rellVersion` is not a `major.minor.patch` version string. */
         MALFORMED_VERSION,
     }
+}
+
+/**
+ * One settings file claiming a given source file: its parsed `compile.rellVersion` (null when
+ * absent or malformed) and the version its toolchain would use (null below the compatibility
+ * floor — such claimants are out of scope for conflict detection).
+ */
+data class RellSettingsClaimant(
+    val configFile: VirtualFile,
+    val declared: RellVersion?,
+    val effectiveVersion: RellVersion?,
+) {
+    val belowFloor: Boolean
+        get() = declared != null && declared < RellVersionRegistry.floor
 }

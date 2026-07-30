@@ -1,8 +1,19 @@
 package net.postchain.rellide.jetbrains.settings
 
 import com.intellij.openapi.options.Configurable
+import com.intellij.openapi.options.ShowSettingsUtil
+import com.intellij.openapi.project.Project
 import org.jetbrains.annotations.Nls
 import javax.swing.JComponent
+
+/**
+ * Opens Settings | Tools | Rell. Goes through the configurable class rather than the
+ * `jetbrains://idea/settings?name=Tools--Rell` URL, which depends on the page's display name and
+ * on the OS URL handler.
+ */
+fun openRellSettings(project: Project?) {
+    ShowSettingsUtil.getInstance().showSettingsDialog(project, RellPluginSettingsConfigurable::class.java)
+}
 
 /**
  * Provides controller functionality for Rell plugin settings.

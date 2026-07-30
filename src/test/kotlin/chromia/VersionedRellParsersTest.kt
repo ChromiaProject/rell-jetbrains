@@ -1,7 +1,7 @@
 package net.postchain.rellide.jetbrains.chromia
 
-import org.junit.Assert.assertTrue
-import org.junit.Test
+import kotlin.test.Test
+import kotlin.test.assertTrue
 
 class VersionedRellParsersTest {
 
@@ -10,7 +10,7 @@ class VersionedRellParsersTest {
     @Test
     fun everySupportedVersionBelowNewestHasAParser() {
         for (version in RellVersionRegistry.supported.filter { it < RellVersionRegistry.max }) {
-            assertTrue("No versioned parser for supported Rell $version", VersionedRellParsers.supports(version))
+            assertTrue(VersionedRellParsers.supports(version), "No versioned parser for supported Rell $version")
         }
     }
 
@@ -22,7 +22,7 @@ class VersionedRellParsersTest {
             query test_it(): integer = apply(x -> x + 1, 7);
         """.trimIndent()
         val errors = VersionedRellParsers.parse(RellVersion(0, 16, 1), lambdaDapp)
-        assertTrue("Lambdas entered the grammar in 0.16.1 and must parse, got: $errors", errors.isEmpty())
+        assertTrue(errors.isEmpty(), "Lambdas entered the grammar in 0.16.1 and must parse, got: $errors")
     }
 
     @Test
@@ -32,7 +32,7 @@ class VersionedRellParsersTest {
             function broken( { }
         """.trimIndent()
         val errors = VersionedRellParsers.parse(RellVersion(0, 16, 1), broken)
-        assertTrue("Expected the 0.16.1 grammar to reject broken syntax, got no errors", errors.isNotEmpty())
-        assertTrue("Expected an error on the broken line, got: $errors", errors.any { it.line == 2 })
+        assertTrue(errors.isNotEmpty(), "Expected the 0.16.1 grammar to reject broken syntax, got no errors")
+        assertTrue(errors.any { it.line == 2 }, "Expected an error on the broken line, got: $errors")
     }
 }

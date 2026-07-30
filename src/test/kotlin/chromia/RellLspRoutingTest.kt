@@ -7,8 +7,8 @@ import com.intellij.testFramework.fixtures.BasePlatformTestCase
 import com.intellij.util.io.createDirectories
 import net.postchain.rellide.jetbrains.lsp.RellLspClientDescriptor
 import net.postchain.rellide.jetbrains.lsp.RellLspIntegrationProvider
-import javax.xml.parsers.DocumentBuilderFactory
 import org.w3c.dom.Element
+import javax.xml.parsers.DocumentBuilderFactory
 import kotlin.io.path.deleteIfExists
 import kotlin.io.path.writeText
 
@@ -34,11 +34,32 @@ class RellLspRoutingTest : BasePlatformTestCase() {
         assertContainsElements(implementations, RellLspIntegrationProvider::class.java.name)
     }
 
+    // An `order` naming an extension id that does not exist is dropped silently, leaving the
+    // widget wherever the platform happens to put it.
+    fun testSettingsWidgetIsOrderedAgainstARealPlatformWidget() {
+        val pluginXml = javaClass.classLoader.getResourceAsStream("META-INF/plugin.xml")
+            ?: error("plugin.xml not on test classpath")
+        val document = DocumentBuilderFactory.newInstance().newDocumentBuilder().parse(pluginXml)
+
+        val factories = document.getElementsByTagName("statusBarWidgetFactory")
+        val ours = (0 until factories.length).map { factories.item(it) as Element }
+            .single { it.getAttribute("id") == ChromiaSettingsStatusBarWidget.WIDGET_ID }
+
+        // Platform ids from PlatformLangPlugin.xml; the position widget is "Position", not
+        // "positionWidget".
+        val knownPlatformWidgetIds = setOf("Position", "LineSeparator", "Encoding", "ReadOnlyAttribute")
+        val anchor = ours.getAttribute("order").substringAfter("before ").substringAfter("after ").trim()
+        assertTrue("order anchors an unknown widget id: $anchor", anchor in knownPlatformWidgetIds)
+    }
+
     fun testNewestDescriptorServesDefaultsAndNewestButNotOldOrCeased() {
         val descriptor = RellLspClientDescriptor.newest(project)
         assertTrue(descriptor.isSupportedFile(rellFile("no-config", null)))
         assertTrue(descriptor.isSupportedFile(rellFile("newest", "0.16.2")))
-        assertTrue("Clamped versions run the newest toolchain", descriptor.isSupportedFile(rellFile("clamped", "0.17.0")))
+        assertTrue(
+            "Clamped versions run the newest toolchain",
+            descriptor.isSupportedFile(rellFile("clamped", "0.17.0"))
+        )
         assertFalse("Older versions have their own server", descriptor.isSupportedFile(rellFile("older", "0.16.1")))
         assertFalse("Below the floor no server may match", descriptor.isSupportedFile(rellFile("ceased", "0.14.5")))
     }
@@ -90,6 +111,35 @@ class RellLspRoutingTest : BasePlatformTestCase() {
             assertEquals("Runtime ready: must start", version, startedVersionFor(file))
         } finally {
             marker.deleteIfExists()
+        }
+    }
+
+    fun testConflictingSettingsFilesRouteTheChosenVersion() {
+        myFixture.addFileToProject(
+            "p-conflict/a.yml",
+            "blockchains:\n  my_chain:\n    module: main\ncompile:\n  rellVersion: \"0.16.1\"\n",
+        )
+        myFixture.addFileToProject(
+            "p-conflict/b.yml",
+            "blockchains:\n  my_chain:\n    module: main\ncompile:\n  rellVersion: \"0.16.2\"\n",
+        )
+        val file = myFixture.addFileToProject("p-conflict/src/main.rell", "module;\n").virtualFile
+
+        assertEquals(
+            "The default choice (newest in-scope version) must drive routing",
+            RellVersionRegistry.max,
+            startedVersionFor(file),
+        )
+
+        val directory = file.parent.parent.path
+        ChromiaActiveSettings.getInstance(project).setActive(directory, "a.yml")
+        try {
+            assertTrue(
+                "With an older active settings file the newest descriptor must not match",
+                RellVersionResolver.getInstance(project).resolve(file).effectiveVersion == RellVersion(0, 16, 1),
+            )
+        } finally {
+            ChromiaActiveSettings.getInstance(project).setActive(directory, null)
         }
     }
 

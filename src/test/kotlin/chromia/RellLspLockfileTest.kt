@@ -1,9 +1,9 @@
 package net.postchain.rellide.jetbrains.chromia
 
-import org.junit.Assert.assertEquals
-import org.junit.Assert.assertThrows
-import org.junit.Assert.assertTrue
-import org.junit.Test
+import kotlin.test.Test
+import kotlin.test.assertEquals
+import kotlin.test.assertFailsWith
+import kotlin.test.assertTrue
 
 class RellLspLockfileTest {
 
@@ -15,21 +15,21 @@ class RellLspLockfileTest {
             org.antlr:antlr4-runtime:4.13.1 antlr4-runtime-4.13.1.jar def456
             """.trimIndent(),
         )
-        assertEquals(2, artifacts.size)
+        assertEquals(expected = 2, actual = artifacts.size)
         val lsp = artifacts.first()
-        assertEquals("net.postchain.rell:rell-toolbox-language-server:0.16.0", lsp.gav)
+        assertEquals(expected = "net.postchain.rell:rell-toolbox-language-server:0.16.0", actual = lsp.gav)
         assertEquals(
-            "net/postchain/rell/rell-toolbox-language-server/0.16.0/rell-toolbox-language-server-0.16.0.jar",
-            lsp.mavenPath,
+            expected = "net/postchain/rell/rell-toolbox-language-server/0.16.0/rell-toolbox-language-server-0.16.0.jar",
+            actual = lsp.mavenPath,
         )
-        assertEquals("abc123", lsp.sha256)
+        assertEquals(expected = "abc123", actual = lsp.sha256)
     }
 
     @Test
     fun rejectsMalformedLines() {
-        assertThrows(IllegalArgumentException::class.java) { RellLspLockfile.parse("not a lockfile line") }
-        assertThrows(IllegalArgumentException::class.java) { RellLspLockfile.parse("bad:gav file.jar sha extra") }
-        assertThrows(IllegalArgumentException::class.java) { RellLspLockfile.parse("only-two-parts file.jar") }
+        assertFailsWith<IllegalArgumentException> { RellLspLockfile.parse("not a lockfile line") }
+        assertFailsWith<IllegalArgumentException> { RellLspLockfile.parse("bad:gav file.jar sha extra") }
+        assertFailsWith<IllegalArgumentException> { RellLspLockfile.parse("only-two-parts file.jar") }
     }
 
     // Guards the build wiring: every supported version below the newest must ship a lockfile that
@@ -38,15 +38,15 @@ class RellLspLockfileTest {
     fun everyOlderSupportedVersionHasACompleteLockfileResource() {
         for (version in RellVersionRegistry.supported.filter { it < RellVersionRegistry.max }) {
             val artifacts = RellLspLockfile.load(version)
-            assertTrue("Lockfile for $version is empty", artifacts.isNotEmpty())
+            assertTrue(artifacts.isNotEmpty(), "Lockfile for $version is empty")
             assertTrue(
-                "Lockfile for $version does not pin rell-toolbox-language-server:$version",
                 artifacts.any { it.module == "rell-toolbox-language-server" && it.version == version.toString() },
+                "Lockfile for $version does not pin rell-toolbox-language-server:$version",
             )
             for (artifact in artifacts) {
                 assertTrue(
-                    "Artifact ${artifact.gav} has a malformed SHA-256: ${artifact.sha256}",
                     artifact.sha256.matches(Regex("[0-9a-f]{64}")),
+                    "Artifact ${artifact.gav} has a malformed SHA-256: ${artifact.sha256}",
                 )
             }
         }

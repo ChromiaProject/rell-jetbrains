@@ -264,7 +264,302 @@ class RellVersionResolverTest : BasePlatformTestCase() {
         assertEquals("chromia.yml under the renamed directory", "proj", resolution.configFile!!.parent.name)
     }
 
+    // ---- Alternate settings files (chr -s/--settings) ----
+
+    fun testAlternateSettingsFileQualifiesByBlockchainsSection() {
+        val config = file("alt/atbash.yml", settingsYml("0.16.1"))
+        val source = file("alt/src/main.rell")
+        assertEquals(
+            RellVersionResolution.Supported(RellVersion(0, 16, 1), Origin.DECLARED, config),
+            resolver.resolve(source),
+        )
+    }
+
+    fun testYmlWithoutBlockchainsSectionIsNotASettingsFile() {
+        file("not-settings/qodana.yml", yml("0.16.1"))
+        val source = file("not-settings/src/main.rell")
+        assertEquals(
+            "A yml declaring compile.rellVersion but no blockchains section must not govern files",
+            RellVersionResolution.Supported(RellVersionRegistry.max, Origin.NO_CONFIG, null),
+            resolver.resolve(source),
+        )
+    }
+
+    fun testAgreeingSettingsFilesPreferChromiaYml() {
+        val default = file("agree/chromia.yml", yml("0.16.1"))
+        file("agree/alt.yml", settingsYml("0.16.1"))
+        val source = file("agree/src/main.rell")
+        assertEquals(
+            RellVersionResolution.Supported(RellVersion(0, 16, 1), Origin.DECLARED, default),
+            resolver.resolve(source),
+        )
+    }
+
+    fun testConflictingSettingsFilesDefaultToNewestVersion() {
+        val older = file("conflict/a.yml", settingsYml("0.16.1"))
+        val newer = file("conflict/b.yml", settingsYml("0.16.2"))
+        val source = file("conflict/src/main.rell")
+
+        val resolution = resolver.resolve(source)
+        assertTrue("Expected Conflicting, got $resolution", resolution is RellVersionResolution.Conflicting)
+        resolution as RellVersionResolution.Conflicting
+        assertEquals(RellVersion(0, 16, 2), resolution.version)
+        assertEquals(newer, resolution.configFile)
+        assertEquals(
+            listOf(older to RellVersion(0, 16, 1), newer to RellVersion(0, 16, 2)),
+            resolution.claimants.map { it.configFile to it.effectiveVersion },
+        )
+    }
+
+    fun testActiveSelectionOverridesDefaultAndRevertsWithNull() {
+        val older = file("selected/a.yml", settingsYml("0.16.1"))
+        file("selected/b.yml", settingsYml("0.16.2"))
+        val source = file("selected/src/main.rell")
+        val directory = older.parent.path
+
+        ChromiaActiveSettings.getInstance(project).setActive(directory, "a.yml")
+        val overridden = resolver.resolve(source)
+        assertTrue(overridden is RellVersionResolution.Conflicting)
+        assertEquals(RellVersion(0, 16, 1), overridden.effectiveVersion)
+        assertEquals(older, overridden.configFile)
+
+        ChromiaActiveSettings.getInstance(project).setActive(directory, null)
+        assertEquals(RellVersion(0, 16, 2), resolver.resolve(source).effectiveVersion)
+    }
+
+    fun testBelowFloorClaimantIsOutscoredByInScopeAlternate() {
+        file("mixed-floor/legacy.yml", settingsYml("0.14.15"))
+        val inScope = file("mixed-floor/current.yml", settingsYml("0.16.1"))
+        val source = file("mixed-floor/src/main.rell")
+
+        assertEquals(
+            "A below-floor claimant must not cease or conflict when an in-scope sibling exists",
+            RellVersionResolution.Supported(RellVersion(0, 16, 1), Origin.DECLARED, inScope),
+            resolver.resolve(source),
+        )
+        assertEquals(
+            listOf("current.yml" to false, "legacy.yml" to true),
+            resolver.claimants(source).map { it.configFile.name to it.belowFloor }.sortedBy { it.first },
+        )
+    }
+
+    fun testAllBelowFloorSettingsFilesCease() {
+        file("all-legacy/a.yml", settingsYml("0.14.15"))
+        val newerLegacy = file("all-legacy/b.yml", settingsYml("0.15.0"))
+        val source = file("all-legacy/src/main.rell")
+        assertEquals(
+            RellVersionResolution.Unsupported(RellVersion(0, 15, 0), newerLegacy),
+            resolver.resolve(source),
+        )
+    }
+
+    fun testActivelySelectedBelowFloorSettingsFileCeases() {
+        val legacy = file("explicit-legacy/a.yml", settingsYml("0.14.15"))
+        file("explicit-legacy/b.yml", settingsYml("0.16.2"))
+        val source = file("explicit-legacy/src/main.rell")
+
+        ChromiaActiveSettings.getInstance(project).setActive(legacy.parent.path, "a.yml")
+        assertEquals(
+            "An explicit below-floor choice is authoritative, like chr -s with that file",
+            RellVersionResolution.Unsupported(RellVersion(0, 14, 15), legacy),
+            resolver.resolve(source),
+        )
+    }
+
+    // chromia.yml is what `chr` runs without flags, so the default rule prefers it even below the
+    // floor — the cease banner then offers switching to in-scope alternates.
+    fun testBelowFloorChromiaYmlCeasesDespiteInScopeAlternate() {
+        val default = file("legacy-default/chromia.yml", yml("0.14.15"))
+        file("legacy-default/current.yml", settingsYml("0.16.2"))
+        val source = file("legacy-default/src/main.rell")
+        assertEquals(
+            RellVersionResolution.Unsupported(RellVersion(0, 14, 15), default),
+            resolver.resolve(source),
+        )
+    }
+
+    fun testSourceRootOwnershipBeatsProximity() {
+        // outer has no source layout dirs, so its settings file claims everything under outer/.
+        val outer = file("owner/chromia.yml", "compile:\n  rellVersion: \"0.16.2\"\n")
+        val contracts = file("owner/contracts/x.yml", settingsYml("0.16.1"))
+        val insideContractsSource = file("owner/contracts/src/y.rell")
+        val outsideContractsSource = file("owner/contracts/tools/t.rell")
+
+        assertEquals(
+            "Files under the inner settings file's source root belong to it",
+            RellVersionResolution.Supported(RellVersion(0, 16, 1), Origin.DECLARED, contracts),
+            resolver.resolve(insideContractsSource),
+        )
+        assertEquals(
+            "Files outside the inner source root belong to the outer claiming settings file",
+            RellVersionResolution.Supported(RellVersion(0, 16, 2), Origin.DECLARED, outer),
+            resolver.resolve(outsideContractsSource),
+        )
+    }
+
+    fun testFileOutsideEverySourceRootFallsBackToNearestSettingsDirectory() {
+        val config = file("weak/chromia.yml", yml("0.16.1"))
+        file("weak/src/main.rell")
+        val stray = file("weak/tools/helper.rell")
+        assertEquals(
+            "No source root claims the file: the nearest directory with settings files governs it",
+            RellVersionResolution.Supported(RellVersion(0, 16, 1), Origin.DECLARED, config),
+            resolver.resolve(stray),
+        )
+    }
+
+    fun testAlternateConfigEditInvalidatesCacheViaVfsListener() {
+        val config = file("alt-edited/settings.yml", settingsYml("0.16.1"))
+        val source = file("alt-edited/src/main.rell")
+        assertEquals(RellVersion(0, 16, 1), resolver.resolve(source).effectiveVersion)
+
+        runWriteAction { VfsUtil.saveText(config, settingsYml("0.16.2")) }
+
+        assertEquals(RellVersion(0, 16, 2), resolver.resolve(source).effectiveVersion)
+    }
+
+    fun testYmlGainingBlockchainsSectionBecomesSettingsFile() {
+        val config = file("gains/deploy.yml", yml("0.16.1"))
+        val source = file("gains/src/main.rell")
+        assertEquals(
+            "Without a blockchains section the yml must not govern",
+            RellVersionRegistry.max,
+            resolver.resolve(source).effectiveVersion,
+        )
+
+        runWriteAction { VfsUtil.saveText(config, settingsYml("0.16.1")) }
+
+        assertEquals(
+            "Gaining a blockchains section must re-qualify the file and re-resolve",
+            RellVersion(0, 16, 1),
+            resolver.resolve(source).effectiveVersion,
+        )
+    }
+
+    fun testMultiSegmentDeclaredSourceIsClaimed() {
+        val config = file(
+            "multiseg/chromia.yml",
+            "compile:\n  rellVersion: \"0.16.1\"\n  source: app/src\n",
+        )
+        val claimed = file("multiseg/app/src/main.rell")
+        // A `src` sibling exists so a failed declared-source lookup would silently pick it up
+        // instead — the layouts chain must not be what answers here.
+        file("multiseg/src/other.rell")
+
+        assertEquals(
+            RellVersionResolution.Supported(RellVersion(0, 16, 1), Origin.DECLARED, config),
+            resolver.resolve(claimed),
+        )
+        assertTrue(
+            "The declared multi-segment source root must be recognised for source-dir events",
+            resolver.affectsCachedSourceRoot("${config.parent.path}/app/src"),
+        )
+    }
+
+    // Directory events on the way to a source root change which files a settings file claims;
+    // unrelated directories next to it must not trigger a re-route.
+    fun testSourceRootEventScoping() {
+        val config = file("scoping/chromia.yml", yml("0.16.1"))
+        val source = file("scoping/src/main.rell")
+        resolver.resolve(source)
+        val dir = config.parent.path
+
+        assertTrue("The source root itself counts", resolver.affectsCachedSourceRoot("$dir/src"))
+        assertTrue("A prefix of the rell/src layout counts", resolver.affectsCachedSourceRoot("$dir/rell"))
+        assertFalse(
+            "A src nested under an unrelated subdirectory must not",
+            resolver.affectsCachedSourceRoot("$dir/sub/src")
+        )
+        assertFalse("An unrelated sibling directory must not", resolver.affectsCachedSourceRoot("$dir/docs"))
+    }
+
+    // The listener consults the resolver while the cache is still warm, and drops the cache when
+    // the answer is yes — so the contract is tested against that pre-event state.
+    fun testDeclaredSourceRootIsRecognisedBeforeItExists() {
+        val config = file("late-src/chromia.yml", "compile:\n  rellVersion: \"0.16.1\"\n  source: app/src\n")
+        val outer = file("late-src/other/main.rell")
+        // No app/src yet: the chain falls back to the config's own directory, which claims everything.
+        assertEquals(RellVersion(0, 16, 1), resolver.resolve(outer).effectiveVersion)
+
+        assertTrue(
+            "Creating the not-yet-existing declared source root must count as a claim change",
+            resolver.affectsCachedSourceRoot("${config.parent.path}/app/src"),
+        )
+    }
+
+    fun testCopiedSettingsFileGovernsItsNewLocation() {
+        val config = file("copy-src/chromia.yml", yml("0.16.1"))
+        file("copy-src/src/main.rell")
+        val targetDir = file("copy-dst/keep.txt").parent
+        val copiedSource = file("copy-dst/src/main.rell")
+        assertEquals(RellVersionRegistry.max, resolver.resolve(copiedSource).effectiveVersion)
+
+        runWriteAction { config.copy(this, targetDir, "chromia.yml") }
+
+        assertEquals(
+            "A copied settings file must govern files at its new location",
+            RellVersion(0, 16, 1),
+            resolver.resolve(copiedSource).effectiveVersion,
+        )
+    }
+
+    // Real-filesystem twin of the Atbash-Dashboard/contracts layout, exercising the on-disk parse
+    // path (Files.readString qualification + toNioPath) that the in-memory fixture bypasses. Uses
+    // the real files' shape: unquoted versions, a libs section, deployments, no compile.source.
+    fun testAtbashContractsLayoutOnRealFilesystem() {
+        val versions = mapOf(
+            "atbash.yml" to "\"0.16.2\"",
+            "atbash_dev.yml" to "0.16.2",
+            "atbash_dev_private.yml" to "0.16.2",
+            "atbash_private.yml" to "0.14.15",
+        )
+        for ((name, version) in versions) {
+            file(
+                "contracts/$name",
+                """
+                blockchains:
+                  atbash:
+                    module: main
+                compile:
+                  rellVersion: $version
+                database:
+                  schema: schema_atbash_v0
+                libs:
+                  com.chromia.ft4:
+                    version: 1.1.0
+                deployments:
+                  testnet:
+                    brid: ABCD
+                """.trimIndent() + "\n",
+            )
+        }
+        val source = file("contracts/src/main/main.rell")
+
+        val resolution = resolver.resolve(source)
+        assertEquals("atbash.yml", resolution.configFile?.name)
+        assertEquals(RellVersion(0, 16, 2), resolution.effectiveVersion)
+
+        val claimants = resolver.claimants(source).associate { it.configFile.name to it.declared }
+        assertEquals(
+            "All four settings files must be recognised and their declared versions read",
+            mapOf(
+                "atbash.yml" to RellVersion(0, 16, 2),
+                "atbash_dev.yml" to RellVersion(0, 16, 2),
+                "atbash_dev_private.yml" to RellVersion(0, 16, 2),
+                "atbash_private.yml" to RellVersion(0, 14, 15),
+            ),
+            claimants,
+        )
+        assertEquals(
+            listOf("atbash_private.yml"),
+            resolver.claimants(source).filter { it.belowFloor }.map { it.configFile.name },
+        )
+    }
+
     private fun yml(version: String) = "compile:\n  rellVersion: \"$version\"\n  source: src\n"
+
+    private fun settingsYml(version: String) =
+        "blockchains:\n  my_chain:\n    module: main\n" + yml(version)
 
     private fun file(relPath: String, content: String = ""): VirtualFile =
         createFile(File(contentRoot, relPath), content)

@@ -31,7 +31,20 @@ class ChromiaTreeCellRenderer : ColoredTreeCellRenderer() {
                 ChromiaNodeType.PROJECT -> {
                     append(value.displayName, SimpleTextAttributes.REGULAR_BOLD_ATTRIBUTES)
 
+                    // Show the active settings file when it is not the default chromia.yml
+                    value.settingsFile?.let {
+                        append(" [$it]", SimpleTextAttributes.GRAYED_ATTRIBUTES)
+                    }
+
                     // Show project path on tooltip
+                    toolTipText = value.description
+                }
+
+                ChromiaNodeType.SETTINGS_FILE -> {
+                    append(value.displayName, SimpleTextAttributes.REGULAR_ATTRIBUTES)
+                    if (value.isActiveSettingsFile) {
+                        append(" (active)", SimpleTextAttributes.GRAYED_BOLD_ATTRIBUTES)
+                    }
                     toolTipText = value.description
                 }
 

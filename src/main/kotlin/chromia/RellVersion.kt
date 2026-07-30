@@ -8,7 +8,6 @@ package net.postchain.rellide.jetbrains.chromia
  * rejected so the plugin never acts on a version the toolchain itself would not accept.
  */
 data class RellVersion(val major: Int, val minor: Int, val patch: Int) : Comparable<RellVersion> {
-
     override fun compareTo(other: RellVersion): Int =
         compareValuesBy(this, other, RellVersion::major, RellVersion::minor, RellVersion::patch)
 

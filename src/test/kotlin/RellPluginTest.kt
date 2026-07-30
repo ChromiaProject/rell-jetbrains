@@ -5,7 +5,7 @@ import com.intellij.psi.xml.XmlFile
 import com.intellij.testFramework.TestDataPath
 import com.intellij.testFramework.fixtures.BasePlatformTestCase
 import com.intellij.util.PsiErrorElementUtil
-import org.junit.Ignore
+import kotlin.test.Ignore
 
 @Ignore
 @TestDataPath($$"$CONTENT_ROOT/src/test/testData")

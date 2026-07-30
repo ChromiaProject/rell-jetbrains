@@ -1,5 +1,21 @@
 # rell-jetbrains
 
+## Adding support for a new Rell version
+
+1. Bump `rell` in `gradle/libs.versions.toml`.
+2. Append the new version to `supportedRellVersions` in `build.gradle.kts` (the build fails if the
+   two drift).
+3. Add the previous newest version to `VersionedRellParsers` (its grammar now generates
+   automatically; `VersionedRellParsersTest` fails until the entry exists).
+4. Add a `<server>` + `<languageMapping>` + `<semanticTokensColorsProvider>` triple for the
+   previous newest version in `plugin.xml`, with `Rell<v>DocumentMatcher` /
+   `Rell<v>LanguageServerFactory` subclasses (`RellLspRoutingTest` fails until they exist).
+5. Extend the version matrix in `docs/COMPATIBILITY.md` and CHANGELOG.md.
+
+Older language servers are downloaded on first use into `<IDE system dir>/rell-lsp/<version>/`,
+pinned and SHA-256-verified by the build-generated lockfile `rell/lsp-lockfiles/<version>.lock`; a
+wrong-version server is never substituted.
+
 ## Releases and CHANGELOG.md
 
 Every published plugin version is tagged in git with the plain version number (e.g. `0.4.0`). Treat tagged versions as released and immutable:

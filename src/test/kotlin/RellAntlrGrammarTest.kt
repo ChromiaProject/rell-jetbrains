@@ -3,8 +3,9 @@ package net.postchain.rellide.jetbrains
 import net.postchain.rellide.jetbrains.language.parser.RellLexer
 import net.postchain.rellide.jetbrains.language.parser.RellParser
 import org.antlr.v4.runtime.*
-import org.junit.Assert.assertEquals
-import org.junit.Test
+import kotlin.test.Test
+import kotlin.test.assertEquals
+import kotlin.test.assertTrue
 
 /**
  * Sanity-checks that the ANTLR-generated lexer/parser instantiate (ATN deserialization succeeds with
@@ -16,7 +17,7 @@ class RellAntlrGrammarTest {
 
         override fun syntaxError(
             recognizer: Recognizer<*, *>?, offendingSymbol: Any?, line: Int,
-            charPositionInLine: Int, msg: String?, e: RecognitionException?
+            charPositionInLine: Int, msg: String?, e: RecognitionException?,
         ) {
             errors += "$line:$charPositionInLine $msg"
         }
@@ -59,11 +60,12 @@ class RellAntlrGrammarTest {
 
             query all_users() = user @* {};
         """.trimIndent()
-        assertEquals(emptyList<String>(), parseErrors(source))
+        assertEquals(expected = emptyList(), actual = parseErrors(source))
     }
 
     @Test
     fun reportsSyntaxErrorOnGarbage() {
-        assert(parseErrors("function (").isNotEmpty())
+        // assertTrue, not Kotlin's `assert`, which is a no-op unless assertions are enabled.
+        assertTrue(parseErrors("function (").isNotEmpty())
     }
 }

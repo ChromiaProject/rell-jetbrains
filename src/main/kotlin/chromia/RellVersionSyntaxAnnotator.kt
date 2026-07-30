@@ -18,21 +18,26 @@ import com.intellij.psi.PsiFile
 class RellVersionSyntaxAnnotator :
     ExternalAnnotator<RellVersionSyntaxAnnotator.FileContent, RellVersionSyntaxAnnotator.VersionErrors>() {
 
-    data class FileContent(val text: String, val version: RellVersion)
+    data class FileContent(val text: String, val version: RellVersion, val configName: String)
 
-    data class VersionErrors(val version: RellVersion, val errors: List<VersionedRellParsers.SyntaxError>)
+    data class VersionErrors(
+        val version: RellVersion,
+        val configName: String,
+        val errors: List<VersionedRellParsers.SyntaxError>,
+    )
 
     override fun collectInformation(file: PsiFile): FileContent? {
         val virtualFile = file.virtualFile ?: return null
         val resolution = RellVersionResolver.getInstance(file.project).resolve(virtualFile)
-        val version = (resolution as? RellVersionResolution.Supported)?.version ?: return null
+        // Covers Conflicting too: the chosen settings file's version governs highlighting.
+        val version = resolution.effectiveVersion ?: return null
         if (version >= RellVersionRegistry.max || !VersionedRellParsers.supports(version)) return null
-        return FileContent(file.text, version)
+        return FileContent(file.text, version, resolution.configFile?.name ?: RellVersionResolver.CHROMIA_YML)
     }
 
     override fun doAnnotate(collectedInfo: FileContent?): VersionErrors? {
         val info = collectedInfo ?: return null
-        return VersionErrors(info.version, VersionedRellParsers.parse(info.version, info.text))
+        return VersionErrors(info.version, info.configName, VersionedRellParsers.parse(info.version, info.text))
     }
 
     override fun apply(file: PsiFile, annotationResult: VersionErrors?, holder: AnnotationHolder) {
@@ -42,7 +47,7 @@ class RellVersionSyntaxAnnotator :
             val range = rangeOf(document, error) ?: continue
             holder.newAnnotation(
                 HighlightSeverity.ERROR,
-                "Not valid in Rell ${result.version} (declared in chromia.yml): ${error.message}",
+                "Not valid in Rell ${result.version} (declared in ${result.configName}): ${error.message}",
             ).range(range).create()
         }
     }
