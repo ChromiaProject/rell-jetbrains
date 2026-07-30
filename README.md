@@ -83,11 +83,6 @@ rule_formatter=true
 rule_naming_convention=false
 ```
 
-On by default: `rule_naming_convention`, `rule_import_from_non_module`, `rule_constant_detection`,
-`rule_unused_variable`, `rule_outer_join_cartesian_product`, `rule_replace_if_with_when`,
-`rule_simplify_boolean_return`, `rule_redundant_boolean_comparison`, `rule_simplify_nullable_if`,
-`rule_prefer_empty`, `rule_at_cardinality_misuse`.
-
 ---
 
 ## 🖊 Code Formatter
