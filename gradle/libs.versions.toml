@@ -1,6 +1,6 @@
 [versions]
 kotlin = "2.4.0"
-rell = "0.16.2"
+rell = "0.16.3"
 antlr = "4.13.2"
 
 intellij-platform = "2.18.1"

@@ -94,7 +94,7 @@ class RellVersionEditorNotificationProviderTest : BasePlatformTestCase() {
     }
 
     fun testNoBannerForIgnoredBelowFloorSettingsFile() {
-        myFixture.addFileToProject("ignored/chromia.yml", yml("0.16.2"))
+        myFixture.addFileToProject("ignored/chromia.yml", yml("0.16.3"))
         val legacy = myFixture.addFileToProject("ignored/legacy.yml", settingsYml("0.14.15")).virtualFile
         val source = myFixture.addFileToProject("ignored/src/main.rell", "module;\n").virtualFile
 

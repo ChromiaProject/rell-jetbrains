@@ -2,6 +2,7 @@
 
 ## [0.4.3]
 ### Added
+- Add Rell version 0.16.3
 - Support for arbitrary Chromia settings files, mirroring `chr --settings`: any `*.yml` with a
   top-level `blockchains` section will be considered
 - Status-bar widget naming the settings file that governs the current file and switching it in one

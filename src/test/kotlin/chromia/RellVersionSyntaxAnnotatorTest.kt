@@ -17,7 +17,7 @@ class RellVersionSyntaxAnnotatorTest : BasePlatformTestCase() {
     }
 
     // The daemon only runs external annotators on files without PSI syntax errors, and with the
-    // 0.16.1 and 0.16.2 grammars identical no input can be version-broken yet PSI-clean — so the
+    // 0.16.1 and 0.16.3 grammars identical no input can be version-broken yet PSI-clean — so the
     // collect-and-parse pipeline is exercised directly instead of through doHighlighting.
     fun testAnnotatorParsesOlderSupportedVersionWithItsOwnGrammar() {
         myFixture.addFileToProject("chromia.yml", "compile:\n  rellVersion: \"0.16.1\"\n")
@@ -33,7 +33,7 @@ class RellVersionSyntaxAnnotatorTest : BasePlatformTestCase() {
     }
 
     fun testAnnotatorSkipsNewestVersionFiles() {
-        myFixture.addFileToProject("chromia.yml", "compile:\n  rellVersion: \"0.16.2\"\n")
+        myFixture.addFileToProject("chromia.yml", "compile:\n  rellVersion: \"0.16.3\"\n")
         val psi = myFixture.configureByText("main.rell", lambdaDapp)
         assertNull(
             "Newest-version files are covered by the editor PSI; the annotator must not collect them",
