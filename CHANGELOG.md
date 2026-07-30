@@ -2,16 +2,18 @@
 
 ## [0.4.3]
 ### Added
-- Support for alternate Chromia settings files, mirroring `chr -s/--settings`: any `*.yml` with a
-  top-level `blockchains` section counts alongside `chromia.yml`, and a file is governed by the
-  settings file whose `compile.source` tree contains it
+- Support for arbitrary Chromia settings files, mirroring `chr --settings`: any `*.yml` with a
+  top-level `blockchains` section will be considered
 - Status-bar widget naming the settings file that governs the current file and switching it in one
-  click. The choice is per directory, persisted, also selectable from the tool window, and passed
-  as `--settings` to Chromia commands that accept it
+  click &mdash; also selectable from the tool window, and passed as `--settings` to Chromia commands
 - Settings files declaring an unsupported Rell version are flagged on their own editor, with the
   one-click `rellVersion` fix
-- The active settings files are sent to the language server (`chromiaConfigFiles`), so servers
-  supporting the option index from the chosen file; released servers ignore it
+### Changed
+- A file is now governed by the settings file whose source tree contains it, rather than the
+  nearest enclosing `chromia.yml`
+- Version banners no longer appear just because several settings files disagree on the version
+  &mdash; the status-bar widget shows and changes which one governs. Banners remain for unsupported
+  versions and for versions newer than the plugin knows
 ### Fixed
 - Refresh in the Chromia tool window re-runs project discovery, so added or removed Chromia
   projects appear and disappear
