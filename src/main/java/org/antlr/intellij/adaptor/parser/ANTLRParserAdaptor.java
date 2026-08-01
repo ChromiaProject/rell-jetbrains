@@ -15,6 +15,10 @@ import org.antlr.v4.runtime.tree.ParseTree;
 import org.antlr.v4.runtime.tree.ParseTreeWalker;
 import org.jetbrains.annotations.NotNull;
 
+import java.util.Collections;
+import java.util.List;
+import java.util.function.Function;
+
 /** An adaptor that makes an ANTLR parser look like a PsiParser. */
 public abstract class ANTLRParserAdaptor implements PsiParser {
 	protected final Language language;
@@ -38,20 +42,40 @@ public abstract class ANTLRParserAdaptor implements PsiParser {
 	public ASTNode parse(IElementType root, PsiBuilder builder) {
 		ProgressIndicatorProvider.checkCanceled();
 
-		TokenSource source = new PSITokenSource(builder);
-		TokenStream tokens = new CommonTokenStream(source);
-		parser.setTokenStream(tokens);
-		parser.setErrorHandler(new ErrorStrategyAdaptor()); // tweaks missing tokens
-		parser.removeErrorListeners();
-		parser.addErrorListener(new SyntaxErrorListener()); // trap errors
 		ParseTree parseTree = null;
-		PsiBuilder.Marker rollbackMarker = builder.mark();
-		try {
-			parseTree = parse(parser, root);
+		SyntaxErrorListener winningErrors = null;
+		int fewestErrors = Integer.MAX_VALUE;
+
+		for (Function<Parser, ParseTree> candidate : parseCandidates(root, builder)) {
+			SyntaxErrorListener errors = new SyntaxErrorListener(); // trap errors
+			ParseTree tree = null;
+			PsiBuilder.Marker rollbackMarker = builder.mark();
+			try {
+				TokenSource source = new PSITokenSource(builder);
+				TokenStream tokens = new CommonTokenStream(source);
+				parser.setTokenStream(tokens);
+				parser.setErrorHandler(new ErrorStrategyAdaptor()); // tweaks missing tokens
+				parser.removeErrorListeners();
+				parser.addErrorListener(errors);
+				tree = candidate.apply(parser);
+			}
+			finally {
+				rollbackMarker.rollbackTo();
+			}
+
+			int errorCount = errors.getSyntaxErrors().size();
+			if (errorCount < fewestErrors) {
+				fewestErrors = errorCount;
+				parseTree = tree;
+				winningErrors = errors;
+			}
+			if (errorCount == 0) break;
 		}
-		finally {
-			rollbackMarker.rollbackTo();
-		}
+
+		// The converter picks the errors to highlight off the parser's listeners, so the winning
+		// attempt's listener has to be the one still attached.
+		parser.removeErrorListeners();
+		parser.addErrorListener(winningErrors);
 
 		// Now convert ANTLR parser tree to PSI tree by mimicking subtree
 		// enter/exit with mark/done calls. I *think* this creates their parse
@@ -83,6 +107,14 @@ public abstract class ANTLRParserAdaptor implements PsiParser {
 	}
 
 	protected abstract ParseTree parse(Parser parser, IElementType root);
+
+	/** Root rules to try, in order. The first attempt that parses without syntax errors wins; if
+	 *  none does, the attempt with the fewest errors is the one converted to PSI. Ties go to the
+	 *  earlier candidate. Subclasses override this when a single root rule cannot describe every
+	 *  text the language is asked to parse — an injected fragment, say, versus a whole file. */
+	protected List<Function<Parser, ParseTree>> parseCandidates(IElementType root, PsiBuilder builder) {
+		return Collections.singletonList(p -> parse(p, root));
+	}
 
 	protected ANTLRParseTreeToPSIConverter createListener(Parser parser, IElementType root, PsiBuilder builder) {
 		return new ANTLRParseTreeToPSIConverter(language, parser, builder);

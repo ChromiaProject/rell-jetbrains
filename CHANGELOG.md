@@ -1,5 +1,12 @@
 # Changelog
 
+## [0.4.4]
+### Fixed
+- Rell snippets injected into other files &mdash; a ```` ```rell ```` fence in Markdown, say &mdash;
+  are no longer flagged as broken modules. A fence holding statements or a trailing expression now
+  parses as such, while one holding a whole module still parses as a module and genuinely broken
+  snippets are still reported
+
 ## [0.4.3]
 ### Added
 - Add Rell version 0.16.3
