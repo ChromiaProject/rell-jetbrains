@@ -2,16 +2,10 @@ package net.postchain.rellide.jetbrains.chromia
 
 import com.intellij.openapi.fileEditor.FileDocumentManager
 import com.intellij.openapi.vfs.VirtualFile
-import com.intellij.testFramework.fixtures.BasePlatformTestCase
 
-class RellVersionEditorNotificationProviderTest : BasePlatformTestCase() {
+class RellVersionEditorNotificationProviderTest : RellVersionAwareTestCase() {
 
     private val provider = RellVersionEditorNotificationProvider()
-
-    override fun setUp() {
-        super.setUp()
-        RellVersionResolver.getInstance(project).dropCaches()
-    }
 
     fun testBannerShownForUnsupportedVersion() {
         val file = rellFile("ceased", "0.14.5")
@@ -28,7 +22,7 @@ class RellVersionEditorNotificationProviderTest : BasePlatformTestCase() {
     }
 
     fun testNoBannerForSupportedOrDefaultVersions() {
-        assertNull(collect(rellFile("newest", "0.16.2")))
+        assertNull(collect(rellFile("newest", "${RellVersionRegistry.max}")))
         assertNull(collect(rellFile("older", "0.16.1")))
         assertNull(collect(rellFile("no-config", null)))
     }
@@ -111,7 +105,7 @@ class RellVersionEditorNotificationProviderTest : BasePlatformTestCase() {
     }
 
     // The real Atbash-Dashboard/contracts layout: four settings files sharing one src/, three on
-    // the newest supported version and one legacy deployment variant below the floor.
+    // a supported version and one legacy deployment variant below the floor.
     fun testAtbashLayoutFlagsTheBelowFloorVariant() {
         for ((name, version) in mapOf(
             "atbash.yml" to "0.16.2",

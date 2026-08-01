@@ -4,16 +4,10 @@ import com.intellij.openapi.application.runWriteAction
 import com.intellij.openapi.command.WriteCommandAction
 import com.intellij.openapi.fileEditor.FileDocumentManager
 import com.intellij.openapi.vfs.VirtualFile
-import com.intellij.testFramework.fixtures.BasePlatformTestCase
 
-class ChromiaConfigReloadNotificationProviderTest : BasePlatformTestCase() {
+class ChromiaConfigReloadNotificationProviderTest : RellVersionAwareTestCase() {
 
     private val provider = ChromiaConfigReloadNotificationProvider()
-
-    override fun setUp() {
-        super.setUp()
-        RellVersionResolver.getInstance(project).dropCaches()
-    }
 
     fun testNoBarWhileDocumentMatchesDisk() {
         val config = configFile("clean", "0.16.1")

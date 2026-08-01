@@ -1,13 +1,8 @@
 package net.postchain.rellide.jetbrains.chromia
 
 import com.intellij.openapi.vfs.VirtualFile
-import com.intellij.testFramework.fixtures.BasePlatformTestCase
 
-class ChromiaSettingsChooserTest : BasePlatformTestCase() {
-    override fun setUp() {
-        super.setUp()
-        RellVersionResolver.getInstance(project).dropCaches()
-    }
+class ChromiaSettingsChooserTest : RellVersionAwareTestCase() {
 
     fun testChoiceListsEveryClaimantAndTheGoverningOne() {
         val source = atbashLayout("pick")

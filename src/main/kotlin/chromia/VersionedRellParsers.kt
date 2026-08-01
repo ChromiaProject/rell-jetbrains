@@ -1,5 +1,9 @@
 package net.postchain.rellide.jetbrains.chromia
 
+import net.postchain.rellide.jetbrains.language.parser.v0_16_1.RellLexer as RellLexer0161
+import net.postchain.rellide.jetbrains.language.parser.v0_16_1.RellParser as RellParser0161
+import net.postchain.rellide.jetbrains.language.parser.v0_16_2.RellLexer as RellLexer0162
+import net.postchain.rellide.jetbrains.language.parser.v0_16_2.RellParser as RellParser0162
 import org.antlr.v4.runtime.*
 
 /**
@@ -11,35 +15,35 @@ object VersionedRellParsers {
     data class SyntaxError(val line: Int, val column: Int, val length: Int, val message: String)
 
     private val parsers: Map<RellVersion, (String) -> List<SyntaxError>> = mapOf(
-        RellVersion(0, 16, 1) to { text ->
-            collectErrors(text) { lexer, listener ->
-                val antlrLexer = net.postchain.rellide.jetbrains.language.parser.v0_16_1.RellLexer(lexer)
-                antlrLexer.removeErrorListeners()
-                antlrLexer.addErrorListener(listener)
-                val parser =
-                    net.postchain.rellide.jetbrains.language.parser.v0_16_1.RellParser(CommonTokenStream(antlrLexer))
-                parser.removeErrorListeners()
-                parser.addErrorListener(listener)
-                parser.file()
-            }
-        },
-        RellVersion(0, 16, 2) to { text ->
-            collectErrors(text) { lexer, listener ->
-                val antlrLexer = net.postchain.rellide.jetbrains.language.parser.v0_16_2.RellLexer(lexer)
-                antlrLexer.removeErrorListeners()
-                antlrLexer.addErrorListener(listener)
-                val parser =
-                    net.postchain.rellide.jetbrains.language.parser.v0_16_2.RellParser(CommonTokenStream(antlrLexer))
-                parser.removeErrorListeners()
-                parser.addErrorListener(listener)
-                parser.file()
-            }
-        },
+        RellVersion(0, 16, 1) to entry(::RellLexer0161, ::RellParser0161, RellParser0161::file),
+        RellVersion(0, 16, 2) to entry(::RellLexer0162, ::RellParser0162, RellParser0162::file),
     )
 
     fun supports(version: RellVersion): Boolean = version in parsers
 
     fun parse(version: RellVersion, text: String): List<SyntaxError> = parsers.getValue(version)(text)
+
+    /**
+     * One version's parse function. Each generated grammar package declares its own unrelated
+     * `RellLexer`/`RellParser` types, so the version-exact classes come in as constructor and
+     * root-rule references.
+     */
+    private fun <L : Lexer, P : Parser> entry(
+        newLexer: (CharStream) -> L,
+        newParser: (TokenStream) -> P,
+        rootRule: (P) -> Any?,
+    ): (String) -> List<SyntaxError> = { text ->
+        collectErrors(text) { charStream, listener ->
+            val lexer = newLexer(charStream)
+            lexer.removeErrorListeners()
+            lexer.addErrorListener(listener)
+
+            val parser = newParser(CommonTokenStream(lexer))
+            parser.removeErrorListeners()
+            parser.addErrorListener(listener)
+            rootRule(parser)
+        }
+    }
 
     private inline fun collectErrors(
         text: String,

@@ -43,13 +43,13 @@ sealed interface RellVersionResolution {
 
     /**
      * Several settings files claim the file but disagree on the Rell version. The active (or
-     * default-chosen) file's version governs; the banner surfaces the disagreement and offers
-     * switching. [claimants] lists every claiming settings file with its evaluation.
+     * default-chosen) file's version governs; no banner is shown, because the file gets a working
+     * toolchain either way — the status-bar widget names the governing file, reports the
+     * disagreement, and offers switching.
      */
     data class Conflicting(
         val version: RellVersion,
         override val configFile: VirtualFile,
-        val claimants: List<RellSettingsClaimant>,
     ) : RellVersionResolution {
         override val effectiveVersion: RellVersion
             get() = version

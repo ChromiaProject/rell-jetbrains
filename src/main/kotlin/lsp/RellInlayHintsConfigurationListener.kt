@@ -2,6 +2,8 @@ package net.postchain.rellide.jetbrains.lsp
 
 import com.intellij.codeInsight.hints.InlayHintsSettings
 import com.intellij.codeInsight.hints.InlayHintsSettings.SettingsListener
+import com.intellij.codeInsight.hints.NoSettings
+import com.intellij.codeInsight.hints.SettingsKey
 import com.intellij.openapi.Disposable
 import com.intellij.openapi.application.ApplicationManager
 import com.intellij.openapi.components.Service
@@ -11,6 +13,7 @@ import com.intellij.openapi.project.Project
 import com.intellij.openapi.project.ProjectManager
 import com.intellij.openapi.startup.ProjectActivity
 import com.intellij.util.messages.MessageBusConnection
+import net.postchain.rellide.jetbrains.language.RellLanguage
 import org.eclipse.lsp4j.DidChangeConfigurationParams
 
 @Service(Service.Level.PROJECT)
@@ -33,7 +36,6 @@ class RellInlayHintsConfigurationListener : Disposable {
     }
 
     override fun dispose() {
-        connection?.dispose()
         connection?.disconnect()
     }
 
@@ -44,15 +46,7 @@ class RellInlayHintsConfigurationListener : Disposable {
     }
 
     private fun sendConfigurationToLsp(project: Project) {
-        val inlayHintsEnabled = isRellInlayHintsEnabled()
-
-        val configurationSettings = mapOf(
-            "inlayHints" to mapOf(
-                "parameterHints" to inlayHintsEnabled,
-                "variableTypeHints" to inlayHintsEnabled,
-                "returnTypeHints" to inlayHintsEnabled
-            )
-        )
+        val configurationSettings = mapOf("inlayHints" to getInlayHintsSettings())
 
         try {
             val params = DidChangeConfigurationParams(configurationSettings)
@@ -65,28 +59,34 @@ class RellInlayHintsConfigurationListener : Disposable {
         }
     }
 
-    fun getInlayHintsSettings(): Map<String, Boolean> = try {
+    fun getInlayHintsSettings(): Map<String, Boolean> {
         val isEnabled = isRellInlayHintsEnabled()
 
-        mapOf(
+        return mapOf(
             "parameterHints" to isEnabled,
             "variableTypeHints" to isEnabled,
             "returnTypeHints" to isEnabled
         )
-    } catch (e: Exception) {
-        logger.warn("Error getting inlay hints settings: ${e.message}")
-        mapOf()
     }
 
     private fun isRellInlayHintsEnabled() = runCatching {
-        val hintsSettings = InlayHintsSettings.instance()
-        hintsSettings.state.disabledHintProviderIds.none { it == "Rell.LSP.hints" }
+        InlayHintsSettings.instance().hintsShouldBeShown(LSP_INLAY_HINTS_KEY, RellLanguage.INSTANCE)
     }.onFailure {
         logger.warn("Error checking Rell->hints settings: ${it.message}")
     }.getOrDefault(false)
 
     companion object {
         val logger = Logger.getInstance(RellInlayHintsConfigurationListener::class.java)
+
+        /**
+         * The key the platform's own `LspInlayHintsProvider` registers under — the only provider
+         * that renders Rell inlay hints, since this plugin contributes none of its own. `SettingsKey`
+         * compares by id, so reconstructing it here is equivalent to the platform's instance.
+         *
+         * Asking [InlayHintsSettings.hintsShouldBeShown] with it covers all three levels the user
+         * can switch: the global toggle, "hints for Rell", and this provider's own checkbox.
+         */
+        private val LSP_INLAY_HINTS_KEY = SettingsKey<NoSettings>("lsp.inlay.hints")
     }
 }
 

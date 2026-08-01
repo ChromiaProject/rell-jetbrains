@@ -7,9 +7,11 @@
    two drift).
 3. Add the previous newest version to `VersionedRellParsers` (its grammar now generates
    automatically; `VersionedRellParsersTest` fails until the entry exists).
-4. Add a `<server>` + `<languageMapping>` + `<semanticTokensColorsProvider>` triple for the
-   previous newest version in `plugin.xml`, with `Rell<v>DocumentMatcher` /
-   `Rell<v>LanguageServerFactory` subclasses (`RellLspRoutingTest` fails until they exist).
+4. Bump the newest-version literals in the tests that assert against it by string:
+   `RellLspRoutingTest`, `RellVersionResolverTest`, `RellVersionSyntaxAnnotatorTest`,
+   `RellVersionEditorNotificationProviderTest`. `plugin.xml` needs nothing — the single
+   `platform.lsp.integrationProvider` (`RellLspIntegrationProvider`) routes each file to
+   `RellLspClientDescriptor.versioned`, built per version at runtime.
 5. Extend the version matrix in `docs/COMPATIBILITY.md` and CHANGELOG.md.
 
 Older language servers are downloaded on first use into `<IDE system dir>/rell-lsp/<version>/`,

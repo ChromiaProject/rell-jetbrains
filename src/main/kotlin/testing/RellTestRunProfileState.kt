@@ -1,5 +1,6 @@
 package net.postchain.rellide.jetbrains.testing
 
+import com.intellij.execution.DefaultExecutionResult
 import com.intellij.execution.ExecutionResult
 import com.intellij.execution.Executor
 import com.intellij.execution.configurations.CommandLineState
@@ -37,10 +38,10 @@ class RellTestRunProfileState(
         val consoleProperties = RellTestConsoleProperties(configuration, executor)
 
         // Order of attaching listeners matter!! First the test results listener, then the console
-        processHandler.addProcessListener(RellTestResultsListener(consoleProperties, processHandler))
+        processHandler.addProcessListener(RellTestResultsListener(consoleProperties))
         val console = SMTestRunnerConnectionUtil.createAndAttachConsole("Rell Test", processHandler, consoleProperties)
 
-        return RellTestExecutionResult(console, processHandler, createActions(console, processHandler, executor))
+        return DefaultExecutionResult(console, processHandler, *createActions(console, processHandler, executor))
     }
 
     private fun createCommandLine(): GeneralCommandLine {
@@ -105,7 +106,6 @@ private class RellTestConsoleProperties(
  */
 class RellTestResultsListener(
     private val consoleProperties: SMTRunnerConsoleProperties,
-    private val processHandler: ProcessHandler,
 ) : ProcessListener {
 
     override fun startNotified(event: ProcessEvent) {

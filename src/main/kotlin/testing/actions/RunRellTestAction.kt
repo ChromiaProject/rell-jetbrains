@@ -11,6 +11,7 @@ import com.intellij.openapi.actionSystem.CommonDataKeys
 import com.intellij.openapi.components.service
 import com.intellij.openapi.project.Project
 import com.intellij.openapi.vfs.VirtualFile
+import net.postchain.rellide.jetbrains.language.RellFileType.Companion.RELL_EXTENSION
 import net.postchain.rellide.jetbrains.lsp.RellTestFile
 import net.postchain.rellide.jetbrains.lsp.rellLanguageServerIsRunning
 import net.postchain.rellide.jetbrains.services.RellProjectService
@@ -29,10 +30,7 @@ class RunRellTestAction : AnAction("Run Rell Test", "Run the selected Rell test 
         val rellTestFile = getRellTestFile(project, virtualFile) ?: return
 
         val runManager = RunManager.getInstance(project)
-        val configurationSettings = createTestConfiguration(project, virtualFile, runManager, rellTestFile)
-        runManager.addConfiguration(configurationSettings)
-        runManager.selectedConfiguration = configurationSettings
-        ExecutionUtil.runConfiguration(configurationSettings, DefaultRunExecutor.getRunExecutorInstance())
+        runTestConfiguration(runManager, createTestConfiguration(project, virtualFile, runManager, rellTestFile))
     }
 
     override fun update(e: AnActionEvent) {
@@ -51,7 +49,7 @@ class RunRellTestAction : AnAction("Run Rell Test", "Run the selected Rell test 
     }
 
     private fun getRellTestFile(project: Project, virtualFile: VirtualFile): RellTestFile? {
-        return if (virtualFile.extension == "rell") {
+        return if (virtualFile.extension == RELL_EXTENSION) {
             project.service<RellProjectService>().getTestFile(virtualFile)
         } else {
             null
@@ -77,4 +75,11 @@ fun createTestConfiguration(
     options.setWorkingDirectory(project.basePath)
 
     return configurationSettings
+}
+
+/** Registers the configuration, makes it the selected one, and runs it. */
+fun runTestConfiguration(runManager: RunManager, settings: RunnerAndConfigurationSettings) {
+    runManager.addConfiguration(settings)
+    runManager.selectedConfiguration = settings
+    ExecutionUtil.runConfiguration(settings, DefaultRunExecutor.getRunExecutorInstance())
 }

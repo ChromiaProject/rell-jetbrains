@@ -15,7 +15,6 @@ import javax.swing.tree.DefaultTreeModel
 class ChromiaTreeModel(private val project: Project) : DefaultTreeModel(createRoot()) {
 
     private val settings = ChromiaToolWindowSettings.getInstance(project)
-    var hasProjects: Boolean = false
 
     companion object {
         private fun createRoot(): ChromiaTreeNode = ChromiaTreeNode(
@@ -44,7 +43,6 @@ class ChromiaTreeModel(private val project: Project) : DefaultTreeModel(createRo
         root.removeAllChildren()
 
         val discoveredProjects = ChromiaProjectDiscovery.discoverProjects(project)
-        hasProjects = discoveredProjects.isNotEmpty()
 
         if (discoveredProjects.isEmpty()) {
             val noProjectsNode = ChromiaTreeNode(
@@ -293,12 +291,9 @@ class ChromiaTreeModel(private val project: Project) : DefaultTreeModel(createRo
 
     /** Stamps the active non-default settings file on every command that accepts `--settings`. */
     private fun applySettingsFile(node: ChromiaTreeNode, settingsFileName: String) {
-        if (node.nodeType == ChromiaNodeType.COMMAND && node.command in SETTINGS_AWARE_COMMANDS) {
-            node.settingsFile = settingsFileName
-        }
-        for (i in 0 until node.childCount) {
-            applySettingsFile(node.getChildAt(i) as ChromiaTreeNode, settingsFileName)
-        }
+        node.selfAndDescendants()
+            .filter { it.nodeType == ChromiaNodeType.COMMAND && it.command in SETTINGS_AWARE_COMMANDS }
+            .forEach { it.settingsFile = settingsFileName }
     }
 
     private fun createCommandNode(
@@ -317,59 +312,8 @@ class ChromiaTreeModel(private val project: Project) : DefaultTreeModel(createRo
     )
 
     private fun loadParametersFromSettings() {
-        fun loadNodeParameters(node: ChromiaTreeNode) {
-            if (node.nodeType == ChromiaNodeType.COMMAND && node.command != null) {
-                node.parameters = settings.getParameters(node.command)
-            }
-
-            for (i in 0 until node.childCount) {
-                val child = node.getChildAt(i) as ChromiaTreeNode
-                loadNodeParameters(child)
-            }
-        }
-
-        loadNodeParameters(root as ChromiaTreeNode)
-    }
-
-    /**
-     * Save parameters for all command nodes to settings
-     */
-    fun saveParametersToSettings() {
-        val commandParameters = mutableMapOf<String, String>()
-
-        fun collectParameters(node: ChromiaTreeNode) {
-            if (node.nodeType == ChromiaNodeType.COMMAND && node.command != null) {
-                commandParameters[node.command] = node.parameters
-            }
-
-            for (i in 0 until node.childCount) {
-                val child = node.getChildAt(i) as ChromiaTreeNode
-                collectParameters(child)
-            }
-        }
-
-        collectParameters(root as ChromiaTreeNode)
-        settings.commandParameters = commandParameters
-    }
-
-    /**
-     * Find a command node by its command string
-     */
-    fun findCommandNode(command: String): ChromiaTreeNode? {
-        fun searchNode(node: ChromiaTreeNode): ChromiaTreeNode? {
-            if (node.nodeType == ChromiaNodeType.COMMAND && node.command == command) {
-                return node
-            }
-
-            for (i in 0 until node.childCount) {
-                val child = node.getChildAt(i) as ChromiaTreeNode
-                val found = searchNode(child)
-                if (found != null) return found
-            }
-
-            return null
-        }
-
-        return searchNode(root as ChromiaTreeNode)
+        (root as ChromiaTreeNode).selfAndDescendants()
+            .filter { it.nodeType == ChromiaNodeType.COMMAND }
+            .forEach { node -> node.command?.let { node.parameters = settings.getParameters(it) } }
     }
 }

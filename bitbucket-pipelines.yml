@@ -37,15 +37,13 @@ definitions:
         size: 2x
         caches: [ gradle-wrapper, gradle-home, gradle-project, gradle-build-output ]
         script:
-          - chmod +x ./gradlew ./get-lsp.sh
+          - chmod +x ./gradlew
           # 2x step = 8192 MB. Budget: Gradle build JVM 3 GB heap + 768 MB
           # metaspace, Kotlin compile daemon 2 GB heap; the remaining ~2 GB
           # covers the forked JVMs — test/headless IDE first, then the plugin
           # verifier, which runs after the test JVMs are gone.
           - export GRADLE_OPTS='-Xmx3g -XX:MaxMetaspaceSize=768m'
           - export SENTRY_AUTH_TOKEN="$RELL_JETBRAINS_SENTRY_AUTH_TOKEN"
-          - rm -rf language-server
-          - ./get-lsp.sh
           # verifyPlugin runs the JetBrains Plugin Verifier against every IDE in
           # the supported build range — the same check the Marketplace applies
           # after upload, and what sank 0.4.1. It gates the manual publish step
@@ -67,7 +65,7 @@ definitions:
         deployment: Production
         caches: [ gradle-wrapper, gradle-home, gradle-project, gradle-build-output ]
         script:
-          - chmod +x ./gradlew ./get-lsp.sh
+          - chmod +x ./gradlew
           # The temurin image has no git; the clone happens in the build setup
           # phase, so the tag guard and the tag push below need it installed.
           - apt-get update && apt-get install -y --no-install-recommends git curl
@@ -113,8 +111,6 @@ definitions:
           - echo "$RELL_JETBRAINS_CERTIFICATE_CHAIN" | base64 -d > /tmp/chain.crt
           - echo "$RELL_JETBRAINS_PRIVATE_KEY" | base64 -d > /tmp/private.pem
           - export CERTIFICATE_CHAIN=/tmp/chain.crt PRIVATE_KEY=/tmp/private.pem
-          - rm -rf language-server
-          - ./get-lsp.sh
           - ./gradlew --build-cache "-Pkotlin.daemon.jvmargs=-Xmx2g" publishPlugin
           - git tag "$VERSION" "$BITBUCKET_COMMIT"
           - git push origin "refs/tags/$VERSION"

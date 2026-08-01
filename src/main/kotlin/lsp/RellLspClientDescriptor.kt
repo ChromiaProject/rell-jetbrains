@@ -16,6 +16,7 @@ import net.postchain.rellide.jetbrains.chromia.ChromiaSettingsFiles
 import net.postchain.rellide.jetbrains.chromia.RellLspRuntimeManager
 import net.postchain.rellide.jetbrains.chromia.RellVersion
 import net.postchain.rellide.jetbrains.chromia.RellVersionRegistry
+import net.postchain.rellide.jetbrains.language.RellFileType.Companion.RELL_EXTENSION
 import net.postchain.rellide.jetbrains.sentry.SentryReportSubmitter
 import net.postchain.rellide.jetbrains.settings.RellPluginSettingsState
 import net.postchain.rellide.jetbrains.toolwindow.project.ChromiaProjectDiscovery
@@ -106,7 +107,6 @@ class RellLspClientDescriptor(
     ).absolutePathString()
 
     companion object {
-        const val RELL_EXTENSION = "rell"
         private const val USE_SOCKET_PROPERTY = "rell.lsp.useSocket"
         private const val SOCKET_PORT = 5008
         private const val DEFAULT_MAX_HEAP_SIZE_IN_MB = 2048

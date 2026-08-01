@@ -37,7 +37,7 @@ sentry {
     includeSourceContext = sentryAuthToken != null
     org = "chromaway-ab-za"
     projectName = "rell-jetbrains"
-    authToken = System.getenv("SENTRY_AUTH_TOKEN") ?: ""
+    authToken = sentryAuthToken ?: ""
 }
 
 // Rell's ANTLR grammar (Rell.g4) ships in the `frontend` sources jar; we extract it at build time so

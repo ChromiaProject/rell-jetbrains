@@ -46,7 +46,7 @@ class ChromiaToolWindow(private val project: Project) {
 
         tree.cellRenderer = ChromiaTreeCellRenderer()
 
-        tree.addMouseListener(ChromiaTreeMouseListener(project, treeModel))
+        tree.addMouseListener(ChromiaTreeMouseListener(project))
 
         tree.componentPopupMenu = ChromiaTreePopupMenu(project, treeModel, tree)
 

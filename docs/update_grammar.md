@@ -24,8 +24,8 @@ Maven by the build.
 ```
 
 A version bump is also a compatibility-mode change: the previous newest version stays supported and
-needs its own parser entry, `plugin.xml` server triple and matrix row. Follow the release checklist
-in [COMPATIBILITY.md](COMPATIBILITY.md).
+needs its own parser entry and matrix row. Follow the release checklist in
+[COMPATIBILITY.md](COMPATIBILITY.md).
 
 ## Step 2: Reconcile token/rule references (only if the grammar changed shape)
 
@@ -35,8 +35,8 @@ You only need to touch code if rule/token *names* were added, removed, or rename
 
 - `RellPsiElementTypes` — token sets (comments/whitespace/strings) and punctuation lookups by literal text.
 - `RellSyntaxHighlighter` — keyword/operator/bracket coloring (classifies literal tokens automatically).
-- `RellFoldingBuilder`, `RellAdvancedSyntaxHighlightingAnnotator`, `RellTestLineMarkerProvider` —
-  navigate by `RellParser.RULE_*` rule indices and `RellLexer.RULE_*` token types.
+- `RellFoldingBuilder`, `RellTestLineMarkerProvider` — navigate by `RellParser.RULE_*` rule indices
+  and `RellLexer.RULE_*` token types.
 
 Remember ANTLR **labeled alternatives** (e.g. `# nameTypeAttrHeader`) are *not* separate rule nodes —
 they are alternatives of their parent rule, so distinguish them by inspecting tokens, not rule index.

@@ -16,7 +16,6 @@ import com.intellij.psi.search.GlobalSearchScope
 class RellTestLocator : SMTestLocator {
 
     companion object {
-        val INSTANCE = RellTestLocator()
         const val PROTOCOL = "rell_test"
     }
 

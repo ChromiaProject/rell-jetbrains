@@ -12,6 +12,7 @@ import com.intellij.openapi.wm.ToolWindowFactory
 import com.intellij.openapi.wm.ex.ToolWindowEx
 import com.intellij.ui.content.ContentFactory
 import net.postchain.rellide.jetbrains.settings.openRellSettings
+import net.postchain.rellide.jetbrains.toolwindow.project.ChromiaProjectDiscovery
 
 /**
  * Factory for creating the Chromia tool window.
@@ -44,5 +45,6 @@ class ChromiaToolWindowFactory : ToolWindowFactory, DumbAware {
         }
     }
 
-    override suspend fun isApplicableAsync(project: Project): Boolean = ChromiaToolWindow(project).treeModel.hasProjects
+    override suspend fun isApplicableAsync(project: Project): Boolean =
+        ChromiaProjectDiscovery.discoverProjects(project).isNotEmpty()
 }

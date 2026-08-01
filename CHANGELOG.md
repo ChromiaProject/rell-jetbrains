@@ -15,9 +15,14 @@
 - Version banners no longer appear just because several settings files disagree on the version
   &mdash; the status-bar widget shows and changes which one governs. Banners remain for unsupported
   versions and for versions newer than the plugin knows
+- Semantic coloring now comes solely from the language server; the "Collection type" and "Global
+  function call" entries, which nothing could ever color, are gone from Settings | Editor |
+  Color Scheme | Rell
 ### Fixed
 - Refresh in the Chromia tool window re-runs project discovery, so added or removed Chromia
   projects appear and disappear
+- Opening a project no longer builds the whole Chromia tool window off-screen just to decide
+  whether to show it
 
 ## [0.4.2]
 ### Added

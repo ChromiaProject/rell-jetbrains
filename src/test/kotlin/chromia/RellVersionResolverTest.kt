@@ -307,7 +307,7 @@ class RellVersionResolverTest : BasePlatformTestCase() {
         assertEquals(newer, resolution.configFile)
         assertEquals(
             listOf(older to RellVersion(0, 16, 1), newer to RellVersion(0, 16, 2)),
-            resolution.claimants.map { it.configFile to it.effectiveVersion },
+            resolver.claimants(source).map { it.configFile to it.effectiveVersion },
         )
     }
 

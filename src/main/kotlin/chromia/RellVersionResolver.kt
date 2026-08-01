@@ -33,8 +33,8 @@ import kotlin.io.path.deleteIfExists
  * When the claiming files agree on a version (after dropping below-floor ones from the
  * comparison), resolution behaves as with a single `chromia.yml`. When they disagree, the active
  * settings file ([ChromiaActiveSettings], defaulting per [ChromiaSettingsFiles.defaultChoice])
- * decides, and the outcome is [RellVersionResolution.Conflicting] so the banner can surface the
- * disagreement.
+ * decides, and the outcome is [RellVersionResolution.Conflicting] so the status-bar widget can
+ * surface the disagreement.
  *
  * Parsing goes through the toolchain's own parser (`rell-toolbox-common`), so the semantics —
  * `.yml` only, blank values treated as absent, parse failures swallowed — are identical to
@@ -58,7 +58,6 @@ class RellVersionResolver(private val project: Project) {
             RellVersionResolution.Conflicting(
                 checkNotNull(chosen.effective) { "non-below-floor claimant has an effective version" },
                 chosen.configFile,
-                claimants.map { it.toClaimant() },
             )
         }
     }
@@ -275,7 +274,7 @@ class RellVersionResolver(private val project: Project) {
             } finally {
                 tempPath.deleteIfExists()
             }
-        } ?: unreadable(configFile, hasBlockchains)
+        } ?: unreadable(configFile)
     }
 
     private fun parseWithToolchain(path: Path, configFile: VirtualFile, hasBlockchains: Boolean): ParsedConfig {
@@ -283,7 +282,7 @@ class RellVersionResolver(private val project: Project) {
         // classpath (RellLibraryModel.rid: WrappedByteArray). Constructing them and reading fields
         // is safe, but toString/equals/hashCode on them throws NoClassDefFoundError — never retain,
         // compare, or log these objects.
-        val model = ChromiaModelProvider.loadChromiaModelFromFile(path) ?: return unreadable(configFile, hasBlockchains)
+        val model = ChromiaModelProvider.loadChromiaModelFromFile(path) ?: return unreadable(configFile)
         return ParsedConfig(
             declaredVersion = model.compile.rellVersion,
             readable = true,
@@ -328,7 +327,7 @@ class RellVersionResolver(private val project: Project) {
         null
     }
 
-    private fun unreadable(configFile: VirtualFile, hasBlockchains: Boolean): ParsedConfig {
+    private fun unreadable(configFile: VirtualFile): ParsedConfig {
         LOG.warn("Unreadable Chromia settings file at ${configFile.path}; using ${RellVersionRegistry.max}")
         return ParsedConfig(
             declaredVersion = null,

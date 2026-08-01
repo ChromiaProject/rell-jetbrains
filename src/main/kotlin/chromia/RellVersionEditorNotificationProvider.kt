@@ -11,6 +11,7 @@ import com.intellij.ui.EditorNotificationPanel
 import com.intellij.ui.EditorNotificationProvider
 import com.intellij.ui.EditorNotifications
 import com.intellij.ui.HyperlinkLabel
+import net.postchain.rellide.jetbrains.language.RellFileType.Companion.RELL_EXTENSION
 import java.util.function.Function
 import javax.swing.JComponent
 
@@ -39,7 +40,8 @@ class RellVersionEditorNotificationProvider : EditorNotificationProvider {
             is RellVersionResolution.Unsupported ->
                 Function { _ -> unsupportedPanel(project, resolution, resolver.claimants(file)) }
 
-            is RellVersionResolution.Clamped -> Function { _ -> clampedPanel(resolution) }
+            is RellVersionResolution.Clamped ->
+                Function { _ -> clampedPanel(resolution.configFile.name, resolution.declared, resolution.effective) }
 
             // No banner when the file still gets a working toolchain and the only news is which of
             // several settings files supplied it, or that a sibling is unusable. Every such
@@ -63,10 +65,12 @@ class RellVersionEditorNotificationProvider : EditorNotificationProvider {
         file: VirtualFile,
         resolver: RellVersionResolver,
     ): Function<in FileEditor, out JComponent?>? {
-        val declared = resolver.evaluateConfig(file)?.declared ?: return null
+        val claimant = resolver.evaluateConfig(file) ?: return null
+        val declared = claimant.declared ?: return null
+        val effective = claimant.effectiveVersion
         return when {
-            declared < RellVersionRegistry.floor -> Function { _ -> unsupportedConfigPanel(project, file, declared) }
-            !RellVersionRegistry.isSupported(declared) -> Function { _ -> clampedConfigPanel(file, declared) }
+            effective == null -> Function { _ -> unsupportedConfigPanel(project, file, declared) }
+            effective != declared -> Function { _ -> clampedPanel(file.name, declared, effective) }
             else -> null
         }
     }
@@ -79,15 +83,7 @@ class RellVersionEditorNotificationProvider : EditorNotificationProvider {
             ChromiaConfigQuickFix.setDeclaredRellVersion(project, configFile, RellVersionRegistry.max)
             EditorNotifications.getInstance(project).updateAllNotifications()
         }
-        panel.createActionLabel("About Rell compatibility") { BrowserUtil.browse(COMPATIBILITY_DOC_URL) }
-        return panel
-    }
-
-    private fun clampedConfigPanel(configFile: VirtualFile, declared: RellVersion): JComponent {
-        val panel = EditorNotificationPanel(EditorNotificationPanel.Status.Warning)
-        panel.text = "${configFile.name} declares Rell $declared, which this plugin version does not know: " +
-                "using ${RellVersionRegistry.max}. Update the plugin for exact support."
-        panel.createActionLabel("About Rell compatibility") { BrowserUtil.browse(COMPATIBILITY_DOC_URL) }
+        panel.addCompatibilityDocLink()
         return panel
     }
 
@@ -105,16 +101,21 @@ class RellVersionEditorNotificationProvider : EditorNotificationProvider {
             EditorNotifications.getInstance(project).updateAllNotifications()
         }
         addSwitchAction(panel, project, resolution.configFile, claimants)
-        panel.createActionLabel("About Rell compatibility") { BrowserUtil.browse(COMPATIBILITY_DOC_URL) }
+        panel.addCompatibilityDocLink()
         return panel
     }
 
-    private fun clampedPanel(resolution: RellVersionResolution.Clamped): JComponent {
+    /** The same warning whether it is shown on the `.rell` file or on the settings file declaring the version. */
+    private fun clampedPanel(configName: String, declared: RellVersion, effective: RellVersion): JComponent {
         val panel = EditorNotificationPanel(EditorNotificationPanel.Status.Warning)
-        panel.text = "${resolution.configFile.name} declares Rell ${resolution.declared}, which this plugin version " +
-                "does not know: using ${resolution.effective}. Update the plugin for exact support."
-        panel.createActionLabel("About Rell compatibility") { BrowserUtil.browse(COMPATIBILITY_DOC_URL) }
+        panel.text = "$configName declares Rell $declared, which this plugin version does not know: " +
+                "using $effective. Update the plugin for exact support."
+        panel.addCompatibilityDocLink()
         return panel
+    }
+
+    private fun EditorNotificationPanel.addCompatibilityDocLink() {
+        createActionLabel("About Rell compatibility") { BrowserUtil.browse(COMPATIBILITY_DOC_URL) }
     }
 
     /**
@@ -148,7 +149,6 @@ class RellVersionEditorNotificationProvider : EditorNotificationProvider {
     }
 
     companion object {
-        private const val RELL_EXTENSION = "rell"
         private const val COMPATIBILITY_DOC_URL =
             "https://bitbucket.org/chromawallet/rell-jetbrains/src/main/docs/COMPATIBILITY.md"
     }

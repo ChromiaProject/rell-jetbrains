@@ -3,7 +3,6 @@ package net.postchain.rellide.jetbrains.chromia
 import com.intellij.openapi.vfs.VirtualFile
 import com.intellij.platform.lsp.api.LspClientDescriptor
 import com.intellij.platform.lsp.api.LspIntegrationProvider
-import com.intellij.testFramework.fixtures.BasePlatformTestCase
 import com.intellij.util.io.createDirectories
 import net.postchain.rellide.jetbrains.lsp.RellLspClientDescriptor
 import net.postchain.rellide.jetbrains.lsp.RellLspIntegrationProvider
@@ -12,12 +11,7 @@ import javax.xml.parsers.DocumentBuilderFactory
 import kotlin.io.path.deleteIfExists
 import kotlin.io.path.writeText
 
-class RellLspRoutingTest : BasePlatformTestCase() {
-
-    override fun setUp() {
-        super.setUp()
-        RellVersionResolver.getInstance(project).dropCaches()
-    }
+class RellLspRoutingTest : RellVersionAwareTestCase() {
 
     // Guards plugin.xml against losing the LSP integration: the provider that routes every Rell
     // file to the server of its version must stay registered.

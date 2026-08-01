@@ -45,22 +45,15 @@ Most of the suite covers the compatibility machinery described in [COMPATIBILITY
 `RellVersionResolverTest` deliberately uses real filesystem temp directories rather than the
 in-memory fixture, because the toolbox parser reads `chromia.yml` from an on-disk path.
 
-Adding a Rell version to `supportedRellVersions` without the matching `VersionedRellParsers` entry or
-`plugin.xml` server triple fails `VersionedRellParsersTest` / `RellLspRoutingTest` — those failures
-are the release checklist enforcing itself.
+Adding a Rell version to `supportedRellVersions` without the matching `VersionedRellParsers` entry
+fails `VersionedRellParsersTest`, and the suites that assert against the newest version by string
+fail until their literals are bumped — those failures are the release checklist enforcing itself.
 
 ---
 
 ## Test runner
 
 `RellTestLocatorTest` covers mapping test names reported by the Chromia CLI back to source elements.
-
----
-
-## Not part of the suite
-
-`RellPluginTest` is `@Ignore`d leftover scaffolding from the IntelliJ plugin template (it exercises
-XML PSI and rename against `src/test/testData/rename/`), and does not test any Rell behavior.
 
 ---
 

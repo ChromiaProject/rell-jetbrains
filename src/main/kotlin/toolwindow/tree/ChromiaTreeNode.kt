@@ -57,3 +57,7 @@ enum class ChromiaNodeType {
     COMMAND,
     SETTINGS_FILE,
 }
+
+/** Pre-order walk over this node and all of its descendants. */
+fun ChromiaTreeNode.selfAndDescendants(): Sequence<ChromiaTreeNode> =
+    preorderEnumeration().asSequence().filterIsInstance<ChromiaTreeNode>()

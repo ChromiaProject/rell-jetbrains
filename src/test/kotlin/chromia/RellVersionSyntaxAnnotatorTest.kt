@@ -1,20 +1,14 @@
 package net.postchain.rellide.jetbrains.chromia
 
 import com.intellij.lang.annotation.HighlightSeverity
-import com.intellij.testFramework.fixtures.BasePlatformTestCase
 
-class RellVersionSyntaxAnnotatorTest : BasePlatformTestCase() {
+class RellVersionSyntaxAnnotatorTest : RellVersionAwareTestCase() {
 
     private val lambdaDapp = """
         module;
         function apply(f: (integer) -> integer, x: integer): integer = f(x);
         query test_it(): integer = apply(x -> x + 1, 7);
     """.trimIndent()
-
-    override fun setUp() {
-        super.setUp()
-        RellVersionResolver.getInstance(project).dropCaches()
-    }
 
     // The daemon only runs external annotators on files without PSI syntax errors, and with the
     // 0.16.1 and 0.16.3 grammars identical no input can be version-broken yet PSI-clean — so the

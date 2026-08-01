@@ -4,8 +4,6 @@ import com.intellij.codeInsight.daemon.LineMarkerInfo
 import com.intellij.codeInsight.daemon.LineMarkerProvider
 import com.intellij.execution.RunManager
 import com.intellij.execution.RunnerAndConfigurationSettings
-import com.intellij.execution.executors.DefaultRunExecutor
-import com.intellij.execution.runners.ExecutionUtil
 import com.intellij.icons.AllIcons
 import com.intellij.openapi.components.service
 import com.intellij.openapi.editor.markup.GutterIconRenderer
@@ -23,6 +21,7 @@ import net.postchain.rellide.jetbrains.lsp.RellTestFile
 import net.postchain.rellide.jetbrains.lsp.rellLanguageServerIsRunning
 import net.postchain.rellide.jetbrains.services.RellProjectService
 import net.postchain.rellide.jetbrains.testing.actions.createTestConfiguration
+import net.postchain.rellide.jetbrains.testing.actions.runTestConfiguration
 
 class RellTestLineMarkerProvider : LineMarkerProvider {
     override fun getLineMarkerInfo(element: PsiElement): LineMarkerInfo<*>? {
@@ -71,10 +70,7 @@ class RellTestLineMarkerProvider : LineMarkerProvider {
         { _, elt ->
             val project = elt.project
             val runManager = RunManager.getInstance(project)
-            val configurationSettings = createTestConfiguration(project, virtualFile, runManager, testFile)
-            runManager.addConfiguration(configurationSettings)
-            runManager.selectedConfiguration = configurationSettings
-            ExecutionUtil.runConfiguration(configurationSettings, DefaultRunExecutor.getRunExecutorInstance())
+            runTestConfiguration(runManager, createTestConfiguration(project, virtualFile, runManager, testFile))
         },
         GutterIconRenderer.Alignment.CENTER,
         { "Run tests in module" }
@@ -101,12 +97,8 @@ class RellTestLineMarkerProvider : LineMarkerProvider {
     }
 
     private fun runTest(element: PsiElement, testCase: RellTestCase) {
-        val project = element.project
-        val runManager = RunManager.getInstance(project)
-        val configuration = createOrFindRunConfiguration(element, runManager, testCase)
-        runManager.addConfiguration(configuration)
-        runManager.selectedConfiguration = configuration
-        ExecutionUtil.runConfiguration(configuration, DefaultRunExecutor.getRunExecutorInstance())
+        val runManager = RunManager.getInstance(element.project)
+        runTestConfiguration(runManager, createOrFindRunConfiguration(element, runManager, testCase))
     }
 
     private fun createOrFindRunConfiguration(

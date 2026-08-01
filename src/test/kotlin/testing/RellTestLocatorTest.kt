@@ -82,9 +82,4 @@ class RellTestLocatorTest : BasePlatformTestCase() {
     fun testProtocolConstant() {
         assertEquals("rell_test", RellTestLocator.PROTOCOL)
     }
-
-    fun testSingletonInstance() {
-        assertNotNull(RellTestLocator.INSTANCE)
-        assertInstanceOf(RellTestLocator.INSTANCE, RellTestLocator::class.java)
-    }
 }

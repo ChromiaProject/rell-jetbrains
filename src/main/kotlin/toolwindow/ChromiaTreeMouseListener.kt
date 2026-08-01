@@ -5,7 +5,6 @@ import com.intellij.openapi.project.Project
 import com.intellij.openapi.vfs.LocalFileSystem
 import net.postchain.rellide.jetbrains.toolwindow.execution.ChromiaCommandExecutor
 import net.postchain.rellide.jetbrains.toolwindow.tree.ChromiaNodeType
-import net.postchain.rellide.jetbrains.toolwindow.tree.ChromiaTreeModel
 import net.postchain.rellide.jetbrains.toolwindow.tree.ChromiaTreeNode
 import java.awt.event.MouseAdapter
 import java.awt.event.MouseEvent
@@ -17,10 +16,7 @@ import javax.swing.tree.TreePath
  * Handles mouse events for the Chromia tree.
  * Double-click on command nodes executes the corresponding CLI command.
  */
-class ChromiaTreeMouseListener(
-    private val project: Project,
-    private val treeModel: ChromiaTreeModel,
-) : MouseAdapter() {
+class ChromiaTreeMouseListener(private val project: Project) : MouseAdapter() {
     private val commandExecutor = ChromiaCommandExecutor(project)
 
     override fun mouseClicked(e: MouseEvent) {

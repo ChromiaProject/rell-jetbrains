@@ -22,7 +22,6 @@ object ChromiaProjectDiscovery {
         val path: String,
         /** Absolute path of the active settings file. */
         val configFile: String? = null,
-        val isMainProject: Boolean = false,
         /** All settings file names in the project directory, sorted. */
         val settingsFiles: List<String> = emptyList(),
         /** The active settings file name — chosen by the user or by the default rule. */
@@ -57,7 +56,6 @@ object ChromiaProjectDiscovery {
                     name = dir.name,
                     path = dir.absolutePath,
                     configFile = File(dir, active).absolutePath,
-                    isMainProject = false,
                     settingsFiles = settingsFiles,
                     activeSettingsFile = active,
                 )
