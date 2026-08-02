@@ -9,12 +9,14 @@ import com.intellij.openapi.fileChooser.FileChooserDescriptorFactory
 import com.intellij.openapi.progress.ProgressIndicator
 import com.intellij.openapi.progress.ProgressManager
 import com.intellij.openapi.progress.Task
+import com.intellij.openapi.project.ProjectManager
 import com.intellij.openapi.ui.ComponentWithBrowseButton
 import com.intellij.openapi.ui.Messages
 import com.intellij.ui.components.JBCheckBox
 import com.intellij.ui.components.fields.ExpandableTextField
 import com.intellij.ui.dsl.builder.AlignX
 import com.intellij.ui.dsl.builder.panel
+import net.postchain.rellide.jetbrains.chromia.RellVersionResolver
 import javax.swing.JComponent
 import javax.swing.JPanel
 
@@ -107,10 +109,18 @@ class RellPluginSettingsComponent {
                                 "Test Chromia CLI"
                             )
 
-                            output.exitCode == 0 -> Messages.showInfoMessage(
-                                output.stdout.trim().ifBlank { "Executable responded successfully." },
-                                "Test Chromia CLI"
-                            )
+                            output.exitCode == 0 -> {
+                                RellPluginSettingsState.instance.recordChrVersionOutput(userCmd, output.stdout)
+                                // The Chromia tool window compares the tested CLI's Rell version
+                                // against each project's settings file — let it recompute.
+                                ProjectManager.getInstance().openProjects.forEach { project ->
+                                    project.messageBus.syncPublisher(RellVersionResolver.TOPIC).chromiaConfigChanged()
+                                }
+                                Messages.showInfoMessage(
+                                    output.stdout.trim().ifBlank { "Executable responded successfully." },
+                                    "Test Chromia CLI"
+                                )
+                            }
 
                             else -> {
                                 val message = buildString {

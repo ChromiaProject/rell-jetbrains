@@ -4,6 +4,7 @@ import com.intellij.icons.AllIcons
 import com.intellij.openapi.project.Project
 import net.postchain.rellide.jetbrains.chromia.ChromiaSettingsFiles
 import net.postchain.rellide.jetbrains.language.RellIcons
+import net.postchain.rellide.jetbrains.settings.ChrVersionService
 import net.postchain.rellide.jetbrains.toolwindow.project.ChromiaProjectDiscovery
 import net.postchain.rellide.jetbrains.toolwindow.settings.ChromiaToolWindowSettings
 import javax.swing.tree.DefaultTreeModel
@@ -79,6 +80,8 @@ class ChromiaTreeModel(private val project: Project) : DefaultTreeModel(createRo
                     (chromiaProject.activeSettingsFile?.let { ", active settings file: $it" } ?: "")
         )
         projectNode.settingsFile = alternateSettings
+
+        chrVersionWarning(chromiaProject)?.let { projectNode.add(it) }
 
         if (chromiaProject.settingsFiles.size > 1) {
             val settingsCategory = ChromiaTreeNode(
@@ -287,6 +290,28 @@ class ChromiaTreeModel(private val project: Project) : DefaultTreeModel(createRo
         }
 
         return projectNode
+    }
+
+    /**
+     * A warning node when the Chromia CLI supports a lower Rell version than the active settings
+     * file declares. Null when either side is unknown — no parseable `compile.rellVersion`, or the
+     * CLI's version not probed yet (asking [ChrVersionService] starts a background probe that
+     * refreshes this tree once it delivers).
+     */
+    private fun chrVersionWarning(chromiaProject: ChromiaProjectDiscovery.ChromiaProject): ChromiaTreeNode? {
+        val declared = chromiaProject.activeDeclaredVersion ?: return null
+        val chrMax = ChrVersionService.getInstance().maxRellVersion() ?: return null
+        if (declared <= chrMax) return null
+        val settingsFileName = chromiaProject.activeSettingsFile ?: ChromiaSettingsFiles.CHROMIA_YML
+        return ChromiaTreeNode(
+            displayName = "chr supports Rell up to $chrMax, but $settingsFileName declares $declared",
+            nodeType = ChromiaNodeType.WARNING,
+            icon = AllIcons.General.Warning,
+            description = "The configured Chromia CLI reported Rell $chrMax as its maximal version, " +
+                    "so commands run against $settingsFileName (compile.rellVersion: $declared) may fail. " +
+                    "Update the Chromia CLI or lower compile.rellVersion.",
+            projectPath = chromiaProject.path,
+        )
     }
 
     /** Stamps the active non-default settings file on every command that accepts `--settings`. */

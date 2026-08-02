@@ -59,6 +59,10 @@ class ChromiaTreeMouseListener(private val project: Project) : MouseAdapter() {
             ChromiaNodeType.SETTINGS_FILE -> {
                 openSettingsFile(project, node)
             }
+
+            ChromiaNodeType.WARNING -> {
+                // Informational only
+            }
         }
     }
 

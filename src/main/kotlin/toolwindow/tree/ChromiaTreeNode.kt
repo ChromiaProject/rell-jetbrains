@@ -56,6 +56,7 @@ enum class ChromiaNodeType {
     CATEGORY,
     COMMAND,
     SETTINGS_FILE,
+    WARNING,
 }
 
 /** Pre-order walk over this node and all of its descendants. */

@@ -52,6 +52,11 @@ class ChromiaTreeCellRenderer : ColoredTreeCellRenderer() {
                     append(value.displayName, SimpleTextAttributes.REGULAR_ATTRIBUTES)
                 }
 
+                ChromiaNodeType.WARNING -> {
+                    append(value.displayName, SimpleTextAttributes.ERROR_ATTRIBUTES)
+                    toolTipText = value.description
+                }
+
                 ChromiaNodeType.COMMAND -> {
                     append(value.displayName, SimpleTextAttributes.REGULAR_ATTRIBUTES)
 

@@ -26,6 +26,8 @@ object ChromiaProjectDiscovery {
         val settingsFiles: List<String> = emptyList(),
         /** The active settings file name — chosen by the user or by the default rule. */
         val activeSettingsFile: String? = null,
+        /** `compile.rellVersion` declared in the active settings file, null when absent or malformed. */
+        val activeDeclaredVersion: RellVersion? = null,
     )
 
     fun discoverProjects(project: Project): List<ChromiaProject> {
@@ -58,6 +60,7 @@ object ChromiaProjectDiscovery {
                     configFile = File(dir, active).absolutePath,
                     settingsFiles = settingsFiles,
                     activeSettingsFile = active,
+                    activeDeclaredVersion = declaredVersionIn(File(dir, active)),
                 )
             )
         }

@@ -27,6 +27,11 @@
                 language="Rell"
                 implementationClass="net.postchain.rellide.jetbrains.language.RellParserDefinition"/>
 
+        <!-- The language server owns syntax diagnostics; PSI errors would duplicate them with raw
+             ANTLR messages. The filter keeps them only where no server runs. -->
+        <highlightErrorFilter
+                implementation="net.postchain.rellide.jetbrains.language.RellSyntaxErrorFilter"/>
+
         <lang.syntaxHighlighterFactory
                 language="Rell"
                 implementationClass="net.postchain.rellide.jetbrains.language.RellSyntaxHighlighterFactory"/>

@@ -7,6 +7,7 @@ import com.intellij.openapi.components.State
 import com.intellij.openapi.components.Storage
 import com.intellij.openapi.util.SystemInfo
 import com.intellij.util.xmlb.XmlSerializerUtil
+import net.postchain.rellide.jetbrains.chromia.RellVersion
 import java.io.File
 
 /**
@@ -31,6 +32,12 @@ class RellPluginSettingsState : PersistentStateComponent<RellPluginSettingsState
 
     /** Legacy field name; migrated to [chromiaCliCommand] on load. */
     var chromiaCliExecutable: String = ""
+
+    /** The CLI command whose `--version` output [chrVersionOutput] came from. */
+    var chrVersionCommand: String = ""
+
+    /** Raw output of the last successful `chr --version` run — a background probe or the settings Test button. */
+    var chrVersionOutput: String = ""
 
     override fun getState(): RellPluginSettingsState = this
 
@@ -82,12 +89,39 @@ class RellPluginSettingsState : PersistentStateComponent<RellPluginSettingsState
         return wrapInShell(fullCmd)
     }
 
-    private fun effectiveCommand(): String? =
+    /**
+     * Remembers the `--version` output of a successful run. [command] is the exact CLI command the
+     * run used, or null when it ran the effective command.
+     */
+    fun recordChrVersionOutput(command: String?, output: String) {
+        chrVersionCommand = command?.trim()?.takeIf { it.isNotBlank() } ?: effectiveCommand() ?: ""
+        chrVersionOutput = output.trim()
+    }
+
+    /** Whether [chrVersionOutput] exists and came from the command that would run now. */
+    fun chrVersionInfoIsCurrent(): Boolean =
+        chrVersionOutput.isNotBlank() && chrVersionCommand == (effectiveCommand() ?: "")
+
+    /**
+     * The maximal Rell version the Chromia CLI reported (its `rell version` line), or null when
+     * no output is recorded, it carried no parseable version, or it came from a command other
+     * than the one that would run now — stale info must not drive warnings.
+     */
+    fun reportedMaxRellVersion(): RellVersion? {
+        if (!chrVersionInfoIsCurrent()) return null
+        return RELL_VERSION_LINE.find(chrVersionOutput)?.groupValues?.get(1)?.let(RellVersion::parse)
+    }
+
+    internal fun effectiveCommand(): String? =
         chromiaCliCommand.trim().takeIf { it.isNotBlank() } ?: detectChromiaCliPath()
 
     companion object {
         val instance: RellPluginSettingsState
             get() = ApplicationManager.getApplication().getService(RellPluginSettingsState::class.java)
+
+        /** The `rell version x.y.z` line of `chr --version` output. */
+        private val RELL_VERSION_LINE =
+            Regex("""^rell version\s+(\S+)""", setOf(RegexOption.MULTILINE, RegexOption.IGNORE_CASE))
 
         /** Known default install locations of the Chromia CLI, in preference order. */
         fun autoDetectCandidates(): List<String> = when {

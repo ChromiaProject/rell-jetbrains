@@ -3,6 +3,8 @@ package net.postchain.rellide.jetbrains.settings
 import com.intellij.openapi.options.Configurable
 import com.intellij.openapi.options.ShowSettingsUtil
 import com.intellij.openapi.project.Project
+import com.intellij.openapi.project.ProjectManager
+import net.postchain.rellide.jetbrains.chromia.RellVersionResolver
 import org.jetbrains.annotations.Nls
 import javax.swing.JComponent
 
@@ -45,7 +47,15 @@ class RellPluginSettingsConfigurable : Configurable {
         val settings = RellPluginSettingsState.instance
         val component = settingsComponent ?: return
         settings.indexCaching = component.indexCachingState
+        val cliCommandChanged = settings.chromiaCliCommand != component.chromiaCliCommandState
         settings.chromiaCliCommand = component.chromiaCliCommandState
+        if (cliCommandChanged) {
+            // A different CLI may support a different Rell version; the Chromia tool window
+            // warning derives from the tested command matching the effective one.
+            ProjectManager.getInstance().openProjects.forEach { project ->
+                project.messageBus.syncPublisher(RellVersionResolver.TOPIC).chromiaConfigChanged()
+            }
+        }
     }
 
     override fun reset() {

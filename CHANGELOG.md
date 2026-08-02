@@ -1,11 +1,20 @@
 # Changelog
 
 ## [0.4.4]
+### Added
+- The Chromia tool window warns when the active settings file declares a Rell version newer than
+  the Chromia CLI supports. The CLI's `chr --version` output is probed in the background and
+  remembered; the Test button in Settings | Tools | Rell refreshes it too
 ### Fixed
 - Rell snippets injected into other files &mdash; a ```` ```rell ```` fence in Markdown, say &mdash;
   are no longer flagged as broken modules. A fence holding statements or a trailing expression now
   parses as such, while one holding a whole module still parses as a module and genuinely broken
   snippets are still reported
+- A malformed `compile.rellVersion` no longer surfaces an IDE error from the language server when
+  test run markers are computed &mdash; failed custom requests now degrade to no markers
+- A syntax error is reported once, with the language server's human-readable message. The editor
+  grammar's raw ANTLR messages (`missing RULE_ID at '{'`) no longer stack on top of it in the same
+  popup; they remain only where no language server runs, such as injected snippets
 
 ## [0.4.3]
 ### Added

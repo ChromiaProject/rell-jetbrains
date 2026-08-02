@@ -70,6 +70,10 @@ class ChromiaTreePopupMenu(
             ChromiaNodeType.SETTINGS_FILE -> {
                 buildSettingsFileMenu(node)
             }
+
+            ChromiaNodeType.WARNING -> {
+                // Informational only, no actions
+            }
         }
     }
 

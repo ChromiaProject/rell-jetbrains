@@ -3,6 +3,7 @@ package net.postchain.rellide.jetbrains.toolwindow
 import com.intellij.openapi.util.io.FileUtil
 import com.intellij.testFramework.fixtures.BasePlatformTestCase
 import net.postchain.rellide.jetbrains.chromia.ChromiaActiveSettings
+import net.postchain.rellide.jetbrains.chromia.RellVersion
 import net.postchain.rellide.jetbrains.toolwindow.project.ChromiaProjectDiscovery
 import java.io.File
 
@@ -37,10 +38,12 @@ class ChromiaProjectDiscoveryTest : BasePlatformTestCase() {
         assertEquals(listOf("atbash.yml", "atbash_dev.yml"), contracts.settingsFiles)
         assertEquals("Same version everywhere: first by name wins", "atbash.yml", contracts.activeSettingsFile)
         assertEquals(File(baseDir, "contracts/atbash.yml").absolutePath, contracts.configFile)
+        assertEquals(RellVersion(0, 14, 15), contracts.activeDeclaredVersion)
 
         val plain = projects.single { it.name == "plain" }
         assertEquals(listOf("chromia.yml"), plain.settingsFiles)
         assertEquals("chromia.yml", plain.activeSettingsFile)
+        assertEquals(RellVersion(0, 16, 2), plain.activeDeclaredVersion)
     }
 
     fun testActiveSelectionDrivesDiscovery() {
