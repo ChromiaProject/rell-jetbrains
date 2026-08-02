@@ -49,7 +49,7 @@ class RellLspRoutingTest : RellVersionAwareTestCase() {
     fun testNewestDescriptorServesDefaultsAndNewestButNotOldOrCeased() {
         val descriptor = RellLspClientDescriptor.newest(project)
         assertTrue(descriptor.isSupportedFile(rellFile("no-config", null)))
-        assertTrue(descriptor.isSupportedFile(rellFile("newest", "0.16.3")))
+        assertTrue(descriptor.isSupportedFile(rellFile("newest", "0.16.4")))
         assertTrue(
             "Clamped versions run the newest toolchain",
             descriptor.isSupportedFile(rellFile("clamped", "0.17.0"))
@@ -61,7 +61,7 @@ class RellLspRoutingTest : RellVersionAwareTestCase() {
     fun testVersionedDescriptorRequiresExactVersion() {
         val descriptor = RellLspClientDescriptor.versioned(project, RellVersion(0, 16, 1))
         assertTrue(descriptor.isSupportedFile(rellFile("versioned", "0.16.1")))
-        assertFalse("Wrong version must not match", descriptor.isSupportedFile(rellFile("newest2", "0.16.3")))
+        assertFalse("Wrong version must not match", descriptor.isSupportedFile(rellFile("newest2", "0.16.4")))
         assertFalse("Ceased versions must not match", descriptor.isSupportedFile(rellFile("ceased2", "0.14.5")))
     }
 
@@ -75,7 +75,7 @@ class RellLspRoutingTest : RellVersionAwareTestCase() {
     }
 
     fun testProviderStartsTheNewestServerForNewestAndDefaultFiles() {
-        assertEquals(RellVersionRegistry.max, startedVersionFor(rellFile("p-newest", "0.16.3")))
+        assertEquals(RellVersionRegistry.max, startedVersionFor(rellFile("p-newest", "0.16.4")))
         assertEquals(RellVersionRegistry.max, startedVersionFor(rellFile("p-no-config", null)))
         assertEquals(RellVersionRegistry.max, startedVersionFor(rellFile("p-clamped", "0.17.0")))
     }
@@ -115,7 +115,7 @@ class RellLspRoutingTest : RellVersionAwareTestCase() {
         )
         myFixture.addFileToProject(
             "p-conflict/b.yml",
-            "blockchains:\n  my_chain:\n    module: main\ncompile:\n  rellVersion: \"0.16.3\"\n",
+            "blockchains:\n  my_chain:\n    module: main\ncompile:\n  rellVersion: \"0.16.4\"\n",
         )
         val file = myFixture.addFileToProject("p-conflict/src/main.rell", "module;\n").virtualFile
 

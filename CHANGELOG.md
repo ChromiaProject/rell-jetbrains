@@ -2,6 +2,7 @@
 
 ## [0.4.4]
 ### Added
+- Add Rell version 0.16.4
 - The Chromia tool window warns when the active settings file declares a Rell version newer than
   the Chromia CLI supports. The CLI's `chr --version` output is probed in the background and
   remembered; the Test button in Settings | Tools | Rell refreshes it too
