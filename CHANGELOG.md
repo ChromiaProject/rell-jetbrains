@@ -1,5 +1,22 @@
 # Changelog
 
+## [0.4.5]
+### Added
+- The Project view draws Rell source trees the way it draws Java, Kotlin and Python ones: the
+  directory a settings file compiles from carries a source-root icon, every directory under it
+  carries a package icon and is labelled with the module namespace it stands for, so `src/main/core`
+  reads as `main.core`
+### Fixed
+- Rell code is semantically highlighted again, matching the Java and Kotlin conventions:
+  declaration names of functions, queries and operations share the Function declaration colour,
+  annotations use the Metadata colour, module-level constants use the Static field colour, and
+  local `val`s stay plain like other locals. The IDE had been asking the language server for
+  semantic tokens only in plain-text files, so none of the Rell colours in Settings | Editor |
+  Color Scheme | Rell were ever applied
+- Code | Reformat Code works on Rell files again. The action was disabled, and hidden in context
+  menus, because the IDE only routed formatting to the language server when the server registered
+  the capability dynamically
+
 ## [0.4.4]
 ### Added
 - Add Rell version 0.16.4

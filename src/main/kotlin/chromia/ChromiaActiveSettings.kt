@@ -1,6 +1,7 @@
 package net.postchain.rellide.jetbrains.chromia
 
 import com.intellij.codeInsight.daemon.DaemonCodeAnalyzer
+import com.intellij.ide.projectView.ProjectView
 import com.intellij.openapi.components.*
 import com.intellij.openapi.project.Project
 import com.intellij.platform.lsp.api.LspClientManager
@@ -65,9 +66,10 @@ class ChromiaActiveSettings(private val project: Project) : PersistentStateCompo
 
 /**
  * The re-resolution cascade after Chromia settings state changes, shared by the VFS listener and
- * [ChromiaActiveSettings]: version-dependent highlighting must re-run, banners must update, and —
- * when the governing version may have changed — resolver caches must drop and the Rell language
- * servers must restart so the platform re-routes files to the right toolchain.
+ * [ChromiaActiveSettings]: version-dependent highlighting must re-run, banners must update, the
+ * Project view must redraw because `compile.source` decides which directories are source roots and
+ * carry module names, and — when the governing version may have changed — resolver caches must drop
+ * and the Rell language servers must restart so the platform re-routes files to the right toolchain.
  */
 internal object ChromiaConfigRefresh {
 
@@ -76,6 +78,7 @@ internal object ChromiaConfigRefresh {
         project.messageBus.syncPublisher(RellVersionResolver.TOPIC).chromiaConfigChanged()
         DaemonCodeAnalyzer.getInstance(project).restart("Rell Chromia settings change")
         EditorNotifications.getInstance(project).updateAllNotifications()
+        project.serviceIfCreated<ProjectView>()?.refresh()
     }
 
     /** A change that may route files to a different toolchain. */

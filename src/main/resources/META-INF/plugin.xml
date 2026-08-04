@@ -109,6 +109,10 @@
 
         <!-- Custom icons -->
         <iconProvider implementation="net.postchain.rellide.jetbrains.icons.ChromiaYmlIconProvider"/>
+        <iconProvider implementation="net.postchain.rellide.jetbrains.projectview.RellDirectoryIconProvider"/>
+
+        <!-- Module namespace next to each directory in a Rell source tree -->
+        <projectViewNodeDecorator implementation="net.postchain.rellide.jetbrains.projectview.RellModulePathDecorator"/>
 
         <!-- File templates -->
         <internalFileTemplate name="Rell File"/>

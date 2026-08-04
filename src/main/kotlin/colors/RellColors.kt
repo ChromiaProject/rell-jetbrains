@@ -17,8 +17,8 @@ enum class RellColor(humanName: String, default: TextAttributesKey) {
     ENUM_NAME("Types//Enum name", Defaults.CLASS_NAME),
     TYPE_REFERENCE("Types//Type reference", Defaults.CLASS_REFERENCE),
 
-    GLOBAL("Identifiers//Global", Defaults.GLOBAL_VARIABLE),
-    CONSTANT("Identifiers//Constant", Defaults.STATIC_FIELD),
+    GLOBAL("Identifiers//Global", Defaults.STATIC_FIELD),
+    CONSTANT("Identifiers//Constant", Defaults.LOCAL_VARIABLE),
     STATE_VARIABLE("Identifiers//State variable", Defaults.INSTANCE_FIELD),
     LOCAL_VARIABLE("Identifiers//Local variable", Defaults.LOCAL_VARIABLE),
 
@@ -26,6 +26,7 @@ enum class RellColor(humanName: String, default: TextAttributesKey) {
     FUNCTION_CALL("Functions//Function call", Defaults.FUNCTION_CALL),
     PARAMETER("Functions//Parameter", Defaults.PARAMETER),
 
+    ANNOTATION("Other//Annotation", Defaults.METADATA),
     BRACES("Other//Braces", Defaults.BRACES),
     BRACKETS("Other//Brackets", Defaults.BRACKETS),
     PARENTHESES("Other//Parentheses", Defaults.PARENTHESES),

@@ -5,6 +5,7 @@ import com.intellij.openapi.vfs.LocalFileSystem
 import com.intellij.openapi.vfs.VirtualFile
 import com.intellij.platform.lsp.api.LspClient
 import com.intellij.platform.lsp.api.customization.*
+import com.intellij.psi.PsiFile
 import com.intellij.util.concurrency.AppExecutorUtil
 import net.postchain.rellide.jetbrains.colors.RellColor
 import org.eclipse.lsp4j.CodeAction
@@ -20,9 +21,27 @@ object RellLspCustomization : LspCustomization() {
 
     override val commandsCustomizer: LspCommandsCustomizer = RellCommandsSupport
 
+    override val formattingCustomizer: LspFormattingCustomizer = RellFormattingSupport
+
     // The Rell language server never provides document colors, so keep the feature permanently
     // disabled instead of asking on every highlighting pass.
     override val documentColorCustomizer: LspDocumentColorCustomizer = LspDocumentColorDisabled
+}
+
+
+/**
+ * The default support only lets the server format a file when it *dynamically* registered
+ * `textDocument/formatting` for it; the Rell server announces the capability statically in its
+ * `initialize` reply instead, so the platform would fall back to the core formatter — and with no
+ * `lang.formatter` for Rell, Reformat Code ends up disabled (hidden in context menus). The server
+ * is the only formatter Rell has, so let it format every file this client already claims.
+ */
+object RellFormattingSupport : LspFormattingSupport() {
+    override fun shouldFormatThisFileExclusivelyByServer(
+        file: VirtualFile,
+        ideCanFormatThisFileItself: Boolean,
+        serverExplicitlyWantsToFormatThisFile: Boolean,
+    ): Boolean = true
 }
 
 
@@ -92,12 +111,19 @@ object RellSemanticTokensSupport : LspSemanticTokensSupport() {
     override val tokenModifiers: List<String>
         get() = super.tokenModifiers + RellTokenModifier.entries.map { it.modifierStringId }
 
+    // The default implementation asks for semantic tokens only in plain-text and TextMate files,
+    // assuming any other language brings its own highlighting. Rell has a lexer-based highlighter
+    // for keywords, literals and comments only — everything identifier-shaped (declaration names,
+    // annotations, constants) is coloured from the server's tokens, so they must be requested.
+    override fun shouldAskServerForSemanticTokens(psiFile: PsiFile): Boolean = true
+
     override fun getTextAttributesKey(
         tokenType: String,
         modifiers: List<String>,
     ): TextAttributesKey? {
         val textAttributes = when (tokenType) {
             SemanticTokenTypes.Keyword -> RellColor.KEYWORD.textAttributesKey
+            SemanticTokenTypes.Decorator -> RellColor.ANNOTATION.textAttributesKey
             SemanticTokenTypes.Namespace -> RellColor.NAMESPACE_NAME.textAttributesKey
             SemanticTokenTypes.Type -> RellColor.TYPE_REFERENCE.textAttributesKey
             SemanticTokenTypes.Enum -> RellColor.ENUM_NAME.textAttributesKey

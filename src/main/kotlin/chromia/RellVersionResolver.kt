@@ -67,6 +67,18 @@ class RellVersionResolver(private val project: Project) {
         findClaimGroup(file)?.configs?.map { Evaluated(it, parsedFor(it)).toClaimant() } ?: emptyList()
 
     /**
+     * The Rell source root [file] lives under — the governing settings file's `compile.source`, or
+     * its default layout chain. Null when no settings file actually claims [file], so a file merely
+     * sitting next to a settings file but outside its source tree has no source root, even though
+     * that settings file still governs its version.
+     */
+    fun sourceRootOf(file: VirtualFile): VirtualFile? {
+        val group = findClaimGroup(file)?.takeIf { it.claiming } ?: return null
+        val chosen = chooseGoverning(group.directory, group.configs.map { Evaluated(it, parsedFor(it)) })
+        return ApplicationManager.getApplication().runReadAction<VirtualFile?> { sourceRoot(chosen.configFile) }
+    }
+
+    /**
      * How [configFile] itself evaluates — its declared version and the version its toolchain would
      * run. Null when it is not a Chromia settings file.
      */
@@ -139,8 +151,12 @@ class RellVersionResolver(private val project: Project) {
         return root == directoryPath || root.startsWith("$directoryPath/")
     }
 
-    /** The settings files claiming [file], with the directory whose active choice arbitrates them. */
-    private class ClaimGroup(val directory: VirtualFile, val configs: List<VirtualFile>)
+    /**
+     * The settings files claiming [file], with the directory whose active choice arbitrates them.
+     * [claiming] distinguishes a real claim — [file] lies under the source root — from the weak
+     * proximity fallback, which decides a version but places [file] in no source tree.
+     */
+    private class ClaimGroup(val directory: VirtualFile, val configs: List<VirtualFile>, val claiming: Boolean)
 
     private fun findClaimGroup(file: VirtualFile): ClaimGroup? =
         ApplicationManager.getApplication().runReadAction<ClaimGroup?> {
@@ -154,8 +170,8 @@ class RellVersionResolver(private val project: Project) {
                 val candidates = settingsCandidates(dir)
                 if (candidates.isNotEmpty()) {
                     val claiming = candidates.filter { claims(it, file) }
-                    if (claiming.isNotEmpty()) return@runReadAction ClaimGroup(dir, claiming)
-                    if (nearestWeak == null) nearestWeak = ClaimGroup(dir, candidates)
+                    if (claiming.isNotEmpty()) return@runReadAction ClaimGroup(dir, claiming, claiming = true)
+                    if (nearestWeak == null) nearestWeak = ClaimGroup(dir, candidates, claiming = false)
                 }
                 dir = dir.parent
             }
