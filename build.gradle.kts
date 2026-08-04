@@ -264,7 +264,10 @@ intellijPlatform {
 
         ideaVersion {
             sinceBuild = providers.gradleProperty("pluginSinceBuild")
-            untilBuild = providers.gradleProperty("pluginUntilBuild")
+            // No upper bound: an until-build would block installs on every future IDE release.
+            // `provider { null }` is the documented way to unset it; a plain null falls back to
+            // the default `MAJOR.*`.
+            untilBuild = provider { null }
         }
     }
 

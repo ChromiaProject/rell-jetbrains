@@ -19,8 +19,8 @@
 
 # Verify plugin compatibility
 ./gradlew verifyPlugin
-# Runs the JetBrains Plugin Verifier against the recommended IDEs in the
-# 253.33813-262.* build range declared in gradle.properties
+# Runs the JetBrains Plugin Verifier against the recommended IDEs from
+# pluginSinceBuild (gradle.properties) up; the plugin declares no until-build
 
 # Sign plugin (requires CERTIFICATE_CHAIN / PRIVATE_KEY / PRIVATE_KEY_PASSWORD)
 ./gradlew signPlugin

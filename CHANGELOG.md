@@ -6,6 +6,9 @@
 - The Project view draws Rell source trees semantically: the directory a settings file compiles from carries
   a source-root icon, every directory under it carries a package icon and is labelled with the module namespace it
   stands for, so `src/main/core` reads as `main.core`
+### Changed
+- The plugin no longer declares an upper IDE version bound, so it stays installable on IDE releases
+  published after it
 ### Fixed
 - Rell code is semantically highlighted again: declaration names of functions, queries and operations share the
   Function declaration colour,

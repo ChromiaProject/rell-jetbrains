@@ -7,10 +7,10 @@ import com.intellij.ide.wizard.*
 import com.intellij.ide.wizard.NewProjectWizardBaseData.Companion.baseData
 import com.intellij.ide.wizard.NewProjectWizardChainStep.Companion.nextStep
 import com.intellij.openapi.project.Project
-import com.intellij.ui.SimpleListCellRenderer
 import com.intellij.ui.dsl.builder.Panel
 import com.intellij.ui.dsl.builder.bindItem
 import com.intellij.ui.dsl.builder.bindSelected
+import com.intellij.ui.dsl.listCellRenderer.textListCellRenderer
 import net.postchain.rellide.jetbrains.language.RellIcons
 import net.postchain.rellide.jetbrains.settings.RellPluginSettingsState
 import java.nio.file.Path
@@ -42,7 +42,8 @@ private class ChromiaTemplateStep(parent: NewProjectWizardStep) : AbstractNewPro
         builder.row("Template:") {
             val templateCell = comboBox(
                 ChromiaProjectTemplate.entries,
-                SimpleListCellRenderer.create("") { it.displayName },
+                // The overload taking a separate null placeholder is @Internal in 2026.1.
+                textListCellRenderer { it?.displayName.orEmpty() },
             )
                 .bindItem(templateProperty)
                 .comment(templateProperty.get().description)

@@ -98,9 +98,12 @@ class RellLspClientDescriptor(
     // Keeps a copy of every pushed diagnostic so batch inspections can report them
     // (see RellLspDiagnosticsInspection).
     override fun createLsp4jClient(handler: LspServerNotificationsHandler): Lsp4jClient =
-        Lsp4jClient(DiagnosticsRecordingHandler(handler, project))
+        RellLsp4jClient(DiagnosticsRecordingHandler(handler, project))
 
     override val lspCustomization: LspCustomization = RellLspCustomization
+
+    /** [Lsp4jClient] is `@OverrideOnly`: the platform expects a subclass, not a direct instantiation. */
+    private class RellLsp4jClient(handler: LspServerNotificationsHandler) : Lsp4jClient(handler)
 
     private fun computeJavaPath(): String = Path(
         System.getProperty("java.home"), "bin/java" + (if (SystemInfo.isWindows) ".exe" else "")
