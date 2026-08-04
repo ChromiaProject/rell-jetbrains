@@ -30,7 +30,8 @@ definitions:
         caches: [ gradle-wrapper, gradle-home, gradle-project, gradle-build-output ]
         script:
           - chmod +x ./gradlew
-          - ./gradlew --build-cache buildPlugin test
+          - GRADLE_ARGS=(--build-cache)
+          - ./gradlew "${GRADLE_ARGS[@]}" buildPlugin test
         artifacts: [ build/distributions/*.zip ]
     - step: &release-build-step
         name: Build, Test and Verify (release)
@@ -42,13 +43,13 @@ definitions:
           # metaspace, Kotlin compile daemon 2 GB heap; the remaining ~2 GB
           # covers the forked JVMs — test/headless IDE first, then the plugin
           # verifier, which runs after the test JVMs are gone.
-          - export GRADLE_OPTS='-Xmx3g -XX:MaxMetaspaceSize=768m'
+          - GRADLE_ARGS=(--build-cache "-Dorg.gradle.jvmargs=-Xmx3g -XX:MaxMetaspaceSize=768m" -Pkotlin.daemon.jvmargs=-Xmx2g)
           - export SENTRY_AUTH_TOKEN="$RELL_JETBRAINS_SENTRY_AUTH_TOKEN"
           # verifyPlugin runs the JetBrains Plugin Verifier against every IDE in
           # the supported build range — the same check the Marketplace applies
           # after upload, and what sank 0.4.1. It gates the manual publish step
           # below, which Bitbucket only offers once this step is green.
-          - ./gradlew --build-cache "-Pkotlin.daemon.jvmargs=-Xmx2g" buildPlugin test verifyPlugin
+          - ./gradlew "${GRADLE_ARGS[@]}" buildPlugin test verifyPlugin
         artifacts:
           - build/distributions/*.zip
           # Per-IDE verifier reports, kept so a passing run can still be
@@ -82,7 +83,7 @@ definitions:
               exit 1
             fi
           # Same 8192 MB budget as the release build step.
-          - export GRADLE_OPTS='-Xmx3g -XX:MaxMetaspaceSize=768m'
+          - GRADLE_ARGS=(--build-cache "-Dorg.gradle.jvmargs=-Xmx3g -XX:MaxMetaspaceSize=768m" -Pkotlin.daemon.jvmargs=-Xmx2g)
           - export SENTRY_AUTH_TOKEN="$RELL_JETBRAINS_SENTRY_AUTH_TOKEN"
           # A missing token silently disables source context (build.gradle.kts),
           # and a revoked one only fails deep inside the build — check both here.
@@ -111,7 +112,7 @@ definitions:
           - echo "$RELL_JETBRAINS_CERTIFICATE_CHAIN" | base64 -d > /tmp/chain.crt
           - echo "$RELL_JETBRAINS_PRIVATE_KEY" | base64 -d > /tmp/private.pem
           - export CERTIFICATE_CHAIN=/tmp/chain.crt PRIVATE_KEY=/tmp/private.pem
-          - ./gradlew --build-cache "-Pkotlin.daemon.jvmargs=-Xmx2g" publishPlugin
+          - ./gradlew "${GRADLE_ARGS[@]}" publishPlugin
           - git tag "$VERSION" "$BITBUCKET_COMMIT"
           - git push origin "refs/tags/$VERSION"
 
