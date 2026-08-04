@@ -27,7 +27,7 @@ class RellVersionSyntaxAnnotatorTest : RellVersionAwareTestCase() {
     }
 
     fun testAnnotatorSkipsNewestVersionFiles() {
-        myFixture.addFileToProject("chromia.yml", "compile:\n  rellVersion: \"0.16.4\"\n")
+        myFixture.addFileToProject("chromia.yml", "compile:\n  rellVersion: \"0.16.5\"\n")
         val psi = myFixture.configureByText("main.rell", lambdaDapp)
         assertNull(
             "Newest-version files are covered by the editor PSI; the annotator must not collect them",

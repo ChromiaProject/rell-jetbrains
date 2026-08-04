@@ -2,6 +2,7 @@
 
 ## [0.4.5]
 ### Added
+- Add Rell version 0.16.5
 - The Project view draws Rell source trees semantically: the directory a settings file compiles from carries
   a source-root icon, every directory under it carries a package icon and is labelled with the module namespace it
   stands for, so `src/main/core` reads as `main.core`
