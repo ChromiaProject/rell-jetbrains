@@ -1,6 +1,10 @@
 package net.postchain.rellide.jetbrains.lsp
 
+import com.intellij.codeInsight.intention.preview.IntentionPreviewInfo
+import com.intellij.openapi.editor.Document
+import com.intellij.openapi.editor.Editor
 import com.intellij.openapi.editor.colors.TextAttributesKey
+import com.intellij.openapi.project.Project
 import com.intellij.openapi.vfs.LocalFileSystem
 import com.intellij.openapi.vfs.VirtualFile
 import com.intellij.platform.lsp.api.LspClient
@@ -11,7 +15,9 @@ import net.postchain.rellide.jetbrains.colors.RellColor
 import org.eclipse.lsp4j.CodeAction
 import org.eclipse.lsp4j.CodeActionKind
 import org.eclipse.lsp4j.Command
+import org.eclipse.lsp4j.Position
 import org.eclipse.lsp4j.SemanticTokenTypes
+import org.eclipse.lsp4j.TextEdit
 import java.util.concurrent.TimeUnit
 
 object RellLspCustomization : LspCustomization() {
@@ -86,9 +92,72 @@ object RellCommandsSupport : LspCommandsSupport() {
 object RellCodeActionsSupport : LspCodeActionsSupport() {
     override fun createQuickFix(lspClient: LspClient, codeAction: CodeAction): LspIntentionAction? =
         if (codeAction.kind?.startsWith(CodeActionKind.QuickFix) == true) {
-            super.createQuickFix(lspClient, codeAction)
+            RellLspIntentionAction(lspClient, codeAction)
         } else {
             null
+        }
+
+    override fun createIntentionAction(lspClient: LspClient, codeAction: CodeAction): LspIntentionAction =
+        RellLspIntentionAction(lspClient, codeAction)
+}
+
+
+/**
+ * [LspIntentionAction] whose preview never writes to a [Document]. The platform's
+ * [LspIntentionAction.generatePreview] applies the workspace edit to the non-physical preview
+ * document; that document change still reaches application-wide document listeners such as
+ * BackgroundHighlighter, whose alarm cancellation dispatches to the EDT — forbidden inside the
+ * preview's side-effect guard (`SideEffectNotAllowedException: INVOKE_LATER`, seen on 2026.1.4),
+ * killing the preview for every action that carries an inline edit. Diffing plain strings computes
+ * the same preview without a document change. Actions without an inline single-file edit (e.g. the
+ * lazily resolved fix-all) keep the platform behavior: their preview resolves the action first,
+ * which string diffing cannot reproduce.
+ */
+private class RellLspIntentionAction(
+    lspClient: LspClient,
+    private val codeAction: CodeAction,
+) : LspIntentionAction(lspClient, codeAction) {
+    override fun generatePreview(
+        project: Project,
+        editor: Editor,
+        nonPhysicalPsiFile: PsiFile,
+    ): IntentionPreviewInfo {
+        val edits = codeAction.edit?.changes?.values?.singleOrNull()
+            ?: return super.generatePreview(project, editor, nonPhysicalPsiFile)
+
+        val document = nonPhysicalPsiFile.viewProvider.document
+            ?: return super.generatePreview(project, editor, nonPhysicalPsiFile)
+
+        val originalText = document.text
+
+        return IntentionPreviewInfo.CustomDiff(
+            nonPhysicalPsiFile.fileType,
+            nonPhysicalPsiFile.name,
+            originalText,
+            applyEdits(originalText, document, edits),
+        )
+    }
+
+    /** Offsets are resolved against the original text, so edits apply back to front. */
+    private fun applyEdits(text: String, document: Document, edits: List<TextEdit>): String {
+        val backToFront = edits.sortedWith(
+            compareByDescending<TextEdit> { it.range.start.line }.thenByDescending { it.range.start.character }
+        )
+        var result = text
+        for (edit in backToFront) {
+            result = result.take(offsetOf(document, edit.range.start)) +
+                edit.newText +
+                result.substring(offsetOf(document, edit.range.end))
+        }
+        return result
+    }
+
+    private fun offsetOf(document: Document, position: Position): Int =
+        if (position.line >= document.lineCount) {
+            document.textLength
+        } else {
+            (document.getLineStartOffset(position.line) + position.character)
+                .coerceAtMost(document.getLineEndOffset(position.line))
         }
 }
 

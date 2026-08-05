@@ -1,5 +1,11 @@
 # Changelog
 
+## [0.4.6]
+### Fixed
+- Alt+Enter no longer lists the same language-server action twice: quick fixes stay on the quick-fix
+  channel and everything else stays on the intention channel
+- The preview shown next to a language-server action renders again instead of failing silently
+
 ## [0.4.5]
 ### Added
 - Add Rell version 0.16.5
