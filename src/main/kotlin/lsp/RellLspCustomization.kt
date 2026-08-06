@@ -259,6 +259,11 @@ object RellSemanticTokensSupport : LspSemanticTokensSupport() {
                 }
             }
 
+            // Member function calls (`x.to_gtv_pretty()`) get their own semantic token type so they
+            // stay visually distinct from a call to a declared/system function (RellColor.FUNCTION_CALL,
+            // italic) or to a function value held in a variable (uncoloured).
+            SemanticTokenTypes.Method -> RellColor.FUNCTION_DECLARATION.textAttributesKey
+
             SemanticTokenTypes.Parameter -> RellColor.PARAMETER.textAttributesKey
             else -> null
         }
