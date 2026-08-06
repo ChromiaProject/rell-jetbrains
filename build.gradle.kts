@@ -71,6 +71,9 @@ dependencies {
         bundledPlugins(providers.gradleProperty("platformBundledPlugins").map { it.split(',') })
         bundledModule("intellij.platform.lsp")
         bundledModule("intellij.platform.lsp.impl")
+        // JSON Schema lives in a content module of the JSON plugin, which YAML pulls in; the
+        // schema provider for Chromia settings files compiles against it.
+        bundledModule("intellij.json.backend")
         create(properties("platformType"), properties("platformVersion"))
         pluginVerifier()
         zipSigner()

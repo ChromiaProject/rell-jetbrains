@@ -1,0 +1,8 @@
+<idea-plugin>
+    <extensions defaultExtensionNs="JavaScript.JsonSchema">
+        <!-- The extension namespace is the platform's own, inherited from where JSON Schema
+             support first shipped; it has nothing to do with JavaScript. -->
+        <ProviderFactory
+                implementation="net.postchain.rellide.jetbrains.chromia.ChromiaSchemaProviderFactory"/>
+    </extensions>
+</idea-plugin>

@@ -11,6 +11,9 @@
     <!-- .rell_lint and .rell_format use EditorConfig syntax; associating them with the bundled
          EditorConfig plugin's file type gives them highlighting and structure support. -->
     <depends optional="true" config-file="rell-withEditorConfig.xml">org.editorconfig.editorconfigjetbrains</depends>
+    <!-- Chromia settings files are YAML; the JSON Schema support that validates them comes with
+         the YAML plugin. -->
+    <depends optional="true" config-file="rell-withYaml.xml">org.jetbrains.plugins.yaml</depends>
 
     <resource-bundle>messages.RellBundle</resource-bundle>
 
