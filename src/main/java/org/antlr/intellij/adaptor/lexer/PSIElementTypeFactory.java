@@ -8,15 +8,12 @@ import org.antlr.v4.runtime.Vocabulary;
 import org.antlr.v4.runtime.misc.Utils;
 import org.jetbrains.annotations.NotNull;
 
-import java.util.Arrays;
-import java.util.Collections;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 import java.util.stream.IntStream;
 
-import static java.util.function.Function.*;
-import static java.util.stream.Collectors.*;
+import static java.util.function.Function.identity;
+import static java.util.stream.Collectors.toList;
+import static java.util.stream.Collectors.toMap;
 
 /** The factory that automatically maps all tokens and rule names into
  *  IElementType objects: {@link TokenIElementType} and {@link RuleIElementType}.

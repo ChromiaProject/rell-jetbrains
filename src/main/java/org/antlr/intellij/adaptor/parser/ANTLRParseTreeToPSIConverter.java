@@ -6,20 +6,12 @@ import com.intellij.openapi.progress.ProgressIndicatorProvider;
 import org.antlr.intellij.adaptor.lexer.PSIElementTypeFactory;
 import org.antlr.intellij.adaptor.lexer.RuleIElementType;
 import org.antlr.intellij.adaptor.lexer.TokenIElementType;
-import org.antlr.v4.runtime.RecognitionException;
-import org.antlr.v4.runtime.ANTLRErrorListener;
-import org.antlr.v4.runtime.Parser;
-import org.antlr.v4.runtime.ParserRuleContext;
-import org.antlr.v4.runtime.Token;
+import org.antlr.v4.runtime.*;
 import org.antlr.v4.runtime.tree.ErrorNode;
 import org.antlr.v4.runtime.tree.ParseTreeListener;
 import org.antlr.v4.runtime.tree.TerminalNode;
 
-import java.util.ArrayDeque;
-import java.util.Deque;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 
 /** This is how we build an intellij PSI tree from an ANTLR parse tree.
  *  We let the ANTLR parser build its kind of ParseTree and then

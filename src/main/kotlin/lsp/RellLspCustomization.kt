@@ -12,21 +12,13 @@ import com.intellij.platform.lsp.api.customization.*
 import com.intellij.psi.PsiFile
 import com.intellij.util.concurrency.AppExecutorUtil
 import net.postchain.rellide.jetbrains.colors.RellColor
-import org.eclipse.lsp4j.CodeAction
-import org.eclipse.lsp4j.CodeActionKind
-import org.eclipse.lsp4j.Command
-import org.eclipse.lsp4j.Position
-import org.eclipse.lsp4j.SemanticTokenTypes
-import org.eclipse.lsp4j.TextEdit
+import org.eclipse.lsp4j.*
 import java.util.concurrent.TimeUnit
 
 object RellLspCustomization : LspCustomization() {
     override val semanticTokensCustomizer: LspSemanticTokensCustomizer = RellSemanticTokensSupport
-
     override val codeActionsCustomizer: LspCodeActionsCustomizer = RellCodeActionsSupport
-
     override val commandsCustomizer: LspCommandsCustomizer = RellCommandsSupport
-
     override val formattingCustomizer: LspFormattingCustomizer = RellFormattingSupport
 
     // The Rell language server never provides document colors, so keep the feature permanently
@@ -70,6 +62,7 @@ object RellCommandsSupport : LspCommandsSupport() {
         // ancestors of the file the action was invoked in.
         val ancestors = generateSequence(contextFile.parent) { it.parent }.toList()
         val scheduler = AppExecutorUtil.getAppScheduledExecutorService()
+
         for (delayMillis in longArrayOf(500, 3000)) {
             scheduler.schedule(
                 { LocalFileSystem.getInstance().refreshFiles(ancestors, true, false, null) },
@@ -143,12 +136,17 @@ private class RellLspIntentionAction(
         val backToFront = edits.sortedWith(
             compareByDescending<TextEdit> { it.range.start.line }.thenByDescending { it.range.start.character }
         )
+
         var result = text
+
         for (edit in backToFront) {
-            result = result.take(offsetOf(document, edit.range.start)) +
-                edit.newText +
-                result.substring(offsetOf(document, edit.range.end))
+            result = buildString {
+                append(result.take(offsetOf(document, edit.range.start)))
+                append(edit.newText)
+                append(result.substring(offsetOf(document, edit.range.end)))
+            }
         }
+
         return result
     }
 

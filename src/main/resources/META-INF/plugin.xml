@@ -40,6 +40,13 @@
         <colorSettingsPage
                 implementation="net.postchain.rellide.jetbrains.colors.RellColorSettingsPage"/>
 
+        <!-- Italic function calls, the way Kotlin renders them: a call that resolves to a declared
+             function reads differently from invoking a function value, which the server tokenizes
+             as a variable and which therefore stays upright. The two bundled schemes are the roots
+             every other bundled scheme inherits from. -->
+        <additionalTextAttributes scheme="Default" file="colorScheme/Default_Rell.xml"/>
+        <additionalTextAttributes scheme="Darcula" file="colorScheme/Darcula_Rell.xml"/>
+
         <!-- Commenter -->
         <lang.commenter language="Rell" implementationClass="net.postchain.rellide.jetbrains.language.RellCommenter"/>
 

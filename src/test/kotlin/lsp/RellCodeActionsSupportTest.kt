@@ -1,23 +1,12 @@
 package net.postchain.rellide.jetbrains.lsp
 
+import com.intellij.codeInsight.intention.preview.IntentionPreviewInfo
 import com.intellij.openapi.editor.Document
 import com.intellij.openapi.project.Project
 import com.intellij.openapi.vfs.VirtualFile
-import com.intellij.platform.lsp.api.LspClient
-import com.intellij.platform.lsp.api.LspClientDescriptor
-import com.intellij.platform.lsp.api.LspIntegrationProvider
-import com.intellij.platform.lsp.api.LspServer
-import com.intellij.platform.lsp.api.LspServerState
+import com.intellij.platform.lsp.api.*
 import com.intellij.testFramework.fixtures.BasePlatformTestCase
-import com.intellij.codeInsight.intention.preview.IntentionPreviewInfo
-import org.eclipse.lsp4j.CodeAction
-import org.eclipse.lsp4j.CodeActionKind
-import org.eclipse.lsp4j.InitializeResult
-import org.eclipse.lsp4j.Position
-import org.eclipse.lsp4j.Range
-import org.eclipse.lsp4j.TextDocumentIdentifier
-import org.eclipse.lsp4j.TextEdit
-import org.eclipse.lsp4j.WorkspaceEdit
+import org.eclipse.lsp4j.*
 import org.eclipse.lsp4j.services.LanguageServer
 import java.util.concurrent.CompletableFuture
 

@@ -1,11 +1,7 @@
 package net.postchain.rellide.jetbrains.settings
 
 import net.postchain.rellide.jetbrains.chromia.RellVersion
-import kotlin.test.Test
-import kotlin.test.assertEquals
-import kotlin.test.assertFalse
-import kotlin.test.assertNull
-import kotlin.test.assertTrue
+import kotlin.test.*
 
 class RellPluginSettingsStateTest {
     private val chrOutput = """

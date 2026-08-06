@@ -4,11 +4,7 @@ import com.intellij.lang.ParserDefinition;
 import com.intellij.lang.PsiBuilder;
 import com.intellij.openapi.progress.ProgressIndicatorProvider;
 import com.intellij.openapi.project.Project;
-import org.antlr.v4.runtime.CharStream;
-import org.antlr.v4.runtime.CommonTokenFactory;
-import org.antlr.v4.runtime.Token;
-import org.antlr.v4.runtime.TokenFactory;
-import org.antlr.v4.runtime.TokenSource;
+import org.antlr.v4.runtime.*;
 import org.antlr.v4.runtime.misc.Pair;
 
 /** Make a PsiBuilder look like a source of ANTLR tokens. PsiBuilder

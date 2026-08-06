@@ -1,10 +1,16 @@
 # Changelog
 
 ## [0.4.6]
+### Changed
+- Function calls are italic, so calling a declared function looks different from invoking a function value held in
+  a variable
 ### Fixed
 - Alt+Enter no longer lists the same language-server action twice: quick fixes stay on the quick-fix
   channel and everything else stays on the intention channel
 - The preview shown next to a language-server action renders again instead of failing silently
+- Syntax errors in injected Rell (a ```` ```rell ```` fence, say) read the way the Rell compiler
+  words them &mdash; `Name expected, got '123'` rather than
+  ANTLR's `extraneous input '123' expecting RULE_ID`. ANTLR names no longer leak into the editor
 
 ## [0.4.5]
 ### Added

@@ -1,5 +1,7 @@
 package net.postchain.rellide.jetbrains.chromia
 
+import net.postchain.rellide.jetbrains.language.RellParserErrorStrategy
+import org.antlr.v4.runtime.*
 import net.postchain.rellide.jetbrains.language.parser.v0_16_1.RellLexer as RellLexer0161
 import net.postchain.rellide.jetbrains.language.parser.v0_16_1.RellParser as RellParser0161
 import net.postchain.rellide.jetbrains.language.parser.v0_16_2.RellLexer as RellLexer0162
@@ -8,7 +10,6 @@ import net.postchain.rellide.jetbrains.language.parser.v0_16_3.RellLexer as Rell
 import net.postchain.rellide.jetbrains.language.parser.v0_16_3.RellParser as RellParser0163
 import net.postchain.rellide.jetbrains.language.parser.v0_16_4.RellLexer as RellLexer0164
 import net.postchain.rellide.jetbrains.language.parser.v0_16_4.RellParser as RellParser0164
-import org.antlr.v4.runtime.*
 
 /**
  * Version-exact ANTLR parsers, generated at build time from each supported Rell release's own
@@ -45,6 +46,7 @@ object VersionedRellParsers {
             lexer.addErrorListener(listener)
 
             val parser = newParser(CommonTokenStream(lexer))
+            parser.errorHandler = RellParserErrorStrategy()
             parser.removeErrorListeners()
             parser.addErrorListener(listener)
             rootRule(parser)

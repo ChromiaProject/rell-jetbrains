@@ -19,6 +19,7 @@ import net.postchain.rellide.jetbrains.language.parser.RellParser
 import net.postchain.rellide.jetbrains.language.psi.RellFile
 import net.postchain.rellide.jetbrains.language.psi.RellPsiElementTypes
 import org.antlr.intellij.adaptor.parser.ANTLRParserAdaptor
+import org.antlr.v4.runtime.ANTLRErrorStrategy
 import org.antlr.v4.runtime.Parser
 import org.antlr.v4.runtime.tree.ParseTree
 import java.util.function.Function
@@ -30,6 +31,8 @@ class RellParserDefinition : ParserDefinition {
         object : ANTLRParserAdaptor(RellLanguage.INSTANCE, RellParser(null)) {
             override fun parse(parser: Parser, root: IElementType): ParseTree =
                 (parser as RellParser).file()
+
+            override fun createErrorStrategy(): ANTLRErrorStrategy = RellParserErrorStrategy()
 
             override fun parseCandidates(
                 root: IElementType,

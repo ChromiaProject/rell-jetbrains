@@ -7,10 +7,7 @@ import com.intellij.lang.PsiParser;
 import com.intellij.openapi.progress.ProgressIndicatorProvider;
 import com.intellij.psi.tree.IElementType;
 import org.antlr.intellij.adaptor.lexer.PSITokenSource;
-import org.antlr.v4.runtime.CommonTokenStream;
-import org.antlr.v4.runtime.Parser;
-import org.antlr.v4.runtime.TokenSource;
-import org.antlr.v4.runtime.TokenStream;
+import org.antlr.v4.runtime.*;
 import org.antlr.v4.runtime.tree.ParseTree;
 import org.antlr.v4.runtime.tree.ParseTreeWalker;
 import org.jetbrains.annotations.NotNull;
@@ -54,7 +51,7 @@ public abstract class ANTLRParserAdaptor implements PsiParser {
 				TokenSource source = new PSITokenSource(builder);
 				TokenStream tokens = new CommonTokenStream(source);
 				parser.setTokenStream(tokens);
-				parser.setErrorHandler(new ErrorStrategyAdaptor()); // tweaks missing tokens
+				parser.setErrorHandler(createErrorStrategy()); // tweaks missing tokens
 				parser.removeErrorListeners();
 				parser.addErrorListener(errors);
 				tree = candidate.apply(parser);
@@ -107,6 +104,12 @@ public abstract class ANTLRParserAdaptor implements PsiParser {
 	}
 
 	protected abstract ParseTree parse(Parser parser, IElementType root);
+
+	/** The error strategy each parse attempt runs with. Subclasses override this to word the
+	 *  syntax errors their language reports; the default only tweaks missing tokens. */
+	protected ANTLRErrorStrategy createErrorStrategy() {
+		return new ErrorStrategyAdaptor();
+	}
 
 	/** Root rules to try, in order. The first attempt that parses without syntax errors wins; if
 	 *  none does, the attempt with the fewest errors is the one converted to PSI. Ties go to the

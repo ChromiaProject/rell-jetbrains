@@ -7,8 +7,8 @@ import com.intellij.platform.lsp.api.LspClient
 import com.intellij.platform.lsp.api.LspIntegrationProvider
 import com.intellij.platform.lsp.api.lsWidget.LspClientWidgetItem
 import net.postchain.rellide.jetbrains.chromia.*
-import net.postchain.rellide.jetbrains.language.RellIcons
 import net.postchain.rellide.jetbrains.language.RellFileType.Companion.RELL_EXTENSION
+import net.postchain.rellide.jetbrains.language.RellIcons
 import net.postchain.rellide.jetbrains.settings.RellPluginSettingsConfigurable
 
 /**

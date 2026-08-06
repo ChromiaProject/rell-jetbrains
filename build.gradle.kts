@@ -1,11 +1,9 @@
-import java.security.MessageDigest
-import org.gradle.api.artifacts.component.ModuleComponentIdentifier
-import org.gradle.api.plugins.antlr.AntlrTask
 import org.jetbrains.changelog.Changelog
 import org.jetbrains.changelog.markdownToHTML
 import org.jetbrains.intellij.platform.gradle.TestFrameworkType
 import org.jetbrains.intellij.platform.gradle.tasks.VerifyPluginTask.FailureLevel
 import org.jetbrains.kotlin.gradle.dsl.JvmDefaultMode
+import java.security.MessageDigest
 
 fun properties(key: String) = providers.gradleProperty(key)
 fun environment(key: String) = providers.environmentVariable(key)
