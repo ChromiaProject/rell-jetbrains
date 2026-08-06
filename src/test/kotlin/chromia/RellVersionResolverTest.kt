@@ -161,6 +161,35 @@ class RellVersionResolverTest : BasePlatformTestCase() {
         )
     }
 
+    fun testHasDeclaredLibsReflectsLibsSection() {
+        file(
+            "with-libs/chromia.yml",
+            """
+            compile:
+              rellVersion: "0.16.1"
+              source: src
+            libs:
+              ft4:
+                version: "1.1"
+            """.trimIndent(),
+        )
+        file("without-libs/chromia.yml", yml("0.16.1"))
+
+        assertTrue(resolver.hasDeclaredLibs(file("with-libs/src/main.rell")))
+        assertFalse(resolver.hasDeclaredLibs(file("without-libs/src/main.rell")))
+        assertFalse(
+            "A file no settings file claims has nothing to declare libs",
+            resolver.hasDeclaredLibs(file("no-config/src/main.rell")),
+        )
+    }
+
+    fun testGoverningConfigDirectoryIsWhereChrCommandsMustRun() {
+        val config = file("proj/chromia.yml", yml("0.16.1"))
+        val source = file("proj/src/main.rell")
+        assertEquals(config.parent, resolver.governingConfigDirectory(source))
+        assertNull(resolver.governingConfigDirectory(file("no-config/src/main.rell")))
+    }
+
     fun testNearestEnclosingConfigWins() {
         val outer = file("nested/chromia.yml", yml("0.16.2"))
         val inner = file("nested/sub/chromia.yml", yml("0.16.1"))

@@ -100,6 +100,11 @@
         <editorNotificationProvider
                 implementation="net.postchain.rellide.jetbrains.chromia.RellVersionEditorNotificationProvider"/>
 
+        <!-- Banner suggesting `chr install` for an unresolved module that looks like a
+             not-yet-installed library dependency -->
+        <editorNotificationProvider
+                implementation="net.postchain.rellide.jetbrains.chromia.ChromiaMissingLibNotificationProvider"/>
+
         <!-- Save-and-reload bar on chromia.yml while an edited rellVersion is unsaved -->
         <editorNotificationProvider
                 implementation="net.postchain.rellide.jetbrains.chromia.ChromiaConfigReloadNotificationProvider"/>
@@ -161,6 +166,14 @@
         <errorHandler implementation="net.postchain.rellide.jetbrains.sentry.SentryReportSubmitter"/>
 
         <postStartupActivity implementation="net.postchain.rellide.jetbrains.lsp.RellInlayHintsStartupActivity"/>
+
+        <!-- Alt-Enter action suggesting `chr install` on an unresolved-module diagnostic that
+             looks like a not-yet-installed library dependency -->
+        <intentionAction>
+            <language>Rell</language>
+            <className>net.postchain.rellide.jetbrains.chromia.ChromiaRunInstallIntention</className>
+            <category>Rell</category>
+        </intentionAction>
     </extensions>
 
     <projectListeners>

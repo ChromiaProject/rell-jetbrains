@@ -4,8 +4,10 @@ import com.intellij.openapi.components.Service
 import com.intellij.openapi.components.service
 import com.intellij.openapi.diagnostic.logger
 import com.intellij.openapi.project.Project
+import com.intellij.openapi.vfs.LocalFileSystem
 import com.intellij.openapi.vfs.VirtualFile
 import com.intellij.platform.lsp.api.LspServerNotificationsHandler
+import com.intellij.ui.EditorNotifications
 import org.eclipse.lsp4j.Diagnostic
 import org.eclipse.lsp4j.PublishDiagnosticsParams
 import java.net.URI
@@ -51,6 +53,13 @@ class RellLspDiagnosticsCache {
     }
 
     companion object {
+        /** Resolves a `publishDiagnostics` URI back to a [VirtualFile], for callers that need to react to new diagnostics. */
+        fun fileFor(uri: String): VirtualFile? = try {
+            LocalFileSystem.getInstance().findFileByPath(Paths.get(URI(uri)).toString())
+        } catch (_: Exception) {
+            null
+        }
+
         private val LOG = logger<RellLspDiagnosticsCache>()
 
         fun getInstance(project: Project): RellLspDiagnosticsCache = project.service()
@@ -65,5 +74,8 @@ internal class DiagnosticsRecordingHandler(
     override fun publishDiagnostics(params: PublishDiagnosticsParams) {
         RellLspDiagnosticsCache.getInstance(project).record(params)
         delegate.publishDiagnostics(params)
+        // Banners keyed off diagnostics (e.g. the missing-lib "Run chr install" suggestion) only
+        // recompute when asked; a fresh push is the one signal they have to go check again.
+        RellLspDiagnosticsCache.fileFor(params.uri)?.let { EditorNotifications.getInstance(project).updateNotifications(it) }
     }
 }

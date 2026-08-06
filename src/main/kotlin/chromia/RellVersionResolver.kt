@@ -72,10 +72,20 @@ class RellVersionResolver(private val project: Project) {
      * sitting next to a settings file but outside its source tree has no source root, even though
      * that settings file still governs its version.
      */
-    fun sourceRootOf(file: VirtualFile): VirtualFile? {
+    fun sourceRootOf(file: VirtualFile): VirtualFile? =
+        ApplicationManager.getApplication().runReadAction<VirtualFile?> { chosenClaimant(file)?.let { sourceRoot(it.configFile) } }
+
+    /** Whether the settings file governing [file] declares a non-empty `libs:` section. */
+    fun hasDeclaredLibs(file: VirtualFile): Boolean =
+        ApplicationManager.getApplication().runReadAction<Boolean> { chosenClaimant(file)?.parsed?.hasLibs == true }
+
+    /** The directory holding the settings file governing [file] — where `chr` commands for it must run. */
+    fun governingConfigDirectory(file: VirtualFile): VirtualFile? =
+        ApplicationManager.getApplication().runReadAction<VirtualFile?> { chosenClaimant(file)?.configFile?.parent }
+
+    private fun chosenClaimant(file: VirtualFile): Evaluated? {
         val group = findClaimGroup(file)?.takeIf { it.claiming } ?: return null
-        val chosen = chooseGoverning(group.directory, group.configs.map { Evaluated(it, parsedFor(it)) })
-        return ApplicationManager.getApplication().runReadAction<VirtualFile?> { sourceRoot(chosen.configFile) }
+        return chooseGoverning(group.directory, group.configs.map { Evaluated(it, parsedFor(it)) })
     }
 
     /**
@@ -304,6 +314,9 @@ class RellVersionResolver(private val project: Project) {
             readable = true,
             qualifies = ChromiaSettingsFiles.isDefaultName(configFile.name) || hasBlockchains,
             source = relativeSource(model.compile.source, path),
+            // Reading only the key set, never the library model values themselves — see the
+            // extract-and-discard note above about their unsafe toString/equals/hashCode.
+            hasLibs = model.libs.isNotEmpty(),
         )
     }
 
@@ -352,6 +365,7 @@ class RellVersionResolver(private val project: Project) {
             // unrelated YAML, and an unreadable file cannot prove it is a settings file.
             qualifies = ChromiaSettingsFiles.isDefaultName(configFile.name),
             source = null,
+            hasLibs = false,
         )
     }
 
@@ -361,6 +375,7 @@ class RellVersionResolver(private val project: Project) {
         val qualifies: Boolean,
         /** `compile.source` relative to the config's directory, null when not declared. */
         val source: String?,
+        val hasLibs: Boolean,
     ) {
         /** The fields a changed value of which can move files to a different resolution. */
         val resolutionKey: Triple<String?, Boolean, String?>
