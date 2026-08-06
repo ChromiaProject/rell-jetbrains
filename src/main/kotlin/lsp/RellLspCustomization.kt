@@ -20,6 +20,7 @@ object RellLspCustomization : LspCustomization() {
     override val codeActionsCustomizer: LspCodeActionsCustomizer = RellCodeActionsSupport
     override val commandsCustomizer: LspCommandsCustomizer = RellCommandsSupport
     override val formattingCustomizer: LspFormattingCustomizer = RellFormattingSupport
+    override val renameCustomizer: LspRenameCustomizer = RellRenameSupport
 
     // The Rell language server never provides document colors, so keep the feature permanently
     // disabled instead of asking on every highlighting pass.
@@ -40,6 +41,17 @@ object RellFormattingSupport : LspFormattingSupport() {
         ideCanFormatThisFileItself: Boolean,
         serverExplicitlyWantsToFormatThisFile: Boolean,
     ): Boolean = true
+}
+
+
+/**
+ * The default support only runs LSP rename for plain-text/TextMate files, on the assumption that a
+ * real language plugin brings its own PSI-based rename. Rell has no PSI naming of its own — the
+ * server is the only source of renameable symbols — so `shouldRunRename` must be opened up for it,
+ * or Rename stays permanently disabled (greyed out) for every Rell file.
+ */
+object RellRenameSupport : LspRenameSupport() {
+    override fun shouldRunRename(psiFile: PsiFile): Boolean = true
 }
 
 
