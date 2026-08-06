@@ -1,5 +1,15 @@
 # Changelog
 
+## [0.4.7]
+### Added
+- Chromia settings files are checked against the Chromia schema. This now covers settings files whatever they are named.
+- An unresolved module that looks like a declared-but-not-installed library dependency now gets a
+  banner and an Alt+Enter action suggesting `chr install`, instead of just "Module not found"
+### Fixed
+- Rename (Shift+F6) was greyed out for Rell symbols. The platform's default LSP customization only
+  runs rename for plain-text/TextMate files; Rell has no PSI-based rename of its own, so it needs
+  the same opt-in the plugin already does for formatting
+
 ## [0.4.6]
 ### Changed
 - Function calls are italic, so calling a declared function looks different from invoking a function value held in
