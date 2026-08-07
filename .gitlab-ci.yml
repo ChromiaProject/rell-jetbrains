@@ -1,0 +1,149 @@
+image: registry.gitlab.com/chromaway/core-tools/chromia-images/java21-jdk:1.0.0@sha256:9ec77f05e43db94c2b300b64d4ec08355e9bf681d667ae168576993176921396
+
+stages:
+  - test
+  - release
+  - publish
+
+variables:
+  GRADLE_USER_HOME: "$CI_PROJECT_DIR/.gradle-user-home"
+
+workflow:
+  rules:
+    - if: $CI_PIPELINE_SOURCE == "merge_request_event"
+    - if: $CI_COMMIT_BRANCH == $CI_DEFAULT_BRANCH
+
+# Content-based cache key: the two files that most often change with a Gradle/dependency bump.
+# GitLab's cache:key:files only takes two paths, so this is an approximation of the five-file
+# key the Bitbucket pipeline used (gradle-wrapper.properties, libs.versions.toml, build.gradle.kts,
+# settings.gradle.kts, gradle.properties) — build.gradle.kts/settings.gradle.kts/gradle.properties
+# edits alone will reuse a stale cache entry until one of the two hashed files also changes.
+.gradle-cache: &gradle-cache
+  key:
+    files:
+      - gradle/wrapper/gradle-wrapper.properties
+      - gradle/libs.versions.toml
+  paths:
+    - .gradle-user-home/wrapper
+    - .gradle-user-home/caches
+    - .gradle
+    - build
+
+build-and-test:
+  stage: test
+  rules:
+    - if: $CI_PIPELINE_SOURCE == "merge_request_event"
+  cache:
+    <<: *gradle-cache
+  script:
+    - chmod +x ./gradlew
+    - GRADLE_ARGS=(--build-cache)
+    - ./gradlew "${GRADLE_ARGS[@]}" buildPlugin test
+  # 4 vCPU / 16 GB (saas-linux-medium-amd64). The default small runner halves the cores the
+  # headless IDE test harness gets; verifyPlugin, the part that actually needs the large runner,
+  # only runs on the default branch.
+  tags: [ saas-linux-medium-amd64 ]
+  artifacts:
+    when: always
+    paths:
+      - build/distributions/*.zip
+      # The console prints only the assertion class and line for a failing test; the stack trace
+      # that says why lives in these.
+      - build/reports/tests/**
+      - build/test-results/**
+    reports:
+      junit: [ "build/test-results/test/TEST-*.xml" ]
+
+release-build:
+  stage: release
+  rules:
+    - if: $CI_COMMIT_BRANCH == $CI_DEFAULT_BRANCH
+  cache:
+    <<: *gradle-cache
+  script:
+    - chmod +x ./gradlew
+    # 8 vCPU / 32 GB runner (saas-linux-large-amd64). Budget: Gradle build JVM 3 GB heap + 768 MB
+    # metaspace, Kotlin compile daemon 2 GB heap; the remaining headroom covers the forked JVMs —
+    # test/headless IDE first, then the plugin verifier, which runs after the test JVMs are gone.
+    - GRADLE_ARGS=(--build-cache "-Dorg.gradle.jvmargs=-Xmx3g -XX:MaxMetaspaceSize=768m" -Pkotlin.daemon.jvmargs=-Xmx2g)
+    - export SENTRY_AUTH_TOKEN="$RELL_JETBRAINS_SENTRY_AUTH_TOKEN"
+    # verifyPlugin runs the JetBrains Plugin Verifier against every IDE in the supported build
+    # range — the same check the Marketplace applies after upload, and what sank 0.4.1. It gates
+    # the manual publish job below, which only becomes available once this job is green.
+    - ./gradlew "${GRADLE_ARGS[@]}" buildPlugin test verifyPlugin
+  tags: [ saas-linux-large-amd64 ]
+  artifacts:
+    when: always
+    paths:
+      - build/distributions/*.zip
+      # Per-IDE verifier reports, kept so a passing run can still be inspected for warnings the
+      # failure level does not act on.
+      - build/reports/pluginVerifier/**
+      # The console prints only the assertion class and line for a failing test; the stack trace
+      # that says why lives in these.
+      - build/reports/tests/**
+      - build/test-results/**
+    reports:
+      junit: [ "build/test-results/test/TEST-*.xml" ]
+
+publish:
+  stage: publish
+  rules:
+    - if: $CI_COMMIT_BRANCH == $CI_DEFAULT_BRANCH
+      when: manual
+  needs: [ release-build ]
+  environment:
+    name: production
+  cache:
+    <<: *gradle-cache
+  script:
+    - chmod +x ./gradlew
+    # Released versions are tagged with the plain version number; refuse to re-publish a version
+    # that already has a tag.
+    - VERSION=$(sed -n 's/^pluginVersion=//p' gradle.properties)
+    - |
+      git ls-remote --exit-code --tags origin "refs/tags/$VERSION" > /dev/null && status=0 || status=$?
+      if [ "$status" -eq 0 ]; then
+        echo "Tag $VERSION already exists. Bump pluginVersion before releasing." >&2
+        exit 1
+      elif [ "$status" -ne 2 ]; then
+        echo "git ls-remote failed with status $status." >&2
+        exit 1
+      fi
+    # Same 8 GB heap budget as the release-build job.
+    - GRADLE_ARGS=(--build-cache "-Dorg.gradle.jvmargs=-Xmx3g -XX:MaxMetaspaceSize=768m" -Pkotlin.daemon.jvmargs=-Xmx2g)
+    - export SENTRY_AUTH_TOKEN="$RELL_JETBRAINS_SENTRY_AUTH_TOKEN"
+    # A missing token silently disables source context (build.gradle.kts), and a revoked one only
+    # fails deep inside the build — check both here.
+    - |
+      if [ -z "$SENTRY_AUTH_TOKEN" ]; then
+        echo "SENTRY_AUTH_TOKEN is empty: set RELL_JETBRAINS_SENTRY_AUTH_TOKEN before releasing." >&2
+        exit 1
+      fi
+      # Organization tokens only carry org:ci, so org details (org:read) answers 403 for a
+      # perfectly good token. Releases is in scope, and the org is DE-hosted, so it has to be the
+      # regional host.
+      code=$(curl -sS -o /dev/null -w '%{http_code}' --max-time 20 --retry 2 \
+        -H "Authorization: Bearer $SENTRY_AUTH_TOKEN" \
+        https://de.sentry.io/api/0/organizations/chromaway-ab-za/releases/)
+      case "$code" in
+        2??) ;;
+        *)
+          echo "Sentry rejected SENTRY_AUTH_TOKEN (HTTP $code). Rotate the token before releasing." >&2
+          exit 1
+          ;;
+      esac
+    - export PRIVATE_KEY_PASSWORD="$RELL_JETBRAINS_PRIVATE_KEY_PASSWORD"
+    - export PUBLISH_TOKEN="$RELL_JETBRAINS_PUBLISH_TOKEN"
+    # The build reads CERTIFICATE_CHAIN / PRIVATE_KEY as file paths, so the secured variables hold
+    # base64-encoded content decoded here.
+    - echo "$RELL_JETBRAINS_CERTIFICATE_CHAIN" | base64 -d > /tmp/chain.crt
+    - echo "$RELL_JETBRAINS_PRIVATE_KEY" | base64 -d > /tmp/private.pem
+    - export CERTIFICATE_CHAIN=/tmp/chain.crt PRIVATE_KEY=/tmp/private.pem
+    - ./gradlew "${GRADLE_ARGS[@]}" publishPlugin
+    - git tag "$VERSION" "$CI_COMMIT_SHA"
+    # CI_JOB_TOKEN's default repo-push scope is restricted per-project; a project access token
+    # with the write_repository scope is used instead so tag pushes don't depend on that setting.
+    - git remote set-url origin "https://gitlab-ci-token:${RELL_JETBRAINS_GITLAB_PUSH_TOKEN}@${CI_SERVER_HOST}/${CI_PROJECT_PATH}.git"
+    - git push origin "refs/tags/$VERSION"
+  tags: [ saas-linux-large-amd64 ]
