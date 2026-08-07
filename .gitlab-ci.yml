@@ -140,9 +140,27 @@ publish:
     - echo "$RELL_JETBRAINS_PRIVATE_KEY" | base64 -d > /tmp/private.pem
     - export CERTIFICATE_CHAIN=/tmp/chain.crt PRIVATE_KEY=/tmp/private.pem
     - ./gradlew "${GRADLE_ARGS[@]}" publishPlugin
-    - git tag "$VERSION" "$CI_COMMIT_SHA"
-    # CI_JOB_TOKEN's default repo-push scope is restricted per-project; a project access token
-    # with the write_repository scope is used instead so tag pushes don't depend on that setting.
-    - git remote set-url origin "https://gitlab-ci-token:${RELL_JETBRAINS_GITLAB_PUSH_TOKEN}@${CI_SERVER_HOST}/${CI_PROJECT_PATH}.git"
-    - git push origin "refs/tags/$VERSION"
+    # Handed to tag-release, which does the tagging: a job token cannot push over git, but it can
+    # create a tag through the Releases API.
+    - echo "VERSION=$VERSION" > release.env
   tags: [ saas-linux-large-amd64 ]
+  artifacts:
+    reports:
+      dotenv: release.env
+
+# Tags the released commit once the upload has gone through, so a tag never claims a version the
+# Marketplace does not have.
+tag-release:
+  stage: publish
+  rules:
+    - if: $CI_COMMIT_BRANCH == $CI_DEFAULT_BRANCH
+  needs:
+    - job: publish
+      artifacts: true
+  image: registry.gitlab.com/gitlab-org/release-cli:latest
+  script:
+    - echo "Tagging $VERSION at $CI_COMMIT_SHA"
+  release:
+    tag_name: $VERSION
+    ref: $CI_COMMIT_SHA
+    description: "See CHANGELOG.md for the notes of $VERSION."
