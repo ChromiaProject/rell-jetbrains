@@ -37,7 +37,7 @@ The plugin supports following features:
 
 Each project gets the language server matching `compile.rellVersion` in its settings file for every Rell release from 0.16.1 up.
 
-[docs/COMPATIBILITY.md](https://bitbucket.org/chromawallet/rell-jetbrains/src/main/docs/COMPATIBILITY.md)
+[docs/COMPATIBILITY.md](https://gitlab.com/chromaway/rell-jetbrains/-/blob/main/docs/COMPATIBILITY.md)
 lists the supported versions and where settings files go.
 
 ---
@@ -112,7 +112,7 @@ tab_size=4
 
 The plugin collects no analytics or telemetry. Crash reports are sent to ChromaWay's error tracker
 (Sentry, hosted in the EU) only when you explicitly submit one from the IDE's error dialog. The
-[PRIVACY_POLICY.md](https://bitbucket.org/chromawallet/rell-jetbrains/src/main/PRIVACY_POLICY.md) file in the plugin repository describes exactly what a report contains.
+[PRIVACY_POLICY.md](https://gitlab.com/chromaway/rell-jetbrains/-/blob/main/PRIVACY_POLICY.md) file in the plugin repository describes exactly what a report contains.
 
 ---
 

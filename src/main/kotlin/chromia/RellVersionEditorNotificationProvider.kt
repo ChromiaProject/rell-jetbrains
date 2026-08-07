@@ -150,7 +150,7 @@ class RellVersionEditorNotificationProvider : EditorNotificationProvider {
 
     companion object {
         private const val COMPATIBILITY_DOC_URL =
-            "https://bitbucket.org/chromawallet/rell-jetbrains/src/main/docs/COMPATIBILITY.md"
+            "https://gitlab.com/chromaway/rell-jetbrains/-/blob/main/docs/COMPATIBILITY.md"
     }
 }
 

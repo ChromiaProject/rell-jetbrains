@@ -1,5 +1,11 @@
 # rell-jetbrains
 
+## Repository
+
+The canonical repository is `gitlab.com/chromaway/rell-jetbrains`; CI, releases and issues live
+there. The `bitbucket` remote is a frozen mirror whose `main` carries nothing but a tombstone
+README — never push to it, and never merge from it.
+
 ## Adding support for a new Rell version
 
 1. Bump `rell` in `gradle/libs.versions.toml`.
@@ -23,6 +29,6 @@ wrong-version server is never substituted.
 Every published plugin version is tagged in git with the plain version number (e.g. `0.4.0`). Treat tagged versions as released and immutable:
 
 - Never edit, rename, or delete a `## [x.y.z]` section in CHANGELOG.md whose version has a git tag — those are the shipped release notes.
-- Check **remote** tags before modifying CHANGELOG.md: `git ls-remote --tags bitbucket` (the remote is named `bitbucket`, not `origin`). Local tags can be stale and miss recent releases — do not trust `git tag` alone.
+- Check **remote** tags before modifying CHANGELOG.md: `git ls-remote --tags gitlab` (the remote is named `gitlab`, not `origin`). Local tags can be stale and miss recent releases — do not trust `git tag` alone.
 - The section matching the current `pluginVersion` in gradle.properties is the in-progress release (unless that version is tagged on the remote): new entries go there, not into a new `[Unreleased]` section.
 - The Gradle changelog plugin reads the section matching `pluginVersion`, so the new section header must match the new version exactly.

@@ -77,17 +77,21 @@ added as bundled modules in `build.gradle.kts`.
 
 `RellLspRuntimeManager` mirrors this list at runtime when downloading older language-server runtimes.
 
-### CI: Bitbucket Pipelines
+### CI: GitLab CI
 
-`bitbucket-pipelines.yml` defines three steps:
+`.gitlab-ci.yml` defines three jobs:
 
-- **Pull requests:** `buildPlugin test`.
+- **Merge requests:** `buildPlugin test`.
 - **`main`:** the release build — `buildPlugin test verifyPlugin` with `SENTRY_AUTH_TOKEN` set, so
-  source context is uploaded. This gates the publish step, which Bitbucket only offers once the
-  build is green.
-- **Publish (manual trigger, Production deployment):** refuses to run if a git tag for the current
+  source context is uploaded. This gates the publish job, which GitLab only offers once the build
+  is green.
+- **Publish (manual trigger, Production environment):** refuses to run if a git tag for the current
   `pluginVersion` already exists, checks that `SENTRY_AUTH_TOKEN` is present and accepted by
   Sentry, then runs `publishPlugin` and tags the commit with the plain version number.
+
+Everything runs on the chromia-images `java21-jdk` image, which carries the fontconfig and freetype
+libraries the headless IntelliJ test harness needs. The release and publish jobs take a larger
+runner because `verifyPlugin` loads every IDE in the supported build range.
 
 Released versions are therefore always tagged — which is why a `## [x.y.z]` section in CHANGELOG.md
 with a matching tag must never be edited.

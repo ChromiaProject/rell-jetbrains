@@ -14,7 +14,7 @@
 ## Initial Setup
 
 ```bash
-git clone https://bitbucket.org/chromawallet/rell-jetbrains.git
+git clone https://gitlab.com/chromaway/rell-jetbrains.git
 cd rell-jetbrains
 ./gradlew buildPlugin
 # Output: build/distributions/rell-jetbrains-<VERSION>.zip

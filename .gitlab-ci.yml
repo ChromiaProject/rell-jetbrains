@@ -14,10 +14,9 @@ workflow:
     - if: $CI_COMMIT_BRANCH == $CI_DEFAULT_BRANCH
 
 # Content-based cache key: the two files that most often change with a Gradle/dependency bump.
-# GitLab's cache:key:files only takes two paths, so this is an approximation of the five-file
-# key the Bitbucket pipeline used (gradle-wrapper.properties, libs.versions.toml, build.gradle.kts,
-# settings.gradle.kts, gradle.properties) — build.gradle.kts/settings.gradle.kts/gradle.properties
-# edits alone will reuse a stale cache entry until one of the two hashed files also changes.
+# GitLab's cache:key:files takes at most two paths, so build.gradle.kts, settings.gradle.kts and
+# gradle.properties are not hashed — editing only those reuses a stale cache entry until one of
+# the two files below also changes.
 .gradle-cache: &gradle-cache
   key:
     files:
