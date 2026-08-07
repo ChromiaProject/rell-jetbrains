@@ -10,6 +10,8 @@ import net.postchain.rellide.jetbrains.language.parser.v0_16_3.RellLexer as Rell
 import net.postchain.rellide.jetbrains.language.parser.v0_16_3.RellParser as RellParser0163
 import net.postchain.rellide.jetbrains.language.parser.v0_16_4.RellLexer as RellLexer0164
 import net.postchain.rellide.jetbrains.language.parser.v0_16_4.RellParser as RellParser0164
+import net.postchain.rellide.jetbrains.language.parser.v0_16_5.RellLexer as RellLexer0165
+import net.postchain.rellide.jetbrains.language.parser.v0_16_5.RellParser as RellParser0165
 
 /**
  * Version-exact ANTLR parsers, generated at build time from each supported Rell release's own
@@ -24,6 +26,7 @@ object VersionedRellParsers {
         RellVersion(0, 16, 2) to entry(::RellLexer0162, ::RellParser0162, RellParser0162::file),
         RellVersion(0, 16, 3) to entry(::RellLexer0163, ::RellParser0163, RellParser0163::file),
         RellVersion(0, 16, 4) to entry(::RellLexer0164, ::RellParser0164, RellParser0164::file),
+        RellVersion(0, 16, 5) to entry(::RellLexer0165, ::RellParser0165, RellParser0165::file),
     )
 
     fun supports(version: RellVersion): Boolean = version in parsers

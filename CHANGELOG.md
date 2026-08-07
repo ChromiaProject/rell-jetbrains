@@ -2,6 +2,7 @@
 
 ## [0.4.7]
 ### Added
+- Add Rell version 0.16.6
 - Chromia settings files are checked against the Chromia schema. This now covers settings files whatever they are named.
 - An unresolved module that looks like a declared-but-not-installed library dependency now gets a
   banner and an Alt+Enter action suggesting `chr install`, instead of just "Module not found"
