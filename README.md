@@ -3,6 +3,9 @@
 [![Version](https://img.shields.io/jetbrains/plugin/v/net.postchain.rellide.jetbrains.svg)](https://plugins.jetbrains.com/plugin/22585-rell)
 [![Downloads](https://img.shields.io/jetbrains/plugin/d/net.postchain.rellide.jetbrains.svg)](https://plugins.jetbrains.com/plugin/22585-rell)
 
+> **The canonical repository is hosted on GitLab: [gitlab.com/chromaway/rell-jetbrains](https://gitlab.com/chromaway/rell-jetbrains).**
+> The Bitbucket repository is a frozen mirror — please file issues and merge requests on GitLab.
+
 ![./docs/screens/rell-intellij.PNG](./docs/screens/rell-intellij.PNG)
 
 <!-- Plugin description -->
