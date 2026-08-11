@@ -48,7 +48,7 @@ class RellTestLocator : SMTestLocator {
             } else {
                 // If not found by absolute path, try to find by file name
                 locations += FilenameIndex.getVirtualFilesByName(filePath.substringAfterLast("/"), globalSearchScope)
-                    .map(psiManager::findFile)
+                    .mapNotNull(psiManager::findFile)
                     .map(::PsiLocation)
             }
         }
