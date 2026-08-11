@@ -79,9 +79,12 @@ class RellVersionResolver(private val project: Project) {
     fun hasDeclaredLibs(file: VirtualFile): Boolean =
         ApplicationManager.getApplication().runReadAction<Boolean> { chosenClaimant(file)?.parsed?.hasLibs == true }
 
+    /** The settings file governing [file] — the one `chr` commands for it must be pointed at. */
+    fun governingConfigFile(file: VirtualFile): VirtualFile? =
+        ApplicationManager.getApplication().runReadAction<VirtualFile?> { chosenClaimant(file)?.configFile }
+
     /** The directory holding the settings file governing [file] — where `chr` commands for it must run. */
-    fun governingConfigDirectory(file: VirtualFile): VirtualFile? =
-        ApplicationManager.getApplication().runReadAction<VirtualFile?> { chosenClaimant(file)?.configFile?.parent }
+    fun governingConfigDirectory(file: VirtualFile): VirtualFile? = governingConfigFile(file)?.parent
 
     private fun chosenClaimant(file: VirtualFile): Evaluated? {
         val group = findClaimGroup(file)?.takeIf { it.claiming } ?: return null
@@ -195,12 +198,14 @@ class RellVersionResolver(private val project: Project) {
     private fun claims(config: VirtualFile, file: VirtualFile): Boolean =
         sourceRoot(config)?.let { VfsUtilCore.isAncestor(it, file, false) } == true
 
-    /** The directory whose files [config] claims — see the class doc for the chain. */
+    /** The directory whose files [config] claims. */
     private fun sourceRoot(config: VirtualFile): VirtualFile? {
         val dir = config.parent ?: return null
+
         for (candidate in sourceRootCandidates(config)) {
             findRelative(dir, candidate)?.takeIf { it.isDirectory }?.let { return it }
         }
+
         return dir
     }
 

@@ -6,14 +6,14 @@ import com.intellij.openapi.vfs.VirtualFile
 import com.intellij.ui.EditorNotificationPanel
 import com.intellij.ui.EditorNotificationProvider
 import net.postchain.rellide.jetbrains.language.RellFileType.Companion.RELL_EXTENSION
-import net.postchain.rellide.jetbrains.toolwindow.execution.ChromiaCommandExecutor
 import java.util.function.Function
 import javax.swing.JComponent
 
 /**
  * Suggests `chr install` on a `.rell` file whose current diagnostics include an unresolved module
- * that looks like a not-yet-installed library dependency rather than a typo — see
- * [ChromiaMissingLibDetector].
+ * that looks like a not-yet-installed library dependency rather than a typo
+ *
+ * @see [ChromiaMissingLibDetector]
  */
 class ChromiaMissingLibNotificationProvider : EditorNotificationProvider {
     override fun collectNotificationData(
@@ -27,12 +27,11 @@ class ChromiaMissingLibNotificationProvider : EditorNotificationProvider {
 
     private fun panel(project: Project, file: VirtualFile, modulePath: String): JComponent {
         val panel = EditorNotificationPanel(EditorNotificationPanel.Status.Warning)
-        panel.text = "Module '$modulePath' was not found — it may belong to a library declared in " +
-                "chromia.yml that has not been installed yet."
-        panel.createActionLabel("Run chr install") {
-            val configDirectory = RellVersionResolver.getInstance(project).governingConfigDirectory(file)
-            ChromiaCommandExecutor(project).executeCommand("chr install", configDirectory?.path)
-        }
+        val settingsFileName = RellVersionResolver.getInstance(project).governingConfigFile(file)?.name
+            ?: ChromiaSettingsFiles.CHROMIA_YML
+        panel.text = "Module '$modulePath' was not found. It may belong to a library declared in " +
+                "$settingsFileName that has not been installed yet."
+        panel.createActionLabel("Run chr install") { ChromiaInstallCommand.run(project, file) }
         return panel
     }
 }

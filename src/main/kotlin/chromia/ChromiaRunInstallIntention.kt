@@ -7,7 +7,6 @@ import com.intellij.psi.PsiDocumentManager
 import com.intellij.psi.PsiFile
 import net.postchain.rellide.jetbrains.lsp.RellLspDiagnosticRanges
 import net.postchain.rellide.jetbrains.lsp.RellLspDiagnosticsCache
-import net.postchain.rellide.jetbrains.toolwindow.execution.ChromiaCommandExecutor
 
 /**
  * Alt-Enter action offering `chr install` when the caret sits on an unresolved-module diagnostic
@@ -28,8 +27,7 @@ class ChromiaRunInstallIntention : IntentionAction {
 
     override fun invoke(project: Project, editor: Editor?, file: PsiFile?) {
         val virtualFile = file?.virtualFile ?: return
-        val configDirectory = RellVersionResolver.getInstance(project).governingConfigDirectory(virtualFile)
-        ChromiaCommandExecutor(project).executeCommand("chr install", configDirectory?.path)
+        ChromiaInstallCommand.run(project, virtualFile)
     }
 
     private fun missingLibModuleAtCaret(project: Project, file: PsiFile, editor: Editor): String? {

@@ -1,5 +1,10 @@
 # Changelog
 
+## [0.4.8]
+### Fixed
+- The `chr install` suggestion on an unresolved library module now runs against the active settings file, so it works
+  in projects whose settings file is not `chromia.yml`.
+
 ## [0.4.7]
 ### Added
 - Add Rell version 0.16.6
