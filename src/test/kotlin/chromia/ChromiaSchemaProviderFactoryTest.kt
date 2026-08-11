@@ -41,7 +41,7 @@ class ChromiaSchemaProviderFactoryTest : BasePlatformTestCase() {
 
     fun testAlternateNameWithBlockchainsGetsTheSchema() {
         assertTrue(
-            "A -s/--settings file must validate like chromia.yml — the whole point of the provider",
+            "A -s/--settings file must validate like chromia.yml",
             provider.isAvailable(file("atbash-dev.yml", settingsYml())),
         )
     }

@@ -67,13 +67,14 @@ class RellLspRuntimeManager {
             override fun onSuccess() {
                 // Route open files through the provider again in every open project so the
                 // now-available server starts, and re-run highlighting against it.
-                for (openProject in ProjectManager.getInstance().openProjects) {
-                    if (!openProject.isDisposed) {
+                ProjectManager.getInstance().openProjects
+                    .filterNot { it.isDisposed }
+                    .forEach { openProject ->
                         LspClientManager.getInstance(openProject)
                             .startClientsIfNeeded(RellLspIntegrationProvider::class.java)
+
                         DaemonCodeAnalyzer.getInstance(openProject).restart("Rell $version LSP runtime downloaded")
                     }
-                }
             }
 
             override fun onThrowable(error: Throwable) {
@@ -108,9 +109,12 @@ class RellLspRuntimeManager {
             if (target.isRegularFile() && sha256(target) == artifact.sha256) continue
             downloadArtifact(artifact, target, indicator)
             val actual = sha256(target)
+
             if (actual != artifact.sha256) {
                 target.deleteIfExists()
-                throw IOException("Checksum mismatch for ${artifact.fileName}: expected ${artifact.sha256}, got $actual")
+                throw IOException(
+                    "Checksum mismatch for ${artifact.fileName}: expected ${artifact.sha256}, got $actual"
+                )
             }
         }
 
@@ -122,6 +126,7 @@ class RellLspRuntimeManager {
 
     private fun downloadArtifact(artifact: RellLspLockfile.Artifact, target: Path, indicator: ProgressIndicator) {
         var lastError: IOException? = null
+
         for (repository in MAVEN_REPOSITORIES) {
             try {
                 HttpRequests.request("$repository/${artifact.mavenPath}").saveToFile(target, indicator)
@@ -130,6 +135,7 @@ class RellLspRuntimeManager {
                 lastError = e
             }
         }
+
         throw IOException("Could not download ${artifact.gav} from any repository", lastError)
     }
 

@@ -69,19 +69,25 @@ internal class ChromiaConfigChangeListener(private val project: Project) : BulkF
             if (project.isDisposed) return@executeOnPooledThread
             var changed = false
             var isConfig = base == Impact.CONFIG_TOUCHED
-            for (file in files) {
-                if (!file.isValid) continue
+
+            for (file in files.filter { it.isValid }) {
                 val delta = ReadAction.nonBlocking<Boolean> {
-                    if (project.isDisposed) false else resolver.refreshConfig(file)
+                    !project.isDisposed && resolver.refreshConfig(file)
                 }.executeSynchronously()
+
                 changed = changed || delta
                 isConfig = isConfig || resolver.isKnownCandidate(file.path)
             }
+
             if (!changed && !isConfig) return@executeOnPooledThread
-            ApplicationManager.getApplication().invokeLater({
-                if (project.isDisposed) return@invokeLater
-                if (changed) ChromiaConfigRefresh.versionChanged(project) else ChromiaConfigRefresh.touched(project)
-            }, project.disposed)
+
+            ApplicationManager.getApplication().invokeLater(
+                {
+                    if (project.isDisposed) return@invokeLater
+                    if (changed) ChromiaConfigRefresh.versionChanged(project) else ChromiaConfigRefresh.touched(project)
+                },
+                project.disposed
+            )
         }
     }
 
@@ -172,11 +178,15 @@ internal class ChromiaConfigChangeListener(private val project: Project) : BulkF
         if (dir == null || !dir.isValid || !isInProjectContent(dir)) return Impact.NONE
 
         var impact = Impact.NONE
-        for (child in dir.children) {
-            if (child.isDirectory || !ChromiaSettingsFiles.isYmlName(child.name)) continue
-            if (ChromiaSettingsFiles.isDefaultName(child.name)) return Impact.VERSION_CHANGED
-            impact = maxOf(impact, defer(child, toDiff))
-        }
+
+        dir.children
+            .filterNot { it.isDirectory }
+            .filter { ChromiaSettingsFiles.isYmlName(it.name) }
+            .forEach { child ->
+                if (ChromiaSettingsFiles.isDefaultName(child.name)) return Impact.VERSION_CHANGED
+                impact = maxOf(impact, defer(child, toDiff))
+            }
+
         return impact
     }
 

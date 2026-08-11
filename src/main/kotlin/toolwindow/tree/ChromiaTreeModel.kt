@@ -46,18 +46,19 @@ class ChromiaTreeModel(private val project: Project) : DefaultTreeModel(createRo
         val discoveredProjects = ChromiaProjectDiscovery.discoverProjects(project)
 
         if (discoveredProjects.isEmpty()) {
-            val noProjectsNode = ChromiaTreeNode(
-                displayName = "No Chromia projects found",
-                nodeType = ChromiaNodeType.CATEGORY,
-                icon = AllIcons.General.Information
+            root.add(
+                ChromiaTreeNode(
+                    displayName = "No Chromia projects found",
+                    nodeType = ChromiaNodeType.CATEGORY,
+                    icon = AllIcons.General.Information
+                )
             )
-            root.add(noProjectsNode)
         } else {
             for (rellProject in discoveredProjects) {
-                val projectNode = createProjectNode(rellProject)
-                root.add(projectNode)
+                root.add(createProjectNode(rellProject))
             }
         }
+
         loadParametersFromSettings()
         reload()
     }
@@ -89,12 +90,13 @@ class ChromiaTreeModel(private val project: Project) : DefaultTreeModel(createRo
                 nodeType = ChromiaNodeType.CATEGORY,
                 icon = AllIcons.Nodes.ConfigFolder
             )
+
             for (name in chromiaProject.settingsFiles) {
                 settingsCategory.add(
                     ChromiaTreeNode(
                         displayName = name,
                         nodeType = ChromiaNodeType.SETTINGS_FILE,
-                        description = "Chromia settings file — the active one decides the Rell version " +
+                        description = "Chromia settings file. The active one decides the Rell version " +
                                 "and the --settings argument of project commands",
                         icon = RellIcons.CHROMIA_ICON_FILE,
                         projectPath = chromiaProject.path,
@@ -104,6 +106,7 @@ class ChromiaTreeModel(private val project: Project) : DefaultTreeModel(createRo
                     }
                 )
             }
+
             projectNode.add(settingsCategory)
         }
 
@@ -177,6 +180,7 @@ class ChromiaTreeModel(private val project: Project) : DefaultTreeModel(createRo
                 chromiaProject.path
             )
         )
+
         projectNode.add(nodeCategory)
 
 

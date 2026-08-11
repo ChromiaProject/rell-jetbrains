@@ -51,17 +51,17 @@ object ChromiaProjectDiscovery {
         if (currentDepth >= maxDepth || !dir.isDirectory) return
 
         val settingsFiles = findSettingsFiles(dir)
+
         if (settingsFiles.isNotEmpty()) {
             val active = activeSettingsFile(dir, settingsFiles, activeSettings)
-            projects.add(
-                ChromiaProject(
-                    name = dir.name,
-                    path = dir.absolutePath,
-                    configFile = File(dir, active).absolutePath,
-                    settingsFiles = settingsFiles,
-                    activeSettingsFile = active,
-                    activeDeclaredVersion = declaredVersionIn(File(dir, active)),
-                )
+
+            projects += ChromiaProject(
+                name = dir.name,
+                path = dir.absolutePath,
+                configFile = File(dir, active).absolutePath,
+                settingsFiles = settingsFiles,
+                activeSettingsFile = active,
+                activeDeclaredVersion = declaredVersionIn(File(dir, active)),
             )
         }
 

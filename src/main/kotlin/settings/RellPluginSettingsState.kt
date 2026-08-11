@@ -62,13 +62,15 @@ class RellPluginSettingsState : PersistentStateComponent<RellPluginSettingsState
         val cmd = overrideCommand?.trim()?.takeIf { it.isNotBlank() }
             ?: effectiveCommand()
             ?: return null
+
         val fullCmd = buildString {
             append(cmd)
+
             for (arg in args) {
-                append(' ')
-                append(shellQuote(arg))
+                append(' ').append(shellQuote(arg))
             }
         }
+
         return wrapInShell(fullCmd)
     }
 
@@ -81,11 +83,13 @@ class RellPluginSettingsState : PersistentStateComponent<RellPluginSettingsState
     fun buildChromiaCliCommandLineFromString(command: String): GeneralCommandLine? {
         val substitution = effectiveCommand() ?: return null
         val prefix = "chr"
+
         val fullCmd = if (command == prefix || command.startsWith("$prefix ")) {
             command.replaceFirst(prefix, substitution)
         } else {
             command
         }
+
         return wrapInShell(fullCmd)
     }
 
@@ -165,12 +169,11 @@ class RellPluginSettingsState : PersistentStateComponent<RellPluginSettingsState
             else GeneralCommandLine("sh", "-c", fullCmd)
 
         private fun findOnPath(name: String): String? {
-            val pathEnv = System.getenv("PATH") ?: return null
-            for (dir in pathEnv.split(File.pathSeparator)) {
-                val f = File(dir, name)
-                if (f.canExecute()) return f.absolutePath
-            }
-            return null
+            return (System.getenv("PATH") ?: return null)
+                .splitToSequence(File.pathSeparator)
+                .map { dir -> File(dir, name) }
+                .find { it.canExecute() }
+                ?.absolutePath
         }
 
         private fun shellQuote(arg: String): String =

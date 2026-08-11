@@ -53,9 +53,11 @@ private fun collectDescriptorsRecursively(
     descriptors: MutableList<FoldingDescriptor>,
 ) {
     val type = node.elementType
+
     if (type === BLOCK_STMT && spanMultipleLines(node, document) || type === ML_COMMENT || type in DEF_TYPES) {
-        descriptors.add(FoldingDescriptor(node, node.textRange))
+        descriptors += FoldingDescriptor(node, node.textRange)
     }
+
     for (child in node.getChildren(null)) {
         collectDescriptorsRecursively(child, document, descriptors)
     }

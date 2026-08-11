@@ -33,25 +33,23 @@ class RellTestLocator : SMTestLocator {
 
         // Parse the path which should be in format: file_path:line_number:function_name
         val parts = path.split(":")
+
         if (parts.isNotEmpty()) {
             val filePath = parts[0]
             val psiManager = PsiManager.getInstance(project)
 
             // Try to find file by absolute path first
             val virtualFile = LocalFileSystem.getInstance().findFileByPath(filePath)
+
             if (virtualFile != null) {
-                val psiFile = psiManager.findFile(virtualFile)
-                if (psiFile != null) {
-                    locations.add(PsiLocation(psiFile))
+                psiManager.findFile(virtualFile)?.let {
+                    locations += PsiLocation(it)
                 }
             } else {
-                // If not found by absolute path, try to find by filename
-                val fileName = filePath.substringAfterLast("/")
-                val virtualFiles = FilenameIndex.getVirtualFilesByName(fileName, globalSearchScope)
-                for (virtualFile in virtualFiles) {
-                    val psiFile = psiManager.findFile(virtualFile)
-                    locations.add(PsiLocation(psiFile))
-                }
+                // If not found by absolute path, try to find by file name
+                locations += FilenameIndex.getVirtualFilesByName(filePath.substringAfterLast("/"), globalSearchScope)
+                    .map(psiManager::findFile)
+                    .map(::PsiLocation)
             }
         }
 
