@@ -17,16 +17,32 @@ workflow:
 # GitLab's cache:key:files takes at most two paths, so build.gradle.kts, settings.gradle.kts and
 # gradle.properties are not hashed — editing only those reuses a stale cache entry until one of
 # the two files below also changes.
-.gradle-cache: &gradle-cache
+#
+# .gradle-user-home/caches also holds verifyPlugin's downloaded IDE distributions (the
+# IntelliJ Platform Gradle Plugin stores them as Gradle module artifacts), which are several
+# hundred MB to GB each across the "recommended" verification matrix. Cached together with the
+# rest of caches/, that blew past the S3-backed runner cache's single-PUT upload limit
+# (EntityTooLarge on ~24.9k files). verifyPlugin only runs in release-build/publish, so those
+# jobs get a slimmer cache without caches/, while build-and-test — which never runs it — keeps
+# the full dependency cache.
+.gradle-cache-base: &gradle-cache-base
   key:
     files:
       - gradle/wrapper/gradle-wrapper.properties
       - gradle/libs.versions.toml
   paths:
     - .gradle-user-home/wrapper
+    - .gradle
+
+.gradle-cache: &gradle-cache
+  <<: *gradle-cache-base
+  paths:
+    - .gradle-user-home/wrapper
     - .gradle-user-home/caches
     - .gradle
-    - build
+
+.gradle-cache-no-verifier: &gradle-cache-no-verifier
+  <<: *gradle-cache-base
 
 build-and-test:
   stage: test
@@ -58,7 +74,7 @@ release-build:
   rules:
     - if: $CI_COMMIT_BRANCH == $CI_DEFAULT_BRANCH
   cache:
-    <<: *gradle-cache
+    <<: *gradle-cache-no-verifier
   script:
     - chmod +x ./gradlew
     # 8 vCPU / 32 GB runner (saas-linux-large-amd64). Budget: Gradle build JVM 3 GB heap + 768 MB
@@ -94,7 +110,7 @@ publish:
   environment:
     name: production
   cache:
-    <<: *gradle-cache
+    <<: *gradle-cache-no-verifier
   script:
     - chmod +x ./gradlew
     # Released versions are tagged with the plain version number; refuse to re-publish a version
