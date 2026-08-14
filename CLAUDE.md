@@ -6,23 +6,16 @@ The canonical repository is `gitlab.com/chromaway/rell-jetbrains`; CI, releases 
 there. The `bitbucket` remote is a frozen mirror whose `main` carries nothing but a tombstone
 README — never push to it, and never merge from it.
 
-## Adding support for a new Rell version
+## Bumping the bundled Rell version
 
-1. Bump `rell` in `gradle/libs.versions.toml`.
-2. Append the new version to `supportedRellVersions` in `build.gradle.kts` (the build fails if the
-   two drift).
-3. Add the previous newest version to `VersionedRellParsers` (its grammar now generates
-   automatically; `VersionedRellParsersTest` fails until the entry exists).
-4. Bump the newest-version literals in the tests that assert against it by string:
-   `RellLspRoutingTest`, `RellVersionResolverTest`, `RellVersionSyntaxAnnotatorTest`,
-   `RellVersionEditorNotificationProviderTest`. `plugin.xml` needs nothing — the single
-   `platform.lsp.integrationProvider` (`RellLspIntegrationProvider`) routes each file to
-   `RellLspClientDescriptor.versioned`, built per version at runtime.
-5. Extend the version matrix in `docs/COMPATIBILITY.md` and CHANGELOG.md.
+1. Bump `rell` in `gradle/libs.versions.toml`. That drives the editor grammar, the bundled language
+   server, and the build-generated `rell/bundled-version.txt` that `BundledRellVersion` reads.
+2. Extend the version matrix in `docs/COMPATIBILITY.md` and CHANGELOG.md.
 
-Older language servers are downloaded on first use into `<IDE system dir>/rell-lsp/<version>/`,
-pinned and SHA-256-verified by the build-generated lockfile `rell/lsp-lockfiles/<version>.lock`; a
-wrong-version server is never substituted.
+The plugin bundles one language server for every project. A project's `compile.rellVersion` selects
+the compiler's compatibility mode inside that server, so an older project gets that release's
+diagnostics without a second toolchain — there is nothing to download and no version-exact grammar
+to generate.
 
 ## Releases and CHANGELOG.md
 

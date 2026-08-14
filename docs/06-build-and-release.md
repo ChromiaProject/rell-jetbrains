@@ -37,17 +37,13 @@ away, so they do not block a release.
 
 ### Build-generated inputs
 
-Three generation steps run before compilation, all driven by `supportedRellVersions` and the `rell`
-version in `gradle/libs.versions.toml`:
+Two generation steps run before compilation, both driven by the `rell` version in
+`gradle/libs.versions.toml`:
 
-- `extractRellGrammar` + `generateGrammarSource` — `Rell.g4` for the newest supported version, from
-  the `net.postchain.rell:frontend:<rell>:sources` jar, generating the editor parser/lexer. Each
-  older version gets its own extract/generate pair into a version-suffixed package.
-- `generateRellVersionRegistry` — `rell/supported-versions.txt`, read by `RellVersionRegistry`. It
-  fails the build if `supportedRellVersions` does not end with the `rell` version, so the two cannot
-  drift.
-- `generateRellLspLockfiles` — `rell/lsp-lockfiles/<version>.lock` (GAV + SHA-256) for the
-  downloadable language-server runtimes of older versions.
+- `extractRellGrammar` + `generateGrammarSource` — `Rell.g4` from the
+  `net.postchain.rell:frontend:<rell>:sources` jar, generating the editor parser/lexer.
+- `generateBundledRellVersion` — `rell/bundled-version.txt`, read by `BundledRellVersion` for the
+  version text the settings-file UI shows.
 
 The bundled language server is resolved from Maven as a detached configuration and copied into the
 plugin by `prepareSandbox`, together with `lsp-config/log4j2-override.properties`. There is no manual
@@ -74,8 +70,6 @@ added as bundled modules in `build.gradle.kts`.
 - **etherjar:** `https://maven.emrld.io`
 
 **Why GitLab Maven?** Rell and related libraries are hosted on GitLab package registries (not Maven Central).
-
-`RellLspRuntimeManager` mirrors this list at runtime when downloading older language-server runtimes.
 
 ### CI: GitLab CI
 

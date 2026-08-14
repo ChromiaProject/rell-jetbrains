@@ -49,8 +49,8 @@ sandbox IDE against a snapshot instead of the release pinned in `libs.versions.t
   work/snapshot-lsp.sh                                 # current snapshot (next minor over the pinned release)
   RELL_SNAPSHOT=0.18.0-SNAPSHOT work/snapshot-lsp.sh   # a different snapshot version
 ```
-Only the language-server runtime is swapped — the editor grammar, the chromia.yml parser and the
-compatibility-mode lockfiles stay at the pinned release.
+Only the language-server runtime is swapped — the editor grammar and the chromia.yml parser stay at
+the pinned release.
 
 ---
 

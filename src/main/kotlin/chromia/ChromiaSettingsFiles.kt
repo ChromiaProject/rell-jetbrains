@@ -24,31 +24,20 @@ object ChromiaSettingsFiles {
 
     fun isYmlName(name: String?): Boolean = name?.endsWith(YML_EXTENSION, ignoreCase = true) == true
 
-    /**
-     * The version whose toolchain serves a config declaring [declared]: `null` below the
-     * compatibility floor (hard cease), clamped to the newest supported version when the declared
-     * version is unknown to this build, the newest when nothing usable is declared.
-     */
-    fun effectiveVersion(declared: RellVersion?): RellVersion? = when {
-        declared == null -> RellVersionRegistry.max
-        declared < RellVersionRegistry.floor -> null
-        RellVersionRegistry.isSupported(declared) -> declared
-        else -> RellVersionRegistry.max
-    }
+    /** The version a config declaring [declared] is analysed at — the bundled one when it declares nothing. */
+    fun effectiveVersion(declared: RellVersion?): RellVersion = declared ?: BundledRellVersion.version
 
     /**
      * The settings file that governs a directory when the user has not chosen one: `chromia.yml`
-     * if present, else the candidate whose toolchain is newest — below-floor candidates last, ties
-     * broken by name for determinism. [declaredOf] supplies each candidate's parsed
-     * `compile.rellVersion` (null when absent or malformed).
+     * if present, else the candidate declaring the newest version, ties broken by name for
+     * determinism. [declaredOf] supplies each candidate's parsed `compile.rellVersion` (null when
+     * absent or malformed).
      */
     fun defaultChoice(names: List<String>, declaredOf: (String) -> RellVersion?): String {
         require(names.isNotEmpty()) { "defaultChoice needs at least one candidate" }
         names.firstOrNull { isDefaultName(it) }?.let { return it }
         return names.sortedWith(
-            compareByDescending<String> { effectiveVersion(declaredOf(it)) != null }
-                .thenByDescending { effectiveVersion(declaredOf(it)) ?: declaredOf(it)!! }
-                .thenBy { it.lowercase() },
+            compareByDescending<String> { effectiveVersion(declaredOf(it)) }.thenBy { it.lowercase() },
         ).first()
     }
 }

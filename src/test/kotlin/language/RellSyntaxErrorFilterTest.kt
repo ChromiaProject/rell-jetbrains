@@ -17,12 +17,12 @@ class RellSyntaxErrorFilterTest : RellVersionAwareTestCase() {
         assertFalse(filter.shouldHighlightErrorElement(firstPsiError("f-served")))
     }
 
-    fun testPsiErrorsStayVisibleBelowTheCompatibilityFloor() {
+    fun testPsiErrorsAreHiddenWhateverVersionTheProjectDeclares() {
         myFixture.addFileToProject(
-            "f-ceased/chromia.yml",
+            "f-old/chromia.yml",
             "blockchains:\n  my_chain:\n    module: main\ncompile:\n  rellVersion: \"0.14.5\"\n",
         )
-        assertTrue(filter.shouldHighlightErrorElement(firstPsiError("f-ceased")))
+        assertFalse(filter.shouldHighlightErrorElement(firstPsiError("f-old")))
     }
 
     fun testNonRellPsiErrorsAreUntouched() {

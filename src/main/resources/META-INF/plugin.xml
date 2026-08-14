@@ -65,10 +65,10 @@
         <lang.foldingBuilder language="Rell"
                              implementationClass="net.postchain.rellide.jetbrains.language.RellFoldingBuilder"/>
 
-        <!-- Per-version Rell language servers (docs/COMPATIBILITY.md): the provider routes each
-             file to the server of its chromia.yml-declared version — and to none below the
-             compatibility floor. Signature help, structure view, semantic tokens, and the rest of
-             the LSP feature set come with the platform integration. -->
+        <!-- The bundled Rell language server (docs/COMPATIBILITY.md): one server serves every Rell
+             file and compiles each project against the version its chromia.yml declares. Signature
+             help, structure view, semantic tokens, and the rest of the LSP feature set come with
+             the platform integration. -->
         <platform.lsp.integrationProvider
                 implementation="net.postchain.rellide.jetbrains.lsp.RellLspIntegrationProvider"/>
 
@@ -94,14 +94,6 @@
         <!-- Spellchecking -->
         <spellchecker.support language="Rell"
                               implementationClass="net.postchain.rellide.jetbrains.spellchecking.RellSpellcheckingStrategy"/>
-
-        <!-- Version-exact syntax errors for projects on older supported Rell versions -->
-        <externalAnnotator language="Rell"
-                           implementationClass="net.postchain.rellide.jetbrains.chromia.RellVersionSyntaxAnnotator"/>
-
-        <!-- Banners for unsupported (below the compatibility floor) and newer-than-known Rell versions -->
-        <editorNotificationProvider
-                implementation="net.postchain.rellide.jetbrains.chromia.RellVersionEditorNotificationProvider"/>
 
         <!-- Banner suggesting `chr install` for an unresolved module that looks like a
              not-yet-installed library dependency -->

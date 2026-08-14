@@ -5,22 +5,19 @@ import com.intellij.openapi.project.Project
 import com.intellij.platform.lsp.api.LspClient
 import com.intellij.platform.lsp.api.LspClientManager
 import com.intellij.platform.lsp.api.LspServerState
-import net.postchain.rellide.jetbrains.chromia.RellVersionRegistry
 import org.eclipse.lsp4j.jsonrpc.ResponseErrorException
 import java.util.concurrent.CompletableFuture
 
-/** All Rell language-server clients of [project] that are up and running, any Rell version. */
+/** All Rell language-server clients of [project] that are up and running. */
 fun runningRellLspClients(project: Project): List<LspClient> = LspClientManager.getInstance(project)
     .getClients(RellLspIntegrationProvider::class.java)
     .filter { it.state == LspServerState.Running }
 
 /**
- * The running client of the newest supported Rell version — the bundled toolchain that serves
- * plugin-level requests (tests, templates, cache invalidation) — or `null` if it is not running.
+ * The running language-server client — the one that serves plugin-level requests (tests, templates,
+ * cache invalidation) — or `null` if it is not running.
  */
-fun getRellLspClient(project: Project): LspClient? = runningRellLspClients(project).find {
-    (it.descriptor as? RellLspClientDescriptor)?.version == RellVersionRegistry.max
-}
+fun getRellLspClient(project: Project): LspClient? = runningRellLspClients(project).firstOrNull()
 
 fun rellLanguageServerIsRunning(project: Project): Boolean = getRellLspClient(project) != null
 

@@ -1,7 +1,23 @@
 # Changelog
 
 ## [0.4.8]
+### Changed
+- One bundled language server now serves every Rell project. It reads `compile.rellVersion` from the
+  project's settings file and analyses that project at the declared version, so an older project
+  still gets its own release's diagnostics and completions without a version-exact toolchain.
+
+### Removed
+- Older language servers are no longer downloaded on first use, and the per-version editor grammars
+  that produced "Not valid in Rell X.Y.Z" are gone — the language server reports version problems as
+  ordinary diagnostics on the offending code.
+- The compatibility floor is gone with them: no project is left without a language server because of
+  the version it declares, and the "unsupported version" and "newer than this plugin knows" banners
+  no longer appear.
+
 ### Fixed
+- Switching the active Chromia settings file now takes effect immediately: the language server is
+  told which file governs and re-analyses the project against it, instead of being restarted and
+  losing its index.
 - The `chr install` suggestion on an unresolved library module now runs against the active settings file, so it works
   in projects whose settings file is not `chromia.yml`.
 

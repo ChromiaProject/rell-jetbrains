@@ -15,6 +15,14 @@ interface RellServerApi : LanguageServer {
 
     @JsonRequest("rell/addToProject")
     fun addToProject(params: AddToProjectParams): CompletableFuture<Void>
+
+    /**
+     * Tells the server which Chromia settings files the user has chosen, so switching a directory
+     * between its `chromia.yml` and a sibling re-analyses the sources against the newly active
+     * file's `compile.rellVersion` and `compile.source`. Answers `true` if it re-indexed.
+     */
+    @JsonRequest("rell/setSettingsFiles")
+    fun setSettingsFiles(params: SetSettingsFilesParams): CompletableFuture<Boolean>
 }
 
 
@@ -33,4 +41,13 @@ data class TemplateOptions(
 data class AddToProjectParams(
     val targetDirUri: String,
     val options: TemplateOptions,
+)
+
+/**
+ * Only the settings files that are *not* the `chromia.yml` of their own directory need listing — the
+ * server discovers those by name. An empty list means "use name-based discovery everywhere", which
+ * is what switching a directory back to its `chromia.yml` amounts to.
+ */
+data class SetSettingsFilesParams(
+    val configFileUris: List<String>,
 )

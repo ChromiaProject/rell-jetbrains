@@ -31,7 +31,12 @@ class RellCodeActionsSupportTest : BasePlatformTestCase() {
     }
 
     fun testIntentionChannelServesRefactorRewriteKinds() {
-        assertNotNull(RellCodeActionsSupport.createIntentionAction(fakeLspClient, action(CodeActionKind.RefactorRewrite)))
+        assertNotNull(
+            RellCodeActionsSupport.createIntentionAction(
+                fakeLspClient,
+                action(CodeActionKind.RefactorRewrite)
+            )
+        )
     }
 
     // The platform's preview mutates the preview document, which trips application-wide document
@@ -80,6 +85,7 @@ class RellCodeActionsSupportTest : BasePlatformTestCase() {
         override val project: Project get() = error("unused")
         override val descriptor: LspClientDescriptor get() = error("unused")
         override val state: LspServerState get() = error("unused")
+
         // Read by LspIntentionAction's constructor (resolve-support probing); null means "no
         // capabilities known", which is fine for constructing the action.
         override val initializeResult: InitializeResult? get() = null

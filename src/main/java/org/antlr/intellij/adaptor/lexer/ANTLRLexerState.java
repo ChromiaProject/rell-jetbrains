@@ -37,92 +37,92 @@ import org.jetbrains.annotations.Nullable;
  */
 @Immutable
 public class ANTLRLexerState {
-	/**
-	 * This is the backing field for {@link #getMode}.
-	 */
-	private final int mode;
-	/**
-	 * This is the backing field for {@link #getModeStack}.
-	 */
-	@Nullable
-	private final int[] modeStack;
+    /**
+     * This is the backing field for {@link #getMode}.
+     */
+    private final int mode;
+    /**
+     * This is the backing field for {@link #getModeStack}.
+     */
+    @Nullable
+    private final int[] modeStack;
 
-	/**
-	 * This field stores the cached hash code to maximize the efficiency of {@link #hashCode}.
-	 */
-	private int cachedHashCode;
+    /**
+     * This field stores the cached hash code to maximize the efficiency of {@link #hashCode}.
+     */
+    private int cachedHashCode;
 
-	/**
-	 * Constructs a new instance of {@link ANTLRLexerState}
-	 * containing the mode and mode stack information for an ANTLR
-	 * lexer.
-	 *
-	 * @param mode The current lexer mode, {@link Lexer#_mode}.
-	 * @param modeStack The lexer mode stack, {@link Lexer#_modeStack}, or {@code null} .
-	 */
-	public ANTLRLexerState(int mode, @Nullable IntegerStack modeStack) {
-		this.mode = mode;
-		this.modeStack = modeStack != null ? modeStack.toArray() : null;
-	}
+    /**
+     * Constructs a new instance of {@link ANTLRLexerState}
+     * containing the mode and mode stack information for an ANTLR
+     * lexer.
+     *
+     * @param mode      The current lexer mode, {@link Lexer#_mode}.
+     * @param modeStack The lexer mode stack, {@link Lexer#_modeStack}, or {@code null} .
+     */
+    public ANTLRLexerState(int mode, @Nullable IntegerStack modeStack) {
+        this.mode = mode;
+        this.modeStack = modeStack != null ? modeStack.toArray() : null;
+    }
 
-	/**
-	 * Gets the value of {@link Lexer#_mode} for the current lexer state.
-	 *
-	 * @return The value of {@link Lexer#_mode} for the current lexer state.
-	 */
-	public int getMode() {
-		return mode;
-	}
+    /**
+     * Gets the value of {@link Lexer#_mode} for the current lexer state.
+     *
+     * @return The value of {@link Lexer#_mode} for the current lexer state.
+     */
+    public int getMode() {
+        return mode;
+    }
 
-	/**
-	 * Gets the mode stack stored in {@link Lexer#_modeStack} for
-	 * the current lexer state.
-	 *
-	 * @return The mode stack stored in {@link Lexer#_modeStack}
-	 * for the current lexer state, or {@code null} if the mode
-	 * stack is empty.
-	 */
-	@Nullable
-	public int[] getModeStack() {
-		return modeStack;
-	}
+    /**
+     * Gets the mode stack stored in {@link Lexer#_modeStack} for
+     * the current lexer state.
+     *
+     * @return The mode stack stored in {@link Lexer#_modeStack}
+     * for the current lexer state, or {@code null} if the mode
+     * stack is empty.
+     */
+    @Nullable
+    public int[] getModeStack() {
+        return modeStack;
+    }
 
-	public void apply(@NotNull Lexer lexer) {
-		lexer._mode = getMode();
-		lexer._modeStack.clear();
-		if (getModeStack() != null) {
-			lexer._modeStack.addAll(getModeStack());
-		}
-	}
+    public void apply(@NotNull Lexer lexer) {
+        lexer._mode = getMode();
+        lexer._modeStack.clear();
+        if (getModeStack() != null) {
+            lexer._modeStack.addAll(getModeStack());
+        }
+    }
 
-	@Override
-	public final int hashCode() {
-		if (cachedHashCode == 0) {
-			cachedHashCode = hashCodeImpl();
-		}
+    @Override
+    public final int hashCode() {
+        if (cachedHashCode == 0) {
+            cachedHashCode = hashCodeImpl();
+        }
 
-		return cachedHashCode;
-	}
+        return cachedHashCode;
+    }
 
-	@Override
-	public boolean equals(Object obj) {
-		if (obj == this) {
-			return true;
-		}
+    @Override
+    public boolean equals(Object obj) {
+        if (obj == this) {
+            return true;
+        }
 
-		if (!(obj instanceof ANTLRLexerState)) {
-			return false;
-		}
+        if (!(obj instanceof ANTLRLexerState)) {
+            return false;
+        }
 
-		ANTLRLexerState other = (ANTLRLexerState)obj;
-		return this.mode == other.mode
-			&& ObjectEqualityComparator.INSTANCE.equals(this.modeStack, other.modeStack);
-	}
+        ANTLRLexerState other = (ANTLRLexerState) obj;
+        return this.mode == other.mode
+                && ObjectEqualityComparator.INSTANCE.equals(this.modeStack, other.modeStack);
+    }
 
-	protected int hashCodeImpl() {
-		int hash = MurmurHash.initialize();
-		hash = MurmurHash.update(hash, mode);
-		hash = MurmurHash.update(hash, modeStack);
-		return MurmurHash.finish(hash, 2);
-	}
+    protected int hashCodeImpl() {
+        int hash = MurmurHash.initialize();
+        hash = MurmurHash.update(hash, mode);
+        hash = MurmurHash.update(hash, modeStack);
+        return MurmurHash.finish(hash, 2);
+    }
 }

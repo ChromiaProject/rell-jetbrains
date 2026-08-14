@@ -45,7 +45,7 @@ class RellVersionResolverTest : BasePlatformTestCase() {
     fun testNoConfigResolvesToNewestSupported() {
         val source = file("proj/src/main.rell")
         assertEquals(
-            RellVersionResolution.Supported(RellVersionRegistry.max, Origin.NO_CONFIG, null),
+            RellVersionResolution.Supported(BundledRellVersion.version, Origin.NO_CONFIG, null),
             resolver.resolve(source),
         )
     }
@@ -57,30 +57,6 @@ class RellVersionResolverTest : BasePlatformTestCase() {
             val source = file("$dir/src/main.rell")
             assertEquals(
                 RellVersionResolution.Supported(RellVersion.parse(version)!!, Origin.DECLARED, config),
-                resolver.resolve(source),
-            )
-        }
-    }
-
-    fun testBelowFloorIsUnsupported() {
-        for (version in listOf("0.16.0", "0.15.4", "0.14.5", "0.13.0")) {
-            val dir = "proj-$version"
-            val config = file("$dir/chromia.yml", yml(version))
-            val source = file("$dir/src/main.rell")
-            assertEquals(
-                RellVersionResolution.Unsupported(RellVersion.parse(version)!!, config),
-                resolver.resolve(source),
-            )
-        }
-    }
-
-    fun testUnknownNewerVersionsClampToNewestSupported() {
-        for (version in listOf("0.16.9", "0.17.0", "1.0.0")) {
-            val dir = "proj-$version"
-            val config = file("$dir/chromia.yml", yml(version))
-            val source = file("$dir/src/main.rell")
-            assertEquals(
-                RellVersionResolution.Clamped(RellVersion.parse(version)!!, RellVersionRegistry.max, config),
                 resolver.resolve(source),
             )
         }
@@ -98,7 +74,7 @@ class RellVersionResolverTest : BasePlatformTestCase() {
             val source = file("$dir/src/main.rell")
             assertEquals(
                 "case: $dir",
-                RellVersionResolution.Supported(RellVersionRegistry.max, Origin.NO_VERSION_KEY, config),
+                RellVersionResolution.Supported(BundledRellVersion.version, Origin.NO_VERSION_KEY, config),
                 resolver.resolve(source),
             )
         }
@@ -110,7 +86,7 @@ class RellVersionResolverTest : BasePlatformTestCase() {
             val source = file("proj-$dir/src/main.rell")
             assertEquals(
                 "case: $dir",
-                RellVersionResolution.Supported(RellVersionRegistry.max, Origin.MALFORMED_VERSION, config),
+                RellVersionResolution.Supported(BundledRellVersion.version, Origin.MALFORMED_VERSION, config),
                 resolver.resolve(source),
             )
         }
@@ -129,7 +105,7 @@ class RellVersionResolverTest : BasePlatformTestCase() {
             val source = file("$dir/src/main.rell")
             assertEquals(
                 "case: $dir",
-                RellVersionResolution.Supported(RellVersionRegistry.max, Origin.UNREADABLE_CONFIG, config),
+                RellVersionResolution.Supported(BundledRellVersion.version, Origin.UNREADABLE_CONFIG, config),
                 resolver.resolve(source),
             )
         }
@@ -219,7 +195,7 @@ class RellVersionResolverTest : BasePlatformTestCase() {
         externalFile("chromia.yml", yml("0.14.5"))
         val source = file("proj/src/main.rell")
         assertEquals(
-            RellVersionResolution.Supported(RellVersionRegistry.max, Origin.NO_CONFIG, null),
+            RellVersionResolution.Supported(BundledRellVersion.version, Origin.NO_CONFIG, null),
             resolver.resolve(source),
         )
     }
@@ -228,7 +204,7 @@ class RellVersionResolverTest : BasePlatformTestCase() {
         externalFile("outside/chromia.yml", yml("0.14.5"))
         val source = externalFile("outside/src/main.rell")
         assertEquals(
-            RellVersionResolution.Supported(RellVersionRegistry.max, Origin.NO_CONFIG, null),
+            RellVersionResolution.Supported(BundledRellVersion.version, Origin.NO_CONFIG, null),
             resolver.resolve(source),
         )
     }
@@ -286,10 +262,7 @@ class RellVersionResolverTest : BasePlatformTestCase() {
         }
 
         val resolution = resolver.resolve(proj2Source)
-        assertEquals(
-            RellVersionResolution.Unsupported(RellVersion(0, 15, 0), resolution.configFile!!),
-            resolution,
-        )
+        assertEquals(RellVersion(0, 15, 0), resolution.effectiveVersion)
         assertEquals("chromia.yml under the renamed directory", "proj", resolution.configFile!!.parent.name)
     }
 
@@ -309,7 +282,7 @@ class RellVersionResolverTest : BasePlatformTestCase() {
         val source = file("not-settings/src/main.rell")
         assertEquals(
             "A yml declaring compile.rellVersion but no blockchains section must not govern files",
-            RellVersionResolution.Supported(RellVersionRegistry.max, Origin.NO_CONFIG, null),
+            RellVersionResolution.Supported(BundledRellVersion.version, Origin.NO_CONFIG, null),
             resolver.resolve(source),
         )
     }
@@ -336,7 +309,7 @@ class RellVersionResolverTest : BasePlatformTestCase() {
         assertEquals(newer, resolution.configFile)
         assertEquals(
             listOf(older to RellVersion(0, 16, 1), newer to RellVersion(0, 16, 2)),
-            resolver.claimants(source).map { it.configFile to it.effectiveVersion },
+            resolver.claimants(source).map { it.configFile to it.declared },
         )
     }
 
@@ -354,57 +327,6 @@ class RellVersionResolverTest : BasePlatformTestCase() {
 
         ChromiaActiveSettings.getInstance(project).setActive(directory, null)
         assertEquals(RellVersion(0, 16, 2), resolver.resolve(source).effectiveVersion)
-    }
-
-    fun testBelowFloorClaimantIsOutscoredByInScopeAlternate() {
-        file("mixed-floor/legacy.yml", settingsYml("0.14.15"))
-        val inScope = file("mixed-floor/current.yml", settingsYml("0.16.1"))
-        val source = file("mixed-floor/src/main.rell")
-
-        assertEquals(
-            "A below-floor claimant must not cease or conflict when an in-scope sibling exists",
-            RellVersionResolution.Supported(RellVersion(0, 16, 1), Origin.DECLARED, inScope),
-            resolver.resolve(source),
-        )
-        assertEquals(
-            listOf("current.yml" to false, "legacy.yml" to true),
-            resolver.claimants(source).map { it.configFile.name to it.belowFloor }.sortedBy { it.first },
-        )
-    }
-
-    fun testAllBelowFloorSettingsFilesCease() {
-        file("all-legacy/a.yml", settingsYml("0.14.15"))
-        val newerLegacy = file("all-legacy/b.yml", settingsYml("0.15.0"))
-        val source = file("all-legacy/src/main.rell")
-        assertEquals(
-            RellVersionResolution.Unsupported(RellVersion(0, 15, 0), newerLegacy),
-            resolver.resolve(source),
-        )
-    }
-
-    fun testActivelySelectedBelowFloorSettingsFileCeases() {
-        val legacy = file("explicit-legacy/a.yml", settingsYml("0.14.15"))
-        file("explicit-legacy/b.yml", settingsYml("0.16.2"))
-        val source = file("explicit-legacy/src/main.rell")
-
-        ChromiaActiveSettings.getInstance(project).setActive(legacy.parent.path, "a.yml")
-        assertEquals(
-            "An explicit below-floor choice is authoritative, like chr -s with that file",
-            RellVersionResolution.Unsupported(RellVersion(0, 14, 15), legacy),
-            resolver.resolve(source),
-        )
-    }
-
-    // chromia.yml is what `chr` runs without flags, so the default rule prefers it even below the
-    // floor — the cease banner then offers switching to in-scope alternates.
-    fun testBelowFloorChromiaYmlCeasesDespiteInScopeAlternate() {
-        val default = file("legacy-default/chromia.yml", yml("0.14.15"))
-        file("legacy-default/current.yml", settingsYml("0.16.2"))
-        val source = file("legacy-default/src/main.rell")
-        assertEquals(
-            RellVersionResolution.Unsupported(RellVersion(0, 14, 15), default),
-            resolver.resolve(source),
-        )
     }
 
     fun testSourceRootOwnershipBeatsProximity() {
@@ -452,7 +374,7 @@ class RellVersionResolverTest : BasePlatformTestCase() {
         val source = file("gains/src/main.rell")
         assertEquals(
             "Without a blockchains section the yml must not govern",
-            RellVersionRegistry.max,
+            BundledRellVersion.version,
             resolver.resolve(source).effectiveVersion,
         )
 
@@ -521,7 +443,7 @@ class RellVersionResolverTest : BasePlatformTestCase() {
         file("copy-src/src/main.rell")
         val targetDir = file("copy-dst/keep.txt").parent
         val copiedSource = file("copy-dst/src/main.rell")
-        assertEquals(RellVersionRegistry.max, resolver.resolve(copiedSource).effectiveVersion)
+        assertEquals(BundledRellVersion.version, resolver.resolve(copiedSource).effectiveVersion)
 
         runWriteAction { config.copy(this, targetDir, "chromia.yml") }
 
@@ -578,10 +500,6 @@ class RellVersionResolverTest : BasePlatformTestCase() {
                 "atbash_private.yml" to RellVersion(0, 14, 15),
             ),
             claimants,
-        )
-        assertEquals(
-            listOf("atbash_private.yml"),
-            resolver.claimants(source).filter { it.belowFloor }.map { it.configFile.name },
         )
     }
 

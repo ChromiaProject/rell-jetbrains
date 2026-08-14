@@ -27,7 +27,7 @@ Provides IDE integration for `.rell` source files:
 - Inlay hints (type annotations)
 - Test runner integration with Chromia CLI
 - File templates (entity, struct, enum, etc.)
-- A version-exact toolchain per project, picked from `compile.rellVersion` in `chromia.yml`
+- Analysis at each project's own Rell version, read from `compile.rellVersion` in `chromia.yml`
   (see [COMPATIBILITY.md](COMPATIBILITY.md))
 
 ---

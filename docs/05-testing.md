@@ -15,11 +15,7 @@ headless IDE (PSI, VFS, editor notifications, platform LSP extension points). `.
 succeeds against the bundled `antlr4-runtime`) and that a representative module parses with **no**
 syntax errors while malformed input **does** produce errors.
 
-`VersionedRellParsersTest` does the same for the version-exact parsers of older supported Rell
-versions, and fails when a supported version has no parser entry — which is what keeps
-`VersionedRellParsers` in step with `supportedRellVersions`.
-
-Both are thin by design. The grammar itself is the upstream source of truth and is exhaustively
+It is thin by design. The grammar itself is the upstream source of truth and is exhaustively
 validated in `rell-base` (the 0.16.0 build runs a differential gate comparing the ANTLR parser
 against the legacy parser across the whole corpus), so the plugin does not re-host that corpus.
 
@@ -29,25 +25,18 @@ against the legacy parser across the whole corpus), so the plugin does not re-ho
 
 ## Version compatibility
 
-Most of the suite covers the compatibility machinery described in [COMPATIBILITY.md](COMPATIBILITY.md):
+Part of the suite covers the version handling described in [COMPATIBILITY.md](COMPATIBILITY.md):
 
 | Test                                         | Covers                                                                              |
 |----------------------------------------------|-------------------------------------------------------------------------------------|
 | `RellVersionTest`                            | Parsing and ordering of `major.minor.patch`                                          |
-| `RellVersionRegistryTest`                    | The build-generated supported-version list                                           |
 | `RellVersionResolverTest`                    | `chromia.yml` lookup and `compile.rellVersion` semantics, on real temp directories    |
-| `RellLspRoutingTest`                         | Document matchers agree with the `<server>` entries declared in `plugin.xml`          |
-| `RellLspLockfileTest`                        | Lockfile parsing, and that each one pins its own language-server version              |
-| `RellVersionSyntaxAnnotatorTest`             | Version-true syntax errors from the declared version's own parser                     |
-| `RellVersionEditorNotificationProviderTest`  | Unsupported / clamped banners and the `rellVersion` quick-fix                         |
+| `RellLspRoutingTest`                         | The provider starts the bundled server for every Rell file, and only for those        |
+| `ChromiaSettingsChooserTest`                 | The settings-file popup, and how each file's declared version is described            |
 | `ChromiaConfigReloadNotificationProviderTest`| The save-and-reload bar shown while an edited `rellVersion` is unsaved                |
 
 `RellVersionResolverTest` deliberately uses real filesystem temp directories rather than the
 in-memory fixture, because the toolbox parser reads `chromia.yml` from an on-disk path.
-
-Adding a Rell version to `supportedRellVersions` without the matching `VersionedRellParsers` entry
-fails `VersionedRellParsersTest`, and the suites that assert against the newest version by string
-fail until their literals are bumped — those failures are the release checklist enforcing itself.
 
 ---
 

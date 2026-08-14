@@ -46,17 +46,17 @@ class RellVersionResolver(private val project: Project) {
 
     fun resolve(file: VirtualFile): RellVersionResolution {
         val group = findClaimGroup(file)
-            ?: return RellVersionResolution.Supported(RellVersionRegistry.max, Origin.NO_CONFIG, null)
+            ?: return RellVersionResolution.Supported(BundledRellVersion.version, Origin.NO_CONFIG, null)
 
         val claimants = group.configs.map { Evaluated(it, parsedFor(it)) }
         val chosen = chooseGoverning(group.directory, claimants)
-        val distinctInScope = claimants.mapNotNullTo(HashSet()) { it.effective }
+        val distinctInScope = claimants.mapTo(HashSet()) { it.effective }
 
-        return if (chosen.belowFloor || distinctInScope.size <= 1) {
+        return if (distinctInScope.size <= 1) {
             outcomeOf(chosen)
         } else {
             RellVersionResolution.Conflicting(
-                checkNotNull(chosen.effective) { "non-below-floor claimant has an effective version" },
+                chosen.effective,
                 chosen.configFile,
             )
         }
@@ -73,7 +73,8 @@ class RellVersionResolver(private val project: Project) {
      * that settings file still governs its version.
      */
     fun sourceRootOf(file: VirtualFile): VirtualFile? =
-        ApplicationManager.getApplication().runReadAction<VirtualFile?> { chosenClaimant(file)?.let { sourceRoot(it.configFile) } }
+        ApplicationManager.getApplication()
+            .runReadAction<VirtualFile?> { chosenClaimant(file)?.let { sourceRoot(it.configFile) } }
 
     /** Whether the settings file governing [file] declares a non-empty `libs:` section. */
     fun hasDeclaredLibs(file: VirtualFile): Boolean =
@@ -241,38 +242,31 @@ class RellVersionResolver(private val project: Project) {
         val configFile = chosen.configFile
 
         if (!chosen.parsed.readable) {
-            return RellVersionResolution.Supported(RellVersionRegistry.max, Origin.UNREADABLE_CONFIG, configFile)
+            return RellVersionResolution.Supported(BundledRellVersion.version, Origin.UNREADABLE_CONFIG, configFile)
         }
 
         val declared = chosen.parsed.declaredVersion
-            ?: return RellVersionResolution.Supported(RellVersionRegistry.max, Origin.NO_VERSION_KEY, configFile)
+            ?: return RellVersionResolution.Supported(BundledRellVersion.version, Origin.NO_VERSION_KEY, configFile)
 
         val version = chosen.declared
 
         if (version == null) {
-            LOG.warn("Malformed compile.rellVersion '$declared' in ${configFile.path}; using ${RellVersionRegistry.max}")
-            return RellVersionResolution.Supported(RellVersionRegistry.max, Origin.MALFORMED_VERSION, configFile)
+            LOG.warn(
+                "Malformed compile.rellVersion '$declared' in ${configFile.path}; using ${BundledRellVersion.version}"
+            )
+            return RellVersionResolution.Supported(BundledRellVersion.version, Origin.MALFORMED_VERSION, configFile)
         }
 
-        return when {
-            version < RellVersionRegistry.floor -> RellVersionResolution.Unsupported(version, configFile)
-            RellVersionRegistry.isSupported(version) ->
-                RellVersionResolution.Supported(version, Origin.DECLARED, configFile)
-
-            else -> RellVersionResolution.Clamped(version, RellVersionRegistry.max, configFile)
-        }
+        return RellVersionResolution.Supported(version, Origin.DECLARED, configFile)
     }
 
     private class Evaluated(val configFile: VirtualFile, val parsed: ParsedConfig) {
         val declared: RellVersion? = parsed.declaredVersion?.let(RellVersion::parse)
 
-        val belowFloor: Boolean
-            get() = declared != null && declared < RellVersionRegistry.floor
-
-        val effective: RellVersion?
+        val effective: RellVersion
             get() = ChromiaSettingsFiles.effectiveVersion(declared)
 
-        fun toClaimant(): RellSettingsClaimant = RellSettingsClaimant(configFile, declared, effective)
+        fun toClaimant(): RellSettingsClaimant = RellSettingsClaimant(configFile, declared)
     }
 
     private fun parsedFor(configFile: VirtualFile): ParsedConfig =
@@ -362,7 +356,7 @@ class RellVersionResolver(private val project: Project) {
     }
 
     private fun unreadable(configFile: VirtualFile): ParsedConfig {
-        LOG.warn("Unreadable Chromia settings file at ${configFile.path}; using ${RellVersionRegistry.max}")
+        LOG.warn("Unreadable Chromia settings file at ${configFile.path}; using ${BundledRellVersion.version}")
         return ParsedConfig(
             declaredVersion = null,
             readable = false,

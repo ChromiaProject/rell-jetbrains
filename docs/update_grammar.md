@@ -23,8 +23,7 @@ Maven by the build.
 ./gradlew generateGrammarSource   # optional: regenerate on demand
 ```
 
-A version bump is also a compatibility-mode change: the previous newest version stays supported and
-needs its own parser entry and matrix row. Follow the release checklist in
+A version bump changes which Rell release the plugin bundles; add a row to the matrix in
 [COMPATIBILITY.md](COMPATIBILITY.md).
 
 ## Step 2: Reconcile token/rule references (only if the grammar changed shape)

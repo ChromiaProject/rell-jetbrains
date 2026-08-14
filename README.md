@@ -38,10 +38,10 @@ The plugin supports following features:
 
 ## 🔀 Rell Version Compatibility
 
-Each project gets the language server matching `compile.rellVersion` in its settings file for every Rell release from 0.16.1 up.
+Each project is analysed at the Rell version its settings file declares in `compile.rellVersion`, so an older project sees the diagnostics its own release would have produced.
 
 [docs/COMPATIBILITY.md](https://gitlab.com/chromaway/rell-jetbrains/-/blob/main/docs/COMPATIBILITY.md)
-lists the supported versions and where settings files go.
+lists the bundled versions and where settings files go.
 
 ---
 

@@ -101,11 +101,11 @@ object ChromiaSettingsChooser {
     fun itemText(claimant: RellSettingsClaimant): String =
         "${claimant.configFile.name} (${describeVersion(claimant)})"
 
-    /** What a settings file means for the toolchain: its version, or why it yields none. */
-    fun describeVersion(claimant: RellSettingsClaimant): String = when {
-        claimant.declared == null -> "no rellVersion, using ${RellVersionRegistry.max}"
-        claimant.belowFloor -> "Rell ${claimant.declared}, unsupported"
-        claimant.declared != claimant.effectiveVersion -> "Rell ${claimant.declared}, using ${claimant.effectiveVersion}"
-        else -> "Rell ${claimant.declared}"
-    }
+    /** The Rell version a settings file declares, or the bundled one it falls back to. */
+    fun describeVersion(claimant: RellSettingsClaimant): String =
+        if (claimant.declared == null) {
+            "no rellVersion, using ${BundledRellVersion.version}"
+        } else {
+            "Rell ${claimant.declared}"
+        }
 }

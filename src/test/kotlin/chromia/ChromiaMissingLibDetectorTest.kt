@@ -91,7 +91,8 @@ class ChromiaMissingLibDetectorTest : BasePlatformTestCase() {
 
     private fun yml() = "compile:\n  rellVersion: \"0.16.1\"\n  source: src\n"
 
-    private fun ymlWithLibs() = "compile:\n  rellVersion: \"0.16.1\"\n  source: src\nlibs:\n  ft4:\n    version: \"1.1\"\n"
+    private fun ymlWithLibs() =
+        "compile:\n  rellVersion: \"0.16.1\"\n  source: src\nlibs:\n  ft4:\n    version: \"1.1\"\n"
 
     private fun file(relPath: String, content: String = ""): VirtualFile {
         val f = File(contentRoot, relPath)

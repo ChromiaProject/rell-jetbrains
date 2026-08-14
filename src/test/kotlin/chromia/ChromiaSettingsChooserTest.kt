@@ -42,13 +42,13 @@ class ChromiaSettingsChooserTest : RellVersionAwareTestCase() {
         assertNull(ChromiaSettingsChooser.choiceFor(project, null))
     }
 
-    fun testVersionDescriptionsExplainWhatEachFileWouldRun() {
+    fun testVersionDescriptionsNameTheDeclaredVersion() {
         val source = atbashLayout("describe")
         val byName = ChromiaSettingsChooser.choiceFor(project, source)!!.claimants.associateBy { it.configFile.name }
 
         assertEquals("Rell 0.16.2", ChromiaSettingsChooser.describeVersion(byName.getValue("atbash.yml")))
         assertEquals(
-            "Rell 0.14.15, unsupported",
+            "Rell 0.14.15",
             ChromiaSettingsChooser.describeVersion(byName.getValue("atbash_private.yml")),
         )
     }
@@ -64,25 +64,25 @@ class ChromiaSettingsChooserTest : RellVersionAwareTestCase() {
             listOf(
                 "atbash.yml (Rell 0.16.2)",
                 "atbash_dev.yml (Rell 0.16.2)",
-                "atbash_private.yml (Rell 0.14.15, unsupported)",
+                "atbash_private.yml (Rell 0.14.15)",
             ),
             labels,
         )
         assertFalse("No entry may advertise itself as active", labels.any { it.contains("active") })
     }
 
-    fun testClampedAndMissingVersionsAreDescribed() {
+    fun testDeclaredAndMissingVersionsAreDescribed() {
         myFixture.addFileToProject("desc2/newer.yml", settingsYml("0.99.0"))
         myFixture.addFileToProject("desc2/bare.yml", "blockchains:\n  c:\n    module: main\n")
         val source = myFixture.addFileToProject("desc2/src/main.rell", "module;\n").virtualFile
         val byName = ChromiaSettingsChooser.choiceFor(project, source)!!.claimants.associateBy { it.configFile.name }
 
         assertEquals(
-            "Rell 0.99.0, using ${RellVersionRegistry.max}",
+            "Rell 0.99.0",
             ChromiaSettingsChooser.describeVersion(byName.getValue("newer.yml")),
         )
         assertEquals(
-            "no rellVersion, using ${RellVersionRegistry.max}",
+            "no rellVersion, using ${BundledRellVersion.version}",
             ChromiaSettingsChooser.describeVersion(byName.getValue("bare.yml")),
         )
     }
@@ -98,7 +98,7 @@ class ChromiaSettingsChooserTest : RellVersionAwareTestCase() {
             listOf(
                 "atbash.yml (Rell 0.16.2)",
                 "atbash_dev.yml (Rell 0.16.2)",
-                "atbash_private.yml (Rell 0.14.15, unsupported)",
+                "atbash_private.yml (Rell 0.14.15)",
                 "Rell Settings…",
             ),
             rows,

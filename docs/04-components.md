@@ -21,25 +21,19 @@ API documentation: https://plugins.jetbrains.com/docs/intellij/language-server-p
 ### RellLspIntegrationProvider.kt
 
 **Role:** The `platform.lsp.integrationProvider` extension — the platform calls `fileOpened` for
-every file, and the provider routes each `.rell` file to the server of its resolved Rell version:
-the newest supported version starts from the bundled runtime; an older supported version starts from
-its downloaded runtime, triggering the download and starting nothing until it is ready. Files below
-the compatibility floor start nothing — that is the hard cease. `RellLspRoutingTest` guards this
-routing and the plugin.xml registration.
+every file, and the provider starts the bundled server's client for each `.rell` file. Every Rell
+file is served, whatever version its settings file declares. `RellLspRoutingTest` guards this and the
+plugin.xml registration.
 
 ### RellLspClientDescriptor.kt
 
-**Role:** Describes the server of one supported Rell version: how to launch it, which files it
-serves (`isSupportedFile` re-checks the file's resolved version, so per-version clients never
-overlap), its initialization options (the `indexCaching` setting and the IDE's inlay-hint settings),
-the custom server interface (`RellServerApi`), and the feature customization
-(`RellLspCustomization`). The platform identifies a client by descriptor class + presentable name +
-roots, so the version-carrying presentable name is what keeps per-version clients apart.
+**Role:** Describes the bundled server: how to launch it, which files it serves (every `.rell`
+file), its initialization options (the `indexCaching` setting and the IDE's inlay-hint settings), the
+custom server interface (`RellServerApi`), and the feature customization (`RellLspCustomization`).
 
 **Launch modes** (`lspCommunicationChannel`):
 - **Subprocess mode (StdIO):** Production use. `createCommandLine` launches the runtime with
-  `<lib dir>/*` on the classpath and `net.postchain.rell.toolbox.lsp.StdioMainKt` as the main class;
-  the lib dir is the bundled one for the newest version and a downloaded one for older versions.
+  `<lib dir>/*` on the classpath and `net.postchain.rell.toolbox.lsp.StdioMainKt` as the main class.
 - **Socket mode:** Development. External server runs on port 5008, plugin connects to it. Useful for
   debugging server with IDE. Enabled by `-Drell.lsp.useSocket=true`, which
   `./gradlew runIde -PuseSocket` passes.
@@ -53,17 +47,15 @@ roots, so the version-carrying presentable name is what keeps per-version client
 the root logger, which would upload every logged error without asking. On JDK 23+,
 `--sun-misc-unsafe-memory-access=allow` silences a per-launch deprecation warning.
 
-**Where Is the LSP Runtime?**
-- The bundled one is resolved by Gradle from the `rell` version in `gradle/libs.versions.toml` and
-  copied into `<plugin dir>/language-server/` by `prepareSandbox`. No manual download step.
-- Runtimes for older supported versions live in `<IDE system dir>/rell-lsp/<version>/`, downloaded on
-  demand (see `RellLspRuntimeManager`).
+**Where Is the LSP Runtime?** Resolved by Gradle from the `rell` version in
+`gradle/libs.versions.toml` and copied into `<plugin dir>/language-server/` by `prepareSandbox`. No
+manual download step.
 
 ### RellLspClients.kt
 
 **Role:** Client lookup for the rest of the plugin: `runningRellLspClients` (all running Rell
-clients), `getRellLspClient` (the newest-version client that serves plugin-level requests — tests,
-templates, cache invalidation), and `rellRequest`, which sends one of the custom `RellServerApi`
+clients), `getRellLspClient` (the client that serves plugin-level requests — tests, templates, cache
+invalidation), and `rellRequest`, which sends one of the custom `RellServerApi`
 requests through the platform's `LspClient.sendRequest`.
 
 ### RellServerApi.kt
@@ -169,16 +161,16 @@ server's semantic tokens onto the `RellColor` palette.
 
 ## 3. Version Compatibility (`chromia/`)
 
-**Purpose:** Run the Rell toolchain that matches each project's declared `compile.rellVersion`
-instead of assuming the newest. The user-facing rules live in [COMPATIBILITY.md](COMPATIBILITY.md);
-this section maps them to classes.
+**Purpose:** Tell the user which Rell version each project is analysed at, and which settings file
+decided it. The analysis itself is the bundled server's job — it reads `compile.rellVersion` and sets
+the compiler's compatibility mode from it. The user-facing rules live in
+[COMPATIBILITY.md](COMPATIBILITY.md); this section maps them to classes.
 
-### RellVersionRegistry.kt
+### BundledRellVersion.kt
 
-**Role:** The versions this plugin build supports, read from the build-generated resource
-`rell/supported-versions.txt` (written by the `generateRellVersionRegistry` task from
-`supportedRellVersions` in `build.gradle.kts`). Exposes `floor` (the oldest, below which nothing
-runs) and `max` (the newest, which is bundled and is the default when nothing is declared).
+**Role:** The Rell version this plugin build bundles, read from the build-generated resource
+`rell/bundled-version.txt` (written by the `generateBundledRellVersion` task from `rell` in
+`libs.versions.toml`). Used for UI text only — a project that declares no version is analysed at it.
 
 ### RellVersionResolver.kt
 
@@ -191,30 +183,8 @@ swallowed parse failures behave exactly as they do in `chr`. Results are cached 
 dropped when the file changes.
 
 `RellVersionResolution` is the outcome: `Supported` (declared, or defaulted with an `Origin`
-explaining why), `Clamped` (declared newer than this build knows), or `Unsupported` (below the
-floor — no toolchain at all).
-
-### RellLspRuntimeManager.kt / RellLspLockfile.kt
-
-**Role:** Downloads and validates the older runtimes. The build writes
-`rell/lsp-lockfiles/<version>.lock` (GAV, file name, SHA-256) for each older version; the manager
-fetches exactly those artifacts into `<IDE system dir>/rell-lsp/<version>/`, verifies checksums, and
-writes a `.complete` marker containing the lockfile contents — so a plugin upgrade that re-pins the
-same Rell version to different artifacts invalidates the cache. Failures show a notification with a
-Retry action; a wrong-version server is never substituted.
-
-### VersionedRellParsers.kt / RellVersionSyntaxAnnotator.kt
-
-**Role:** Version-true syntax errors. The build generates an ANTLR parser from each older version's
-own `Rell.g4` into a version-suffixed package; `VersionedRellParsers` holds the entry points, and the
-external annotator runs the right one and reports "Not valid in Rell X.Y.Z (declared in chromia.yml)".
-The editor PSI always uses the newest grammar (a superset), so this is the only client-side place
-where "valid in the newest Rell but not in this project's Rell" surfaces.
-
-### RellVersionEditorNotificationProvider.kt
-
-**Role:** The two banners — an error banner below the floor, with a one-click "Set rellVersion to …"
-fix, and a warning banner when the declared version is newer than the plugin knows.
+explaining why), or `Conflicting` when sibling settings files disagree and the status bar should say
+so. No outcome withholds a language server.
 
 ### ChromiaConfigChangeListener.kt / ChromiaConfigReloadNotificationProvider.kt
 

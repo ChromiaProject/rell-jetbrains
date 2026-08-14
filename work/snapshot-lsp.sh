@@ -2,7 +2,7 @@
 # Run the sandbox IDE with the published Rell snapshot language server instead of the release
 # pinned in libs.versions.toml, so server-side changes on Rell's dev branch can be tested through
 # the real plugin without building Rell locally. Only the language-server runtime is swapped —
-# the editor grammar, the chromia.yml parser and the compatibility-mode lockfiles stay pinned.
+# the editor grammar and the chromia.yml parser stay pinned.
 #
 # Rell versions its snapshot as the next minor over the latest release: 0.X.Y -> 0.(X+1).0-SNAPSHOT.
 #

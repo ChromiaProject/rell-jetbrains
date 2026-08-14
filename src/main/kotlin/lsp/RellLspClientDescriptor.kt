@@ -13,9 +13,6 @@ import com.intellij.platform.lsp.api.LspServerNotificationsHandler
 import com.intellij.platform.lsp.api.ProjectWideLspClientDescriptor
 import com.intellij.platform.lsp.api.customization.LspCustomization
 import net.postchain.rellide.jetbrains.chromia.ChromiaSettingsFiles
-import net.postchain.rellide.jetbrains.chromia.RellLspRuntimeManager
-import net.postchain.rellide.jetbrains.chromia.RellVersion
-import net.postchain.rellide.jetbrains.chromia.RellVersionRegistry
 import net.postchain.rellide.jetbrains.language.RellFileType.Companion.RELL_EXTENSION
 import net.postchain.rellide.jetbrains.sentry.SentryReportSubmitter
 import net.postchain.rellide.jetbrains.settings.RellPluginSettingsState
@@ -24,27 +21,22 @@ import org.eclipse.lsp4j.services.LanguageServer
 import kotlin.io.path.*
 
 /**
- * Descriptor of the language server for one supported Rell version. The newest supported version
- * runs from the runtime bundled with the plugin; older supported versions run from the downloaded
- * runtime in `<system>/rell-lsp/<version>/` (see [RellLspRuntimeManager]).
- *
- * The platform identifies a client by descriptor class + presentable name + roots, so the
- * version-carrying presentable name is what keeps the per-version clients apart.
+ * Descriptor of the language server bundled with the plugin. One server serves every Rell file in
+ * the project: it reads each project's `compile.rellVersion` and compiles against that version, so
+ * there is nothing here to route by.
  */
 class RellLspClientDescriptor(
     project: Project,
-    val version: RellVersion,
     lspLibDir: () -> java.nio.file.Path,
-) : ProjectWideLspClientDescriptor(project, presentableName(version)) {
+) : ProjectWideLspClientDescriptor(project, PRESENTABLE_NAME) {
     // Resolved only when a server actually launches: the bundled dir needs the installed plugin's
     // path, which does not exist under the test runner.
     private val lspLibDir by lazy(lspLibDir)
 
-    override fun isSupportedFile(file: VirtualFile): Boolean =
-        file.extension == RELL_EXTENSION && routedRellVersion(project, file) == version
+    override fun isSupportedFile(file: VirtualFile): Boolean = file.extension == RELL_EXTENSION
 
     override val lspCommunicationChannel: LspCommunicationChannel
-        get() = if (useSocket() && version == RellVersionRegistry.max) {
+        get() = if (useSocket()) {
             LspCommunicationChannel.Socket(SOCKET_PORT, startProcess = false)
         } else {
             LspCommunicationChannel.StdIO
@@ -116,23 +108,13 @@ class RellLspClientDescriptor(
         private const val LSP_MAIN_CLASS = "net.postchain.rell.toolbox.lsp.StdioMainKt"
         private const val LOG4J_OVERRIDE_FILE = "log4j2-override.properties"
 
-        private fun presentableName(version: RellVersion): String =
-            if (version == RellVersionRegistry.max) "Rell Language Server" else "Rell Language Server ($version)"
+        private const val PRESENTABLE_NAME = "Rell Language Server"
 
-        /** Dev mode (work/local-lsp.sh): connect to an externally launched server instead of spawning one. */
+        /** Dev mode (work/snapshot-lsp.sh): connect to an externally launched server instead of spawning one. */
         private fun useSocket(): Boolean = System.getProperty(USE_SOCKET_PROPERTY, "false").toBoolean()
 
-        fun newest(project: Project): RellLspClientDescriptor =
-            RellLspClientDescriptor(project, RellVersionRegistry.max, ::bundledLspLibDir)
-
-        fun versioned(project: Project, version: RellVersion): RellLspClientDescriptor =
-            if (version == RellVersionRegistry.max) {
-                newest(project)
-            } else {
-                RellLspClientDescriptor(project, version) {
-                    RellLspRuntimeManager.getInstance().cachedRuntimeDir(version)
-                }
-            }
+        fun bundled(project: Project): RellLspClientDescriptor =
+            RellLspClientDescriptor(project, ::bundledLspLibDir)
 
         // ErrorReportSubmitter.EP_NAME exists but is internal API, like every by-ID or by-class
         // plugin lookup (PluginManagerCore.getPlugin, PluginManager.findEnabledPlugin/
@@ -147,14 +129,14 @@ class RellLspClientDescriptor(
          * look like a complete set of roots (project discovery is bounded to the project base
          * path, and the server's scan is not).
          */
-        private fun chromiaConfigFileUris(project: Project): List<String>? =
+        internal fun chromiaConfigFileUris(project: Project): List<String>? =
             ChromiaProjectDiscovery.discoverProjects(project)
                 .filter { it.activeSettingsFile?.let { name -> !ChromiaSettingsFiles.isDefaultName(name) } == true }
                 .mapNotNull { it.configFile }
                 .map { java.io.File(it).toURI().toString() }
                 .takeIf { it.isNotEmpty() }
 
-        /** The language-server runtime bundled with the plugin — always the newest supported Rell. */
+        /** The language-server runtime bundled with the plugin. */
         fun bundledLspLibDir(): java.nio.file.Path {
             // The plugin path comes from our own error-handler extension bean: extension beans are
             // PluginAware, so the platform injects the descriptor without any plugin lookup.

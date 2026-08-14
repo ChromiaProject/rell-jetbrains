@@ -76,6 +76,7 @@ internal class DiagnosticsRecordingHandler(
         delegate.publishDiagnostics(params)
         // Banners keyed off diagnostics (e.g. the missing-lib "Run chr install" suggestion) only
         // recompute when asked; a fresh push is the one signal they have to go check again.
-        RellLspDiagnosticsCache.fileFor(params.uri)?.let { EditorNotifications.getInstance(project).updateNotifications(it) }
+        RellLspDiagnosticsCache.fileFor(params.uri)
+            ?.let { EditorNotifications.getInstance(project).updateNotifications(it) }
     }
 }

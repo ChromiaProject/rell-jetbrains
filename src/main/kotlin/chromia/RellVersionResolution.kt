@@ -5,13 +5,16 @@ import com.intellij.openapi.vfs.VirtualFile
 /**
  * Outcome of resolving the Rell version for a file from the Chromia settings files claiming it
  * (see docs/COMPATIBILITY.md for the full rules).
+ *
+ * The version is shown, never enforced: every `.rell` file is served by the one bundled language
+ * server, which reads `compile.rellVersion` itself and compiles the project against it.
  */
 sealed interface RellVersionResolution {
     /** The settings file that determined the outcome, null when none was found. */
     val configFile: VirtualFile?
 
-    /** The toolchain version consumers (grammar, LSP) must use; null means hard cease. */
-    val effectiveVersion: RellVersion?
+    /** The version this file is analysed at — what the language server reads from the settings file. */
+    val effectiveVersion: RellVersion
 
     data class Supported(
         val version: RellVersion,
@@ -20,25 +23,6 @@ sealed interface RellVersionResolution {
     ) : RellVersionResolution {
         override val effectiveVersion: RellVersion
             get() = version
-    }
-
-    /** The declared version is unknown to this plugin build; the newest supported one is used instead. */
-    data class Clamped(
-        val declared: RellVersion,
-        val effective: RellVersion,
-        override val configFile: VirtualFile,
-    ) : RellVersionResolution {
-        override val effectiveVersion: RellVersion
-            get() = effective
-    }
-
-    /** The declared version predates the compatibility floor: no toolchain runs for this project. */
-    data class Unsupported(
-        val declared: RellVersion,
-        override val configFile: VirtualFile,
-    ) : RellVersionResolution {
-        override val effectiveVersion: RellVersion?
-            get() = null
     }
 
     /**
@@ -56,10 +40,10 @@ sealed interface RellVersionResolution {
     }
 
     enum class Origin {
-        /** `compile.rellVersion` named a supported version. */
+        /** `compile.rellVersion` named a version. */
         DECLARED,
 
-        /** No settings file claims the file — the plugin's newest version applies. */
+        /** No settings file claims the file — the bundled version applies. */
         NO_CONFIG,
 
         /** The settings file exists but has no usable `compile.rellVersion` value. */
@@ -74,15 +58,10 @@ sealed interface RellVersionResolution {
 }
 
 /**
- * One settings file claiming a given source file: its parsed `compile.rellVersion` (null when
- * absent or malformed) and the version its toolchain would use (null below the compatibility
- * floor — such claimants are out of scope for conflict detection).
+ * One settings file claiming a given source file, with its parsed `compile.rellVersion` (null when
+ * absent or malformed).
  */
 data class RellSettingsClaimant(
     val configFile: VirtualFile,
     val declared: RellVersion?,
-    val effectiveVersion: RellVersion?,
-) {
-    val belowFloor: Boolean
-        get() = declared != null && declared < RellVersionRegistry.floor
-}
+)

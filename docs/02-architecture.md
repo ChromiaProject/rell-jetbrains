@@ -36,18 +36,18 @@ Even though the LSP server handles compilation, the IDE still needs a local AST 
 2. **PSI Tree Navigation:** JetBrains IDEs use PSI (Program Structure Interface) trees for local navigation features. Some IDE features expect a PSI tree to exist.
 
 
-### Why One Toolchain per Rell Version?
+### Why One Bundled Toolchain?
 
-**What:** A single plugin build carries several Rell toolchains at once. Every `.rell` file is routed
-to the grammar and the language server matching the `compile.rellVersion` declared in its nearest
-`chromia.yml`.
+**What:** A single plugin build carries one Rell toolchain. Every `.rell` file goes to the same
+language server, which reads the `compile.rellVersion` declared in the governing `chromia.yml` and
+analyses that project at the declared version.
 
-**Why:** Rell changes syntax in patch releases (lambdas arrived in 0.16.1), and the compiler's own
-`compatibility` option gates library members and behavior switches, never syntax. Only the matching
-toolchain produces correct diagnostics, so the plugin ships one per supported version rather than
-approximating with the newest.
+**Why:** The compiler's `compatibility` option makes one build behave as an older release — it gates
+library members, behavior switches, and the version-restricted language constructs alike. Shipping a
+toolchain per supported version bought nothing the option does not already give, and cost a download
+on first use plus a version-exact grammar per release.
 
-The full rules — resolution, clamping, the 0.16.1 floor, downloaded runtimes — are in
+The full rules — which settings file governs a file, and what its declared version means — are in
 [COMPATIBILITY.md](COMPATIBILITY.md).
 
 
@@ -74,19 +74,17 @@ flowchart TB
     subgraph IDE["JetBrains IDE"]
         subgraph Plugin["Rell Plugin (This Codebase)"]
             Lang["Language Definition<br/>(ANTLR grammar → PSI)"]
-            Route["Version Resolution<br/>(chromia.yml → toolchain)"]
-            LSP["Platform LSP Integration<br/>(per-version client descriptors)"]
+            Route["Version Resolution<br/>(chromia.yml → displayed version)"]
+            LSP["Platform LSP Integration<br/>(one client descriptor)"]
             Test["Test Runner"]
             Lang <--> LSP
             Route --> Lang
             Route --> LSP
         end
     end
-    Bundled["Rell Language Server<br/>bundled newest (separate JVM)"]
-    Downloaded["Rell Language Server<br/>older version (downloaded)"]
+    Bundled["Rell Language Server<br/>bundled (separate JVM)"]
     CLI["Chromia CLI<br/>(chr, external)"]
     LSP -->|LSP Protocol| Bundled
-    LSP -->|LSP Protocol| Downloaded
     Test -->|Launches| CLI
 ```
 
@@ -95,8 +93,8 @@ flowchart TB
 **1. Plugin Loads (IDE Startup)**
 - IDE reads `src/main/resources/META-INF/plugin.xml`
 - Registers language (`RellLanguage`), file type (`.rell`)
-- Registers the LSP integration provider (`platform.lsp.integrationProvider`) that starts one
-  language server per supported Rell version on demand
+- Registers the LSP integration provider (`platform.lsp.integrationProvider`) that starts the
+  bundled language server
 - Registers test configuration type
 - Registers tool window factory
 
@@ -105,9 +103,8 @@ flowchart TB
 - Local parser generates PSI tree from source
 - Basic syntax highlighting applied via `RellSyntaxHighlighter`
 - The platform calls `RellLspIntegrationProvider.fileOpened` for the file
-- `RellVersionResolver` walks up to the nearest `chromia.yml` and resolves the file's Rell version;
-  the provider starts the client of that version's server, and no other (below the 0.16.1 floor,
-  none at all)
+- The provider starts the bundled server's client; the server finds the governing `chromia.yml`
+  itself and compiles the project at its declared version
 - The client's `RellLspClientDescriptor` launches the server as a subprocess, or connects to
   port 5008 in socket mode (`-Drell.lsp.useSocket=true`)
 - Initialization options (index caching, inlay hints) sent to server
@@ -119,8 +116,8 @@ flowchart TB
 - Semantic tokens received from LSP
 - `RellSemanticTokensColorProvider` maps tokens to IDE colors
 - Syntax highlighting updates
-- On a project pinned to an older supported version, `RellVersionSyntaxAnnotator` additionally runs
-  that version's own ANTLR parser and reports syntax the version does not accept
+- Constructs the project's declared Rell version does not have are reported by the server as
+  ordinary diagnostics, the same way it reports any other compile error
 
 **4. User Invokes Action (e.g., Go to Definition)**
 - IDE sends `textDocument/definition` request to LSP
