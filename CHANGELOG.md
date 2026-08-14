@@ -1,6 +1,9 @@
 # Changelog
 
-## [0.4.8]
+## [0.4.9]
+### Added
+- Add Rell version 0.16.7
+
 ### Changed
 - One bundled language server now serves every Rell project. It reads `compile.rellVersion` from the
   project's settings file and analyses that project at the declared version, so an older project
@@ -14,6 +17,7 @@
   the version it declares, and the "unsupported version" and "newer than this plugin knows" banners
   no longer appear.
 
+## [0.4.8]
 ### Fixed
 - Switching the active Chromia settings file now takes effect immediately: the language server is
   told which file governs and re-analyses the project against it, instead of being restarted and

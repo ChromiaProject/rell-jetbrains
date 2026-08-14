@@ -8,6 +8,7 @@ follow the Rell release you target rather than the one the server was built from
 
 | Plugin version | Bundled Rell |
 |----------------|--------------|
+| 0.4.9          | 0.16.7       |
 | 0.4.8          | 0.16.6       |
 | 0.4.7          | 0.16.6       |
 | 0.4.5          | 0.16.5       |
